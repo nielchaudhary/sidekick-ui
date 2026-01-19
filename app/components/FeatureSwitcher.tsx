@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const features = [
   {
     id: "memory",
-    label: "Memory",
+    label: "MEMORY",
     title: "Never lose a thread",
     description:
       "Sidekick archives every meeting, note, and thought in a searchable neural net that grows smarter over time.",
@@ -14,7 +14,7 @@ const features = [
   },
   {
     id: "context",
-    label: "Context",
+    label: "CONTEXT",
     title: "Beyond keywords",
     description:
       "It understands the 'why' behind your projects, linking disparate ideas automatically across your entire knowledge base.",
@@ -22,7 +22,7 @@ const features = [
   },
   {
     id: "retention",
-    label: "Retention",
+    label: "RETENTION",
     title: "Long-term storage",
     description:
       "High-stakes decisions preserved forever. Your data stays fresh, indexed, and accessible when you need it most.",
@@ -30,15 +30,14 @@ const features = [
   },
   {
     id: "retrieval",
-    label: "Retrieval",
+    label: "RETRIEVAL",
     title: "Instant access",
-    description:
-      "Query your past thoughts with natural language and get precise answers in milliseconds, not minutes.",
+    description: "Query your past thoughts with natural language and get precise answers in milliseconds, not minutes.",
     icon: RetrievalAnimation,
   },
   {
     id: "reasoning",
-    label: "Reasoning",
+    label: "REASONING",
     title: "A second brain",
     description:
       "Stress-test your logic and surface blind spots. Let AI challenge your assumptions before reality does.",
@@ -61,24 +60,20 @@ export default function FeatureSwitcher() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="font-headline text-4xl md:text-5xl text-black mb-4 tracking-wide">
-            BUILT FOR OPERATORS
-          </h2>
+          <h2 className="font-headline text-4xl md:text-5xl text-black mb-4 tracking-wide">BUILT FOR OPERATORS</h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Five core capabilities that transform how you think, remember, and decide.
           </p>
         </motion.div>
 
         {/* Tab Navigation - Individual buttons above card */}
-        <div className="flex justify-center gap-0 mb-8">
+        <div className="flex justify-center gap-3 mb-8">
           {features.map((feature, index) => (
             <button
               key={feature.id}
               onClick={() => setActiveIndex(index)}
-              className={`px-6 py-3 text-sm font-medium transition-all duration-300 border border-black ${
-                activeIndex === index
-                  ? "bg-black text-white"
-                  : "bg-white text-black hover:bg-gray-100"
+              className={`px-6 py-2 text-sm font-bold transition-all duration-300 border border-black rounded-md ${
+                activeIndex === index ? "bg-gray-300 text-black" : "bg-white text-gray-400 hover:text-gray-600"
               }`}
             >
               {feature.label}
@@ -135,9 +130,7 @@ export default function FeatureSwitcher() {
               key={index}
               onClick={() => setActiveIndex(index)}
               className={`h-1 transition-all duration-300 ${
-                activeIndex === index
-                  ? "w-8 bg-black"
-                  : "w-2 bg-gray-300 hover:bg-gray-400"
+                activeIndex === index ? "w-8 bg-black" : "w-2 bg-gray-300 hover:bg-gray-400"
               }`}
             />
           ))}
@@ -258,12 +251,7 @@ function MemoryAnimation() {
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
         <circle cx="140" cy="80" r="20" fill="#ffffff" stroke="#000000" strokeWidth="1.5" />
-        <path
-          d="M132 80 Q140 70 148 80 Q140 90 132 80"
-          stroke="#000000"
-          strokeWidth="1.5"
-          fill="none"
-        />
+        <path d="M132 80 Q140 70 148 80 Q140 90 132 80" stroke="#000000" strokeWidth="1.5" fill="none" />
       </motion.g>
     </svg>
   );
@@ -416,10 +404,7 @@ function RetentionAnimation() {
 
           {/* Data particles on layer */}
           {i === 0 && (
-            <motion.g
-              animate={{ y: [0, -5, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
+            <motion.g animate={{ y: [0, -5, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>
               <circle cx="110" cy={layer.y - 5} r="2" fill="#000000" opacity="0.6" />
               <circle cx="140" cy={layer.y - 5} r="2" fill="#000000" opacity="0.6" />
               <circle cx="170" cy={layer.y - 5} r="2" fill="#000000" opacity="0.6" />
@@ -444,10 +429,7 @@ function RetentionAnimation() {
       />
 
       {/* Lock icon at top */}
-      <motion.g
-        animate={{ scale: [1, 1.05, 1] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      >
+      <motion.g animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>
         <rect x="130" y="5" width="20" height="14" rx="2" stroke="#000000" strokeWidth="1.5" fill="none" />
         <path d="M134 5 V0 A6 6 0 0 1 146 0 V5" stroke="#000000" strokeWidth="1.5" fill="none" />
         <circle cx="140" cy="12" r="2" fill="#000000" />
@@ -653,10 +635,7 @@ function ReasoningAnimation() {
       ))}
 
       {/* Thought bubbles */}
-      <motion.g
-        animate={{ y: [0, -3, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      >
+      <motion.g animate={{ y: [0, -3, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>
         <circle cx="220" cy="35" r="12" stroke="#000000" strokeWidth="1.5" fill="none" opacity="0.6" />
         <circle cx="235" cy="20" r="7" stroke="#000000" strokeWidth="1" fill="none" opacity="0.4" />
         <circle cx="245" cy="10" r="4" stroke="#000000" strokeWidth="1" fill="none" opacity="0.3" />
