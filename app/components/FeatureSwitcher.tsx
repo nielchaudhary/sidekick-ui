@@ -11,9 +11,9 @@ const features = [
     description: null,
     icon: MemoryAnimation,
     points: [
-      "EVERY CONVERSATION, DECISION, AND THOUGHT—AUTOMATICALLY SAVED.",
-      "NOTHING SLIPS THROUGH. EVERYTHING SEARCHABLE. ALWAYS THERE.",
-      "CAPTURES MEETINGS, NOTES, AND STRAY THOUGHTS INSTANTLY.",
+      "Every conversation, decision, and thought automatically saved.",
+      "Nothing slips through. Everything searchable. Always there.",
+      "Captures meetings, notes, and stray thoughts instantly.",
     ],
   },
   {
@@ -90,6 +90,16 @@ export default function FeatureSwitcher() {
               <div className="flex flex-col md:flex-row min-h-[380px]">
                 {/* Left: Content (40%) */}
                 <div className="w-full md:w-[40%] p-8 md:p-12 flex flex-col justify-center">
+                  {/* Top dotted line */}
+                  <div
+                    className="w-full h-px mb-6"
+                    style={{
+                      backgroundImage: "linear-gradient(to right, #d1d5db 50%, transparent 50%)",
+                      backgroundSize: "8px 1px",
+                      backgroundRepeat: "repeat-x",
+                    }}
+                  />
+
                   <motion.h3
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -111,27 +121,39 @@ export default function FeatureSwitcher() {
 
                   {/* Feature Points */}
                   {activeFeature.points && (
-                    <motion.ul
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                      className="space-y-4"
-                    >
-                      {activeFeature.points.map((point: string, idx: number) => (
-                        <motion.li
-                          key={idx}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.3 + idx * 0.1 }}
-                          className="flex items-start gap-3"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-gray-400 mt-2 flex-shrink-0" />
-                          <span className="font-headline text-sm md:text-base text-gray-600 tracking-wide leading-relaxed">
-                            {point}
-                          </span>
-                        </motion.li>
-                      ))}
-                    </motion.ul>
+                    <>
+                      <motion.ul
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="space-y-4"
+                      >
+                        {activeFeature.points.map((point: string, idx: number) => (
+                          <motion.li
+                            key={idx}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 + idx * 0.1 }}
+                            className="flex items-start gap-2"
+                          >
+                            <span className="text-gray-800 font-bold text-lg leading-none mt-px">|</span>
+                            <span className="font-sans text-sm md:text-base text-gray-900 tracking-wide leading-relaxed">
+                              {point}
+                            </span>
+                          </motion.li>
+                        ))}
+                      </motion.ul>
+
+                      {/* Bottom dotted line */}
+                      <div
+                        className="w-full h-px mt-6"
+                        style={{
+                          backgroundImage: "linear-gradient(to right, #d1d5db 50%, transparent 50%)",
+                          backgroundSize: "8px 1px",
+                          backgroundRepeat: "repeat-x",
+                        }}
+                      />
+                    </>
                   )}
                 </div>
 
@@ -172,15 +194,6 @@ export default function FeatureSwitcher() {
     </section>
   );
 }
-
-/* ============================================
-   ANIMATED SVG ICONS - Black Monochrome
-   ============================================ */
-
-/* ============================================
-   SIDEKICK - Cognitive Interaction Flow
-   "Billion-Dollar" Quality Animation System
-   ============================================ */
 
 type AnimationPhase = "idle" | "input" | "sending" | "thinking" | "responding" | "collapse" | "storage";
 
