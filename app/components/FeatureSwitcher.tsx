@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const features = [
   {
@@ -192,58 +192,201 @@ export default function FeatureSwitcher() {
    ============================================ */
 
 /* ============================================
-   MEMORIA - Premium AI Memory Interaction
+   SIDEKICK - Cognitive Interaction Flow
    "Billion-Dollar" Quality Animation System
    ============================================ */
 
-type AnimationPhase = "input" | "sending" | "responding" | "collapse" | "storage";
+type AnimationPhase = "idle" | "input" | "sending" | "thinking" | "responding" | "collapse" | "storage";
 
-// Staggered text reveal component - word by word fade in
-function StaggeredText({ text, className }: { text: string; className?: string }) {
-  const words = text.split(" ");
+// Shared pulse frequency for synchronization (1.2Hz = 833ms period)
+const PULSE_DURATION = 0.833;
+
+// Typewriter effect component - character by character with variable speed
+function TypewriterText({
+  text,
+  className,
+  onComplete,
+}: {
+  text: string;
+  className?: string;
+  onComplete?: () => void;
+}) {
+  const [displayedText, setDisplayedText] = useState("");
+  const [isComplete, setIsComplete] = useState(false);
+
+  useEffect(() => {
+    let index = 0;
+    setDisplayedText("");
+    setIsComplete(false);
+
+    const typeNextChar = () => {
+      if (index < text.length) {
+        setDisplayedText(text.slice(0, index + 1));
+        index++;
+        // Variable speed - faster for spaces, slower for punctuation
+        const char = text[index - 1];
+        const baseDelay = 25;
+        const delay =
+          char === " "
+            ? baseDelay * 0.5
+            : [".", ",", "!", "?"].includes(char)
+              ? baseDelay * 4
+              : baseDelay + Math.random() * 15;
+        setTimeout(typeNextChar, delay);
+      } else {
+        setIsComplete(true);
+        onComplete?.();
+      }
+    };
+
+    const timer = setTimeout(typeNextChar, 100);
+    return () => clearTimeout(timer);
+  }, [text, onComplete]);
+
   return (
     <span className={className}>
-      {words.map((word, i) => (
+      {displayedText}
+      {!isComplete && (
         <motion.span
-          key={i}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: i * 0.08, duration: 0.15 }}
-          className="inline-block mr-[3px]"
-        >
-          {word}
-        </motion.span>
-      ))}
+          className="inline-block w-[2px] h-[10px] bg-white/80 ml-[1px] align-middle"
+          animate={{ opacity: [1, 0, 1] }}
+          transition={{ duration: 0.5, repeat: Infinity }}
+        />
+      )}
     </span>
   );
 }
 
-// Heartbeat-style typing indicator
-function HeartbeatTypingIndicator() {
+// Background Vector Neural Pathways - Animated during "thinking" state
+function NeuralPathwaysBackground({ isActive }: { isActive: boolean }) {
+  // Generate neural pathway points
+  const pathways = [
+    { d: "M50,200 Q100,150 150,180 T250,160", delay: 0 },
+    { d: "M80,220 Q130,170 180,200 T280,180", delay: 0.2 },
+    { d: "M30,240 Q90,190 140,220 T240,200", delay: 0.4 },
+    { d: "M100,260 Q150,210 200,240 T300,220", delay: 0.1 },
+    { d: "M60,280 Q120,230 170,260 T270,240", delay: 0.3 },
+  ];
+
+  const nodes = [
+    { cx: 100, cy: 180, delay: 0 },
+    { cx: 180, cy: 200, delay: 0.15 },
+    { cx: 140, cy: 240, delay: 0.3 },
+    { cx: 220, cy: 220, delay: 0.45 },
+    { cx: 260, cy: 190, delay: 0.2 },
+    { cx: 80, cy: 260, delay: 0.35 },
+  ];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      className="flex gap-1.5 px-3 py-2"
+    <svg
+      className="absolute inset-0 w-full h-full"
+      viewBox="0 0 340 420"
+      fill="none"
+      style={{ opacity: isActive ? 1 : 0.3, transition: "opacity 0.5s ease" }}
     >
-      {[0, 1, 2].map((i) => (
-        <motion.div
-          key={i}
-          className="w-2 h-2 rounded-full bg-gray-400"
-          animate={{
-            y: [0, -6, 0, -3, 0],
-            scale: [1, 1.2, 1, 1.1, 1],
-          }}
+      {/* Neural pathways */}
+      {pathways.map((path, i) => (
+        <motion.path
+          key={`path-${i}`}
+          d={path.d}
+          stroke="rgba(255,255,255,0.15)"
+          strokeWidth="1"
+          fill="none"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={
+            isActive
+              ? {
+                  pathLength: [0, 1, 1, 0],
+                  opacity: [0, 0.6, 0.6, 0],
+                }
+              : { pathLength: 0, opacity: 0 }
+          }
           transition={{
-            duration: 1.2,
-            delay: i * 0.2,
-            repeat: Infinity,
+            duration: PULSE_DURATION * 3,
+            delay: path.delay,
+            repeat: isActive ? Infinity : 0,
             ease: "easeInOut",
           }}
         />
       ))}
-    </motion.div>
+
+      {/* Neural nodes */}
+      {nodes.map((node, i) => (
+        <g key={`node-${i}`}>
+          {/* Pulse ring */}
+          <motion.circle
+            cx={node.cx}
+            cy={node.cy}
+            r="3"
+            fill="none"
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth="1"
+            initial={{ scale: 1, opacity: 0 }}
+            animate={
+              isActive
+                ? {
+                    scale: [1, 2.5],
+                    opacity: [0.6, 0],
+                  }
+                : { scale: 1, opacity: 0 }
+            }
+            transition={{
+              duration: PULSE_DURATION,
+              delay: node.delay,
+              repeat: isActive ? Infinity : 0,
+              ease: "easeOut",
+            }}
+          />
+          {/* Core node */}
+          <motion.circle
+            cx={node.cx}
+            cy={node.cy}
+            r="2"
+            fill="rgba(255,255,255,0.5)"
+            initial={{ scale: 0.8, opacity: 0.3 }}
+            animate={
+              isActive
+                ? {
+                    scale: [0.8, 1.2, 0.8],
+                    opacity: [0.3, 0.8, 0.3],
+                  }
+                : { scale: 0.8, opacity: 0.3 }
+            }
+            transition={{
+              duration: PULSE_DURATION,
+              delay: node.delay,
+              repeat: isActive ? Infinity : 0,
+              ease: "easeInOut",
+            }}
+          />
+        </g>
+      ))}
+
+      {/* Connecting data streams during active state */}
+      {isActive && (
+        <>
+          {[0, 1, 2].map((i) => (
+            <motion.circle
+              key={`stream-${i}`}
+              r="1.5"
+              fill="rgba(255,255,255,0.8)"
+              initial={{ opacity: 0 }}
+              animate={{
+                opacity: [0, 1, 0],
+                cx: [80 + i * 30, 170, 260 - i * 20],
+                cy: [260 - i * 20, 200 + i * 10, 180 + i * 15],
+              }}
+              transition={{
+                duration: PULSE_DURATION * 2,
+                delay: i * 0.3,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+        </>
+      )}
+    </svg>
   );
 }
 
@@ -255,7 +398,6 @@ function MicIcon({ isActive }: { isActive: boolean }) {
       animate={isActive ? { scale: [1, 1.08, 1] } : {}}
       transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
     >
-      {/* Glow effect */}
       {isActive && (
         <motion.div
           className="absolute inset-0 rounded-full bg-gray-400/30"
@@ -278,19 +420,16 @@ function MemoryAnimation() {
   const [inputText, setInputText] = useState("");
   const [showUserMessage, setShowUserMessage] = useState(false);
   const [showAiResponse, setShowAiResponse] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-
-  // For the collapse animation - track the "data packet" position
-  const dataPacketY = useSpring(0, { stiffness: 100, damping: 15 });
-  const dataPacketScale = useSpring(1, { stiffness: 200, damping: 20 });
-  const dataPacketOpacity = useMotionValue(1);
 
   // Memory node reference position (center of the card)
   const memoryNodeRef = useRef<HTMLDivElement>(null);
 
   // The message content
-  const userMessage = "last week's pricing update?";
-  const aiResponse = "You landed on $49/mo for solo users. Here's the context from Thursday's call.";
+  const userMessage = "need to close deal today";
+  const aiResponse = "Sure, Sidekick will set a reminder for 6PM";
+
+  // Determine if background should be active (during thinking phase)
+  const isBackgroundActive = phase === "thinking";
 
   // Animation state machine
   useEffect(() => {
@@ -300,18 +439,14 @@ function MemoryAnimation() {
       setInputText("");
       setShowUserMessage(false);
       setShowAiResponse(false);
-      setIsTyping(false);
-      dataPacketY.set(0);
-      dataPacketScale.set(1);
-      dataPacketOpacity.set(1);
 
-      // Phase 1: Input - Simulate typing
+      // Phase 1: Idle then Input - Simulate typing
       await delay(600);
 
       // Simulate character-by-character typing
       for (let i = 0; i <= userMessage.length; i++) {
         setInputText(userMessage.slice(0, i));
-        await delay(40 + Math.random() * 30); // Natural typing rhythm
+        await delay(40 + Math.random() * 30);
       }
 
       await delay(400);
@@ -323,25 +458,20 @@ function MemoryAnimation() {
       await delay(100);
       setShowUserMessage(true);
 
-      await delay(300);
+      await delay(400);
 
-      // Phase 3: AI responding
+      // Phase 3: Response - Show immediately without thinking state
       setPhase("responding");
-      setIsTyping(true);
-
-      await delay(1200); // Typing indicator duration
-
-      setIsTyping(false);
       setShowAiResponse(true);
 
-      await delay(1500); // Let user read the response
+      await delay(3000); // Let user read the response
 
-      // Phase 4: Collapse - The "Wow Factor"
+      // Phase 5: Collapse - The "Wow Factor"
       setPhase("collapse");
 
-      await delay(800); // Anticipatory pause
+      await delay(800);
 
-      // Phase 5: Storage
+      // Phase 6: Storage
       setPhase("storage");
 
       await delay(2500);
@@ -351,12 +481,12 @@ function MemoryAnimation() {
     };
 
     runAnimation();
-  }, [dataPacketY, dataPacketScale, dataPacketOpacity]);
+  }, []);
 
-  // Spring configs for different motion types
-  const springTransition = {
+  // Premium spring configs (stiffness: 260, damping: 20 per PRD)
+  const premiumSpring = {
     type: "spring" as const,
-    stiffness: 300,
+    stiffness: 260,
     damping: 20,
   };
 
@@ -383,7 +513,7 @@ function MemoryAnimation() {
 
   return (
     <div className="relative w-[340px] h-[420px] overflow-hidden rounded-2xl">
-      {/* SVG Defs for Grain Filter */}
+      {/* SVG Defs for Filters */}
       <svg className="absolute w-0 h-0">
         <defs>
           <filter id="grain" x="0%" y="0%" width="100%" height="100%">
@@ -391,7 +521,6 @@ function MemoryAnimation() {
             <feColorMatrix type="saturate" values="0" in="noise" result="monoNoise" />
             <feBlend in="SourceGraphic" in2="monoNoise" mode="multiply" />
           </filter>
-          {/* Glow filter for the data packet */}
           <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="4" result="coloredBlur" />
             <feMerge>
@@ -403,12 +532,19 @@ function MemoryAnimation() {
       </svg>
 
       {/* Dithered Burgundy Gradient Background */}
-      <div
+      <motion.div
         className="absolute inset-0"
         style={{
           background: `radial-gradient(ellipse at 30% 20%, #B34B71 0%, #6B2D4A 35%, #3D1A2E 60%, #1A0912 100%)`,
         }}
+        animate={{
+          filter: isBackgroundActive ? "brightness(1.1)" : "brightness(1)",
+        }}
+        transition={{ duration: 0.5 }}
       />
+
+      {/* Neural Pathways Background - Activates during thinking */}
+      <NeuralPathwaysBackground isActive={isBackgroundActive} />
 
       {/* Grain Overlay */}
       <div
@@ -419,7 +555,7 @@ function MemoryAnimation() {
         }}
       />
 
-      {/* Secondary Grain Layer for Depth */}
+      {/* Secondary Grain Layer */}
       <div
         className="absolute inset-0 opacity-20 pointer-events-none"
         style={{
@@ -429,11 +565,21 @@ function MemoryAnimation() {
         }}
       />
 
-      {/* Content Container */}
-      <div className="relative w-full h-full flex items-center justify-center p-4">
+      {/* Content Container with backdrop blur during thinking */}
+      <motion.div
+        className="relative w-full h-full flex items-center justify-center p-4"
+        animate={{
+          backdropFilter: isBackgroundActive ? "blur(2px)" : "blur(0px)",
+        }}
+        transition={{ duration: 0.3 }}
+      >
         <AnimatePresence mode="wait">
-          {/* Phases: Input, Sending, Responding, Collapse - Chat Window */}
-          {(phase === "input" || phase === "sending" || phase === "responding" || phase === "collapse") && (
+          {/* Chat Window - All phases except storage */}
+          {(phase === "input" ||
+            phase === "sending" ||
+            phase === "thinking" ||
+            phase === "responding" ||
+            phase === "collapse") && (
             <motion.div
               key="chat-window"
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -465,15 +611,11 @@ function MemoryAnimation() {
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
-                {/* <span className="text-[10px] font-semibold text-gray-500 tracking-wider">MEMORIA</span> */}
               </div>
 
-              {/* Messages Container - Grows to fit content */}
-              <div className="flex-1 p-4 space-y-3 min-h-[200px]">
-                {/* Heartbeat Typing Indicator */}
-                <AnimatePresence>{isTyping && <HeartbeatTypingIndicator />}</AnimatePresence>
-
-                {/* User Message - iOS style bubble with "pop" animation */}
+              {/* Messages Container */}
+              <div className="flex-1 p-4 space-y-3 min-h-[200px] overflow-hidden">
+                {/* User Message - iOS style bubble */}
                 <AnimatePresence>
                   {showUserMessage && (
                     <motion.div
@@ -481,7 +623,7 @@ function MemoryAnimation() {
                       animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
                       exit={{ opacity: 0, scale: 0.5, y: -20 }}
                       transition={{
-                        ...springTransition,
+                        ...premiumSpring,
                         scale: { type: "spring", stiffness: 500, damping: 25 },
                       }}
                       className="flex justify-end"
@@ -489,7 +631,6 @@ function MemoryAnimation() {
                       <motion.div
                         className="px-3.5 py-2 rounded-2xl rounded-br-md max-w-[180px]"
                         style={{ background: "#1a1a1a" }}
-                        whileHover={{ scale: 1.02 }}
                       >
                         <span className="text-[11px] text-white font-medium leading-relaxed">{userMessage}</span>
                       </motion.div>
@@ -497,24 +638,25 @@ function MemoryAnimation() {
                   )}
                 </AnimatePresence>
 
-                {/* AI Response - Staggered word reveal */}
+                {/* AI Response - Typewriter effect */}
                 <AnimatePresence>
                   {showAiResponse && (
                     <motion.div
-                      initial={{ opacity: 0, x: -30, scale: 0.8 }}
-                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
                       exit={{ opacity: 0, scale: 0.5, y: -20 }}
-                      transition={{ ...springTransition, delay: 0.1 }}
+                      transition={{ duration: 0.2 }}
                       className="flex justify-start"
                     >
                       <motion.div
-                        className="px-3.5 py-2 rounded-2xl rounded-bl-md max-w-[200px]"
+                        className="relative flex items-start gap-2 px-3 py-2.5 rounded-2xl max-w-[220px] overflow-hidden"
                         style={{
-                          background: "linear-gradient(135deg, #000000 0%, #1a1a1a 100%)",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                          background: "#000000",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
                         }}
                       >
-                        <StaggeredText
+                        {/* Typewriter Text Response */}
+                        <TypewriterText
                           text={aiResponse}
                           className="text-[11px] text-white font-medium leading-relaxed"
                         />
@@ -524,7 +666,7 @@ function MemoryAnimation() {
                 </AnimatePresence>
               </div>
 
-              {/* Input Bar - Active/Functional appearance */}
+              {/* Input Bar */}
               <motion.div
                 className="px-3 pb-3"
                 initial={{ opacity: 0, y: 10 }}
@@ -555,7 +697,7 @@ function MemoryAnimation() {
                         />
                       </span>
                     ) : (
-                      <span className="text-[11px] text-gray-400 font-medium">Message Sidekick...</span>
+                      <span className="text-[11px] text-gray-400 font-medium">Write your message...</span>
                     )}
                   </div>
 
@@ -816,7 +958,7 @@ function MemoryAnimation() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
     </div>
   );
 }
