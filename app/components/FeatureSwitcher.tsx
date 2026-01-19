@@ -70,15 +70,15 @@ export default function FeatureSwitcher() {
         </motion.div>
 
         {/* Tab Navigation - Individual buttons above card */}
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="flex justify-center gap-0 mb-8">
           {features.map((feature, index) => (
             <button
               key={feature.id}
               onClick={() => setActiveIndex(index)}
-              className={`relative px-6 py-3 text-sm font-medium transition-all duration-300 border-b-2 ${
+              className={`px-6 py-3 text-sm font-medium transition-all duration-300 border border-black ${
                 activeIndex === index
-                  ? "text-black border-black"
-                  : "text-gray-400 border-transparent hover:text-gray-600 hover:border-gray-300"
+                  ? "bg-black text-white"
+                  : "bg-white text-black hover:bg-gray-100"
               }`}
             >
               {feature.label}
