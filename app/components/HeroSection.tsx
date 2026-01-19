@@ -11,17 +11,18 @@ export default function HeroSection() {
         </h1>
 
         {/* Description */}
-        <p className="mt-8 text-lg md:text-xl text-gray-700 font-semibold max-w-6xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200">
-          The thinking partner that remembers. For operators who make decisions under pressure, Sidekick holds your
-          context, surfaces what&apos;s relevant, and helps you reason faster.
+        <p className="mt-8 text-lg md:text-xl text-gray-600 max-w-6xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200">
+          Sidekick remembers what you said, why you said it, and what you decided. Ask anything—it gives you the data
+          you need, with the context that matters.{" "}
+          <span className="font-bold text-gray-800">Like a human sidekick that never forgets.</span>
         </p>
 
         {/* CTA Buttons */}
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-300">
-          <button className="bg-black text-white font-medium px-8 py-3.5 rounded-lg hover:bg-gray-800 transition-colors text-base">
+          <button className="bg-black text-white font-medium px-6 py-2 rounded-xl hover:bg-gray-800 transition-colors text-base cursor-pointer">
             Join the Waitlist
           </button>
-          <button className="text-gray-600 font-medium px-8 py-3.5 rounded-lg border border-gray-200 hover:border-gray-300 hover:text-black transition-colors text-base">
+          <button className="text-gray-600 font-medium px-6 py-2 rounded-xl border cursor-pointer border-gray-200 hover:border-gray-300 hover:text-black transition-colors text-base">
             Learn More
           </button>
         </div>
