@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 
 const features = [
   {
@@ -193,41 +193,155 @@ export default function FeatureSwitcher() {
 
 /* ============================================
    MEMORIA - Premium AI Memory Interaction
+   "Billion-Dollar" Quality Animation System
    ============================================ */
 
-type AnimationPhase = "dialogue" | "collapse" | "storage";
+type AnimationPhase = "input" | "sending" | "responding" | "collapse" | "storage";
+
+// Staggered text reveal component - word by word fade in
+function StaggeredText({ text, className }: { text: string; className?: string }) {
+  const words = text.split(" ");
+  return (
+    <span className={className}>
+      {words.map((word, i) => (
+        <motion.span
+          key={i}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: i * 0.08, duration: 0.15 }}
+          className="inline-block mr-[3px]"
+        >
+          {word}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
+// Heartbeat-style typing indicator
+function HeartbeatTypingIndicator() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="flex gap-1.5 px-3 py-2"
+    >
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          className="w-2 h-2 rounded-full bg-gray-400"
+          animate={{
+            y: [0, -6, 0, -3, 0],
+            scale: [1, 1.2, 1, 1.1, 1],
+          }}
+          transition={{
+            duration: 1.2,
+            delay: i * 0.2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </motion.div>
+  );
+}
+
+// Mic icon with breathing pulse animation
+function MicIcon({ isActive }: { isActive: boolean }) {
+  return (
+    <motion.div
+      className="relative flex items-center justify-center"
+      animate={isActive ? { scale: [1, 1.08, 1] } : {}}
+      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+    >
+      {/* Glow effect */}
+      {isActive && (
+        <motion.div
+          className="absolute inset-0 rounded-full bg-gray-400/30"
+          animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+        <line x1="12" y1="19" x2="12" y2="23" />
+        <line x1="8" y1="23" x2="16" y2="23" />
+      </svg>
+    </motion.div>
+  );
+}
 
 function MemoryAnimation() {
-  const [phase, setPhase] = useState<AnimationPhase>("dialogue");
+  const [phase, setPhase] = useState<AnimationPhase>("input");
+  const [inputText, setInputText] = useState("");
   const [showUserMessage, setShowUserMessage] = useState(false);
   const [showAiResponse, setShowAiResponse] = useState(false);
-  const [showTyping, setShowTyping] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
+
+  // For the collapse animation - track the "data packet" position
+  const dataPacketY = useSpring(0, { stiffness: 100, damping: 15 });
+  const dataPacketScale = useSpring(1, { stiffness: 200, damping: 20 });
+  const dataPacketOpacity = useMotionValue(1);
+
+  // Memory node reference position (center of the card)
+  const memoryNodeRef = useRef<HTMLDivElement>(null);
+
+  // The message content
+  const userMessage = "What did we decide on pricing last week?";
+  const aiResponse = "You landed on $49/mo for solo users. Here's the context from Thursday's call.";
 
   // Animation state machine
   useEffect(() => {
     const runAnimation = async () => {
       // Reset state
-      setPhase("dialogue");
-      setShowTyping(true);
+      setPhase("input");
+      setInputText("");
       setShowUserMessage(false);
       setShowAiResponse(false);
+      setIsTyping(false);
+      dataPacketY.set(0);
+      dataPacketScale.set(1);
+      dataPacketOpacity.set(1);
 
-      // Phase A: Dialogue
-      await delay(800);
-      setShowTyping(false);
+      // Phase 1: Input - Simulate typing
+      await delay(600);
+
+      // Simulate character-by-character typing
+      for (let i = 0; i <= userMessage.length; i++) {
+        setInputText(userMessage.slice(0, i));
+        await delay(40 + Math.random() * 30); // Natural typing rhythm
+      }
+
+      await delay(400);
+
+      // Phase 2: Send message
+      setPhase("sending");
+      setInputText("");
+
+      await delay(100);
       setShowUserMessage(true);
 
-      await delay(600);
+      await delay(300);
+
+      // Phase 3: AI responding
+      setPhase("responding");
+      setIsTyping(true);
+
+      await delay(1200); // Typing indicator duration
+
+      setIsTyping(false);
       setShowAiResponse(true);
 
-      await delay(2000);
+      await delay(1500); // Let user read the response
 
-      // Phase B: Collapse
+      // Phase 4: Collapse - The "Wow Factor"
       setPhase("collapse");
 
-      await delay(1200);
+      await delay(800); // Anticipatory pause
 
-      // Phase C: Storage
+      // Phase 5: Storage
       setPhase("storage");
 
       await delay(2500);
@@ -237,12 +351,34 @@ function MemoryAnimation() {
     };
 
     runAnimation();
-  }, []);
+  }, [dataPacketY, dataPacketScale, dataPacketOpacity]);
 
+  // Spring configs for different motion types
   const springTransition = {
     type: "spring" as const,
     stiffness: 300,
     damping: 20,
+  };
+
+  const layoutMorphTransition = {
+    type: "spring" as const,
+    stiffness: 400,
+    damping: 30,
+    duration: 0.4,
+  };
+
+  const collapseTransition = {
+    type: "spring" as const,
+    stiffness: 150,
+    damping: 20,
+    duration: 0.6,
+  };
+
+  const magneticTransition = {
+    type: "spring" as const,
+    stiffness: 80,
+    damping: 12,
+    duration: 0.8,
   };
 
   return (
@@ -251,20 +387,17 @@ function MemoryAnimation() {
       <svg className="absolute w-0 h-0">
         <defs>
           <filter id="grain" x="0%" y="0%" width="100%" height="100%">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.9"
-              numOctaves="4"
-              stitchTiles="stitch"
-              result="noise"
-            />
-            <feColorMatrix
-              type="saturate"
-              values="0"
-              in="noise"
-              result="monoNoise"
-            />
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch" result="noise" />
+            <feColorMatrix type="saturate" values="0" in="noise" result="monoNoise" />
             <feBlend in="SourceGraphic" in2="monoNoise" mode="multiply" />
+          </filter>
+          {/* Glow filter for the data packet */}
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
         </defs>
       </svg>
@@ -299,84 +432,72 @@ function MemoryAnimation() {
       {/* Content Container */}
       <div className="relative w-full h-full flex items-center justify-center p-4">
         <AnimatePresence mode="wait">
-          {/* Phase A & B: Chat Window */}
-          {(phase === "dialogue" || phase === "collapse") && (
+          {/* Phases: Input, Sending, Responding, Collapse - Chat Window */}
+          {(phase === "input" || phase === "sending" || phase === "responding" || phase === "collapse") && (
             <motion.div
               key="chat-window"
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{
                 opacity: phase === "collapse" ? 0 : 1,
-                scale: phase === "collapse" ? 0.6 : 1,
-                y: 0,
+                scale: phase === "collapse" ? 0.15 : 1,
+                y: phase === "collapse" ? -20 : 0,
                 borderRadius: phase === "collapse" ? "50%" : "24px",
               }}
-              exit={{ opacity: 0, scale: 0.4 }}
-              transition={phase === "collapse" ? { duration: 0.8, ease: "easeInOut" } : springTransition}
-              className="relative w-[300px] h-[180px] overflow-hidden"
+              exit={{
+                opacity: 0,
+                scale: 0.1,
+                borderRadius: "50%",
+              }}
+              transition={phase === "collapse" ? collapseTransition : layoutMorphTransition}
+              className="relative w-[300px] overflow-hidden flex flex-col"
               style={{
-                background: "rgba(255, 255, 255, 0.92)",
+                background: "rgba(255, 255, 255, 0.95)",
                 backdropFilter: "blur(20px)",
                 WebkitBackdropFilter: "blur(20px)",
-                boxShadow: "0 20px 50px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)",
+                boxShadow: "0 25px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.15)",
                 borderRadius: "24px",
               }}
             >
               {/* Chat Header */}
-              <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-100">
-                <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-[10px] font-medium text-gray-500 tracking-wide">SIDEKICK</span>
+              <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100/80">
+                <motion.div
+                  className="w-2 h-2 rounded-full bg-emerald-500"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                {/* <span className="text-[10px] font-semibold text-gray-500 tracking-wider">MEMORIA</span> */}
               </div>
 
-              {/* Messages Container */}
-              <div className="p-3 space-y-2 overflow-hidden">
-                {/* Typing Indicator */}
-                <AnimatePresence>
-                  {showTyping && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="flex gap-1 px-3 py-2"
-                    >
-                      {[0, 1, 2].map((i) => (
-                        <motion.div
-                          key={i}
-                          className="w-1.5 h-1.5 rounded-full bg-gray-400"
-                          animate={{ y: [0, -4, 0] }}
-                          transition={{
-                            duration: 0.6,
-                            delay: i * 0.15,
-                            repeat: Infinity,
-                          }}
-                        />
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+              {/* Messages Container - Grows to fit content */}
+              <div className="flex-1 p-3 space-y-2.5 min-h-[80px]">
+                {/* Heartbeat Typing Indicator */}
+                <AnimatePresence>{isTyping && <HeartbeatTypingIndicator />}</AnimatePresence>
 
-                {/* User Message */}
+                {/* User Message - iOS style bubble with "pop" animation */}
                 <AnimatePresence>
                   {showUserMessage && (
                     <motion.div
-                      initial={{ opacity: 0, x: 30, scale: 0.8 }}
-                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      initial={{ opacity: 0, scale: 0.3, x: 50, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
                       exit={{ opacity: 0, scale: 0.5, y: -20 }}
-                      transition={springTransition}
+                      transition={{
+                        ...springTransition,
+                        scale: { type: "spring", stiffness: 500, damping: 25 },
+                      }}
                       className="flex justify-end"
                     >
-                      <div
-                        className="px-3 py-1.5 rounded-2xl rounded-br-md max-w-[160px]"
-                        style={{ background: "#333333" }}
+                      <motion.div
+                        className="px-3.5 py-2 rounded-2xl rounded-br-md max-w-[180px]"
+                        style={{ background: "#1a1a1a" }}
+                        whileHover={{ scale: 1.02 }}
                       >
-                        <span className="text-[11px] text-white font-medium">
-                          Remember this meeting
-                        </span>
-                      </div>
+                        <span className="text-[11px] text-white font-medium leading-relaxed">{userMessage}</span>
+                      </motion.div>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* AI Response */}
+                {/* AI Response - Staggered word reveal */}
                 <AnimatePresence>
                   {showAiResponse && (
                     <motion.div
@@ -386,45 +507,165 @@ function MemoryAnimation() {
                       transition={{ ...springTransition, delay: 0.1 }}
                       className="flex justify-start"
                     >
-                      <div
-                        className="px-3 py-1.5 rounded-2xl rounded-bl-md max-w-[180px]"
-                        style={{ background: "#000000" }}
+                      <motion.div
+                        className="px-3.5 py-2 rounded-2xl rounded-bl-md max-w-[200px]"
+                        style={{
+                          background: "linear-gradient(135deg, #000000 0%, #1a1a1a 100%)",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                        }}
                       >
-                        <span className="text-[11px] text-white font-medium">
-                          Stored to your neural archive ✓
-                        </span>
-                      </div>
+                        <StaggeredText
+                          text={aiResponse}
+                          className="text-[11px] text-white font-medium leading-relaxed"
+                        />
+                      </motion.div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
+
+              {/* Input Bar - Active/Functional appearance */}
+              <motion.div
+                className="px-3 pb-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <motion.div
+                  className="flex items-center gap-2 px-3 py-2 rounded-full"
+                  style={{
+                    background: "rgba(255, 255, 255, 0.5)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(0, 0, 0, 0.08)",
+                  }}
+                  animate={{
+                    borderColor: inputText ? "rgba(0, 0, 0, 0.2)" : "rgba(0, 0, 0, 0.08)",
+                  }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {/* Text Input Area */}
+                  <div className="flex-1 min-h-[20px] flex items-center">
+                    {inputText ? (
+                      <motion.span className="text-[11px] text-gray-800 font-medium" layout>
+                        {inputText}
+                        <motion.span
+                          className="inline-block w-[2px] h-[12px] bg-gray-800 ml-[1px]"
+                          animate={{ opacity: [1, 0, 1] }}
+                          transition={{ duration: 0.8, repeat: Infinity }}
+                        />
+                      </motion.span>
+                    ) : (
+                      <span className="text-[11px] text-gray-400 font-medium">Message Sidekick...</span>
+                    )}
+                  </div>
+
+                  {/* Send Button */}
+                  <motion.button
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{
+                      background: inputText ? "#1a1a1a" : "#e5e5e5",
+                    }}
+                    animate={{
+                      background: inputText ? "#1a1a1a" : "#e5e5e5",
+                      scale: inputText ? 1 : 0.95,
+                    }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  >
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke={inputText ? "white" : "#9ca3af"}
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="12" y1="19" x2="12" y2="5" />
+                      <polyline points="5 12 12 5 19 12" />
+                    </svg>
+                  </motion.button>
+
+                  {/* Mic Icon */}
+                  <div className="text-gray-400">
+                    <MicIcon isActive={!inputText && phase === "input"} />
+                  </div>
+                </motion.div>
+              </motion.div>
             </motion.div>
+          )}
+
+          {/* The "Data Packet" - Appears during collapse, flies to memory node */}
+          {phase === "collapse" && (
+            <motion.div
+              key="data-packet"
+              className="absolute"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{
+                scale: [0, 1.5, 0.8],
+                opacity: [0, 1, 0],
+                y: [0, -40, -80],
+              }}
+              transition={{
+                duration: 1,
+                times: [0, 0.4, 1],
+                ease: "easeInOut",
+              }}
+              style={{
+                width: 16,
+                height: 16,
+                background:
+                  "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%)",
+                borderRadius: "50%",
+                filter: "url(#glow)",
+                boxShadow: "0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.4)",
+              }}
+            />
           )}
 
           {/* Phase C: Memory Storage Node */}
           {phase === "storage" && (
             <motion.div
               key="storage-node"
+              ref={memoryNodeRef}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              transition={magneticTransition}
               className="relative flex items-center justify-center"
             >
-              {/* Outer Pulse Rings */}
+              {/* Data Receipt Pulse - Triggered when data arrives */}
+              <motion.div
+                className="absolute rounded-full"
+                initial={{ width: 20, height: 20, opacity: 0.8 }}
+                animate={{
+                  width: [20, 180],
+                  height: [20, 180],
+                  opacity: [0.8, 0],
+                }}
+                transition={{
+                  duration: 1.2,
+                  ease: "easeOut",
+                }}
+                style={{
+                  border: "2px solid rgba(255,255,255,0.6)",
+                }}
+              />
+
+              {/* Outer Pulse Rings - Expanding waves to acknowledge receipt */}
               {[0, 1, 2].map((i) => (
                 <motion.div
                   key={`ring-${i}`}
                   className="absolute rounded-full border border-white/30"
                   initial={{ width: 40, height: 40, opacity: 0 }}
                   animate={{
-                    width: [40, 120 + i * 40],
-                    height: [40, 120 + i * 40],
+                    width: [40, 140 + i * 40],
+                    height: [40, 140 + i * 40],
                     opacity: [0.6, 0],
                   }}
                   transition={{
-                    duration: 2,
-                    delay: i * 0.4,
+                    duration: 2.5,
+                    delay: 0.3 + i * 0.5,
                     repeat: Infinity,
                     ease: "easeOut",
                   }}
@@ -443,8 +684,9 @@ function MemoryAnimation() {
                     stroke="rgba(255,255,255,0.3)"
                     strokeWidth="1"
                     fill="none"
-                    animate={{ rotate: [0, 90] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: [0.8, 1, 0.8] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                   />
                 </svg>
               </motion.div>
@@ -461,89 +703,115 @@ function MemoryAnimation() {
                     stroke="rgba(255,255,255,0.4)"
                     strokeWidth="1"
                     fill="none"
+                    initial={{ scale: 0.9 }}
+                    animate={{ scale: [0.9, 1.1, 0.9] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                   />
                 </svg>
               </motion.div>
 
-              {/* Central Memory Node */}
+              {/* Central Memory Node - With "absorbing" effect */}
               <motion.div
-                className="relative w-12 h-12 rounded-full flex items-center justify-center"
+                className="relative w-14 h-14 rounded-full flex items-center justify-center"
                 style={{
                   background: "linear-gradient(135deg, #B34B71 0%, #6B2D4A 100%)",
-                  boxShadow: "0 0 30px rgba(179, 75, 113, 0.6), inset 0 0 20px rgba(255,255,255,0.1)",
+                  boxShadow: "0 0 40px rgba(179, 75, 113, 0.7), inset 0 0 25px rgba(255,255,255,0.15)",
                 }}
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                initial={{ scale: 0.5 }}
+                animate={{ scale: [0.5, 1.15, 1] }}
+                transition={{
+                  duration: 0.8,
+                  times: [0, 0.5, 1],
+                  ease: "easeOut",
+                }}
               >
-                {/* Inner Glow */}
+                {/* Inner Glow - Pulses to show "absorption" */}
                 <motion.div
-                  className="absolute inset-2 rounded-full"
-                  style={{ background: "radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)" }}
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="absolute inset-1.5 rounded-full"
+                  style={{
+                    background: "radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%)",
+                  }}
+                  animate={{
+                    opacity: [0.3, 1, 0.5],
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 1,
+                    times: [0, 0.3, 1],
+                    ease: "easeOut",
+                  }}
                 />
 
                 {/* Neural Icon */}
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                   <motion.circle
                     cx="12"
                     cy="12"
                     r="3"
                     fill="white"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 1, repeat: Infinity }}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: [0, 1.3, 1] }}
+                    transition={{ duration: 0.6, times: [0, 0.6, 1] }}
                   />
                   <motion.path
                     d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
                     stroke="white"
                     strokeWidth="1.5"
                     strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{ duration: 1, delay: 0.3 }}
                   />
                 </svg>
               </motion.div>
 
-              {/* Floating Data Particles */}
-              {[...Array(8)].map((_, i) => {
-                const angle = (i / 8) * Math.PI * 2;
-                const radius = 55;
+              {/* Incoming Data Particles - Converging from outside */}
+              {[...Array(12)].map((_, i) => {
+                const angle = (i / 12) * Math.PI * 2;
+                const radius = 70;
                 return (
                   <motion.div
                     key={`particle-${i}`}
-                    className="absolute w-1.5 h-1.5 rounded-full bg-white/60"
+                    className="absolute w-1.5 h-1.5 rounded-full"
+                    style={{
+                      background: "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 100%)",
+                      boxShadow: "0 0 6px rgba(255,255,255,0.8)",
+                    }}
                     initial={{
-                      x: 0,
-                      y: 0,
+                      x: Math.cos(angle) * radius,
+                      y: Math.sin(angle) * radius,
                       opacity: 0,
+                      scale: 0,
                     }}
                     animate={{
                       x: [Math.cos(angle) * radius, 0],
                       y: [Math.sin(angle) * radius, 0],
-                      opacity: [1, 0],
-                      scale: [1, 0],
+                      opacity: [0, 1, 0],
+                      scale: [0, 1.2, 0],
                     }}
                     transition={{
-                      duration: 1.5,
-                      delay: i * 0.15,
-                      repeat: Infinity,
-                      ease: "easeIn",
+                      duration: 1.2,
+                      delay: i * 0.08,
+                      ease: [0.25, 0.1, 0.25, 1], // Custom bezier for magnetic feel
                     }}
                   />
                 );
               })}
 
-              {/* "Stored" Label */}
+              {/* "Stored" Label with subtle animation */}
               <motion.div
-                className="absolute -bottom-8 whitespace-nowrap"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+                className="absolute -bottom-10 whitespace-nowrap"
+                initial={{ opacity: 0, y: -15, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.8, duration: 0.4 }}
               >
-                <span className="text-[10px] font-medium tracking-widest text-white/70 uppercase">
+                <motion.span
+                  className="text-[10px] font-semibold tracking-[0.2em] text-white/80 uppercase"
+                  animate={{ opacity: [0.7, 1, 0.7] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
                   Memory Stored
-                </span>
+                </motion.span>
               </motion.div>
             </motion.div>
           )}
