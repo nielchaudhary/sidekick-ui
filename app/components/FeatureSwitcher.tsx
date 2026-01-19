@@ -289,7 +289,7 @@ function MemoryAnimation() {
   const memoryNodeRef = useRef<HTMLDivElement>(null);
 
   // The message content
-  const userMessage = "What did we decide on pricing last week?";
+  const userMessage = "last week's pricing update?";
   const aiResponse = "You landed on $49/mo for solo users. Here's the context from Thursday's call.";
 
   // Animation state machine
@@ -382,7 +382,7 @@ function MemoryAnimation() {
   };
 
   return (
-    <div className="relative w-[400px] h-[280px] overflow-hidden rounded-2xl">
+    <div className="relative w-[340px] h-[420px] overflow-hidden rounded-2xl">
       {/* SVG Defs for Grain Filter */}
       <svg className="absolute w-0 h-0">
         <defs>
@@ -449,7 +449,7 @@ function MemoryAnimation() {
                 borderRadius: "50%",
               }}
               transition={phase === "collapse" ? collapseTransition : layoutMorphTransition}
-              className="relative w-[300px] overflow-hidden flex flex-col"
+              className="relative w-[280px] h-[320px] overflow-hidden flex flex-col"
               style={{
                 background: "rgba(255, 255, 255, 0.95)",
                 backdropFilter: "blur(20px)",
@@ -469,7 +469,7 @@ function MemoryAnimation() {
               </div>
 
               {/* Messages Container - Grows to fit content */}
-              <div className="flex-1 p-3 space-y-2.5 min-h-[80px]">
+              <div className="flex-1 p-4 space-y-3 min-h-[200px]">
                 {/* Heartbeat Typing Indicator */}
                 <AnimatePresence>{isTyping && <HeartbeatTypingIndicator />}</AnimatePresence>
 
@@ -544,16 +544,16 @@ function MemoryAnimation() {
                   transition={{ duration: 0.2 }}
                 >
                   {/* Text Input Area */}
-                  <div className="flex-1 min-h-[20px] flex items-center">
+                  <div className="flex-1 min-h-[20px] flex items-center overflow-hidden">
                     {inputText ? (
-                      <motion.span className="text-[11px] text-gray-800 font-medium" layout>
+                      <span className="text-[11px] text-gray-800 font-medium whitespace-nowrap">
                         {inputText}
                         <motion.span
-                          className="inline-block w-[2px] h-[12px] bg-gray-800 ml-[1px]"
+                          className="inline-block w-[2px] h-[12px] bg-gray-800 ml-[1px] align-middle"
                           animate={{ opacity: [1, 0, 1] }}
-                          transition={{ duration: 0.8, repeat: Infinity }}
+                          transition={{ duration: 0.53, repeat: Infinity, ease: "linear" }}
                         />
-                      </motion.span>
+                      </span>
                     ) : (
                       <span className="text-[11px] text-gray-400 font-medium">Message Sidekick...</span>
                     )}
