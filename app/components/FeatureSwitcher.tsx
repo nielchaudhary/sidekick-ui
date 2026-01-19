@@ -72,8 +72,8 @@ export default function FeatureSwitcher() {
             <button
               key={feature.id}
               onClick={() => setActiveIndex(index)}
-              className={`px-6 py-2 text-sm font-bold transition-all duration-300 border border-black rounded-md ${
-                activeIndex === index ? "bg-gray-300 text-black" : "bg-white text-gray-400 hover:text-gray-600"
+              className={`px-6 py-2 text-sm font-bold transition-all duration-300 border border-gray-300 rounded-md ${
+                activeIndex === index ? "bg-gray-100 text-black" : "bg-white text-gray-400 hover:text-gray-600"
               }`}
             >
               {feature.label}
