@@ -7,7 +7,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 100);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -16,56 +16,48 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out ${
-        isScrolled
-          ? "top-4 left-4 right-4 mx-auto max-w-4xl"
-          : ""
+      className={`sticky top-0 z-50 w-full bg-white box-border transition-all duration-350 ease-[cubic-bezier(0.33,1,0.68,1)] ${
+        isScrolled ? "border-b border-gray-300" : "border-b border-transparent"
       }`}
     >
-      <nav
-        className={`flex items-center justify-between px-6 py-4 transition-all duration-300 ease-out ${
-          isScrolled
-            ? "bg-white/80 backdrop-blur-md rounded-full shadow-lg border border-gray-100"
-            : "bg-transparent"
-        }`}
-      >
+      <nav className="flex items-center justify-between h-16 px-6 lg:px-8 mx-auto max-w-7xl">
         {/* Logo */}
-        <div
-          className={`font-headline text-2xl tracking-wide transition-all duration-300 ${
-            isScrolled ? "opacity-100" : "opacity-100"
-          }`}
-        >
+        <div className="font-sans text-xl tracking-wide">
           Sidekick
         </div>
 
-        {/* Navigation Links - visible on desktop */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Navigation Links - hidden on scroll */}
+        <div
+          className={`hidden md:flex items-center gap-8 transition-all duration-350 ease-[cubic-bezier(0.33,1,0.68,1)] ${
+            isScrolled
+              ? "opacity-0 pointer-events-none"
+              : "opacity-100"
+          }`}
+        >
           <a
-            href="#features"
-            className="text-sm text-gray-600 hover:text-black transition-colors"
+            href="#"
+            className="font-sans font-normal text-sm leading-5 text-black hover:text-gray-600 transition-colors"
           >
-            Features
+            Agents
           </a>
           <a
-            href="#about"
-            className="text-sm text-gray-600 hover:text-black transition-colors"
+            href="#"
+            className="font-sans font-normal text-sm leading-5 text-black hover:text-gray-600 transition-colors"
           >
-            About
+            Resources
+          </a>
+          <a
+            href="#"
+            className="font-sans font-normal text-sm leading-5 text-black hover:text-gray-600 transition-colors"
+          >
+            Pricing
           </a>
         </div>
 
-        {/* CTA Button - appears on scroll */}
-        <div
-          className={`transition-all duration-300 ${
-            isScrolled
-              ? "opacity-100 translate-x-0"
-              : "opacity-0 translate-x-4 pointer-events-none"
-          }`}
-        >
-          <button className="bg-black text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-gray-800 transition-colors">
-            Join the Waitlist
-          </button>
-        </div>
+        {/* CTA Button - always visible, pill-shaped */}
+        <button className="bg-black text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors">
+          Join the Waitlist
+        </button>
       </nav>
     </header>
   );

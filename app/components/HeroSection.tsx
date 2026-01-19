@@ -1,6 +1,6 @@
 export default function HeroSection() {
   return (
-    <section className="pt-32 pb-20 px-6 lg:px-8">
+    <section className="pt-20 pb-20 px-6 lg:px-8">
       <div className="max-w-4xl mx-auto text-center">
         {/* Headline */}
         <h1
@@ -11,7 +11,7 @@ export default function HeroSection() {
         </h1>
 
         {/* Description */}
-        <p className="mt-8 text-lg md:text-xl text-gray-400 font-semibold max-w-6xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200">
+        <p className="mt-8 text-lg md:text-xl text-gray-700 font-semibold max-w-6xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200">
           The thinking partner that remembers. For operators who make decisions under pressure, Sidekick holds your
           context, surfaces what&apos;s relevant, and helps you reason faster.
         </p>
