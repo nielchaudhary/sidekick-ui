@@ -60,20 +60,6 @@ export default function FeatureSwitcher() {
   return (
     <section id="features" className="relative py-24 px-6 lg:px-8 bg-white">
       <div className="max-w-5xl mx-auto">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h2 className="font-headline text-4xl md:text-5xl text-black mb-4 tracking-wide">BUILT FOR OPERATORS</h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Five core capabilities that transform how you think, remember, and decide.
-          </p>
-        </motion.div>
-
         {/* Tab Navigation - Individual buttons above card */}
         <div className="flex justify-center gap-3 mb-8">
           {features.map((feature, index) => (
