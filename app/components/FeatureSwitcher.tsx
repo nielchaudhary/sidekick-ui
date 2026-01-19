@@ -223,15 +223,15 @@ function TypewriterText({
       if (index < text.length) {
         setDisplayedText(text.slice(0, index + 1));
         index++;
-        // Variable speed - faster for spaces, slower for punctuation
+        // Smoother, more consistent speed
         const char = text[index - 1];
-        const baseDelay = 25;
+        const baseDelay = 35;
         const delay =
           char === " "
-            ? baseDelay * 0.5
+            ? baseDelay * 0.6
             : [".", ",", "!", "?"].includes(char)
-              ? baseDelay * 4
-              : baseDelay + Math.random() * 15;
+              ? baseDelay * 3
+              : baseDelay + Math.random() * 10;
         setTimeout(typeNextChar, delay);
       } else {
         setIsComplete(true);
@@ -458,13 +458,13 @@ function MemoryAnimation() {
       await delay(100);
       setShowUserMessage(true);
 
-      await delay(400);
+      await delay(600);
 
       // Phase 3: Response - Show immediately without thinking state
       setPhase("responding");
       setShowAiResponse(true);
 
-      await delay(3000); // Let user read the response
+      await delay(3500); // Let user read the response
 
       // Phase 5: Collapse - The "Wow Factor"
       setPhase("collapse");
@@ -482,13 +482,6 @@ function MemoryAnimation() {
 
     runAnimation();
   }, []);
-
-  // Premium spring configs (stiffness: 260, damping: 20 per PRD)
-  const premiumSpring = {
-    type: "spring" as const,
-    stiffness: 260,
-    damping: 20,
-  };
 
   const layoutMorphTransition = {
     type: "spring" as const,
@@ -619,12 +612,14 @@ function MemoryAnimation() {
                 <AnimatePresence>
                   {showUserMessage && (
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.3, x: 50, y: 10 }}
+                      initial={{ opacity: 0, scale: 0.85, x: 20, y: 5 }}
                       animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
                       exit={{ opacity: 0, scale: 0.5, y: -20 }}
                       transition={{
-                        ...premiumSpring,
-                        scale: { type: "spring", stiffness: 500, damping: 25 },
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 25,
+                        duration: 0.5,
                       }}
                       className="flex justify-end"
                     >
@@ -645,7 +640,7 @@ function MemoryAnimation() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0, scale: 0.5, y: -20 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: 0.5, ease: "easeOut" }}
                       className="flex justify-start"
                     >
                       <motion.div
