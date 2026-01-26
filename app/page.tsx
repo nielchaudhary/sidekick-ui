@@ -4,7 +4,7 @@ import FeatureSwitcher from "./components/FeatureSwitcher";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-black">
       <Navbar />
       <div className="max-w-8xl mx-auto">
         <HeroSection />

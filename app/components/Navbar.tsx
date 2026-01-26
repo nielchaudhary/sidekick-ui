@@ -16,46 +16,62 @@ export default function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full bg-white box-border transition-all duration-350 ease-[cubic-bezier(0.33,1,0.68,1)] ${
-        isScrolled ? "border-b border-gray-300" : "border-b border-transparent"
-      }`}
+      className="sticky top-0 z-50 w-full box-border transition-all duration-350 ease-[cubic-bezier(0.33,1,0.68,1)]"
+      style={{
+        backgroundColor: "#000000",
+        borderBottom: isScrolled
+          ? "1px solid rgba(255, 255, 255, 0.12)"
+          : "1px solid transparent",
+      }}
     >
       <nav className="flex items-center justify-between h-16 px-6 lg:px-8 mx-auto max-w-7xl">
-        {/* Logo */}
-        <div className="font-sans text-xl tracking-wide">
+        {/* Logo - Ghost White */}
+        <div
+          className="font-sans text-xl tracking-wide"
+          style={{ color: "#FFFFFF" }}
+        >
           Sidekick
         </div>
 
         {/* Navigation Links - hidden on scroll */}
         <div
           className={`hidden md:flex items-center gap-8 transition-all duration-350 ease-[cubic-bezier(0.33,1,0.68,1)] ${
-            isScrolled
-              ? "opacity-0 pointer-events-none"
-              : "opacity-100"
+            isScrolled ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
         >
-          <a
-            href="#"
-            className="font-sans font-normal text-sm leading-5 text-black hover:text-gray-600 transition-colors"
-          >
-            Agents
-          </a>
-          <a
-            href="#"
-            className="font-sans font-normal text-sm leading-5 text-black hover:text-gray-600 transition-colors"
-          >
-            Resources
-          </a>
-          <a
-            href="#"
-            className="font-sans font-normal text-sm leading-5 text-black hover:text-gray-600 transition-colors"
-          >
-            Pricing
-          </a>
+          {["Agents", "Resources", "Pricing"].map((label) => (
+            <a
+              key={label}
+              href="#"
+              className="relative font-sans font-normal text-sm leading-5 text-white group"
+            >
+              {label}
+              <span
+                className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                style={{
+                  background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                }}
+              />
+            </a>
+          ))}
         </div>
 
-        {/* CTA Button - always visible, pill-shaped */}
-        <button className="bg-black text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors">
+        {/* CTA Button - Maroon-Burgundy accent */}
+        <button
+          className="text-white text-sm font-medium px-6 py-2.5 rounded-full transition-all duration-200"
+          style={{
+            background: "linear-gradient(180deg, #4A0404 0%, #2E0202 100%)",
+            boxShadow: "0 4px 20px rgba(74, 4, 4, 0.4)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = "0 6px 30px rgba(74, 4, 4, 0.6)";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = "0 4px 20px rgba(74, 4, 4, 0.4)";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
+        >
           Join the Waitlist
         </button>
       </nav>

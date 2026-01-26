@@ -58,42 +58,86 @@ export default function FeatureSwitcher() {
   const activeFeature = features[activeIndex];
 
   return (
-    <section id="features" className="relative py-24 px-6 lg:px-8 bg-white">
-      <div className="max-w-5xl mx-auto">
-        {/* Tab Navigation - Individual buttons above card */}
-        <div className="flex flex-wrap justify-center gap-3 mb-8">
+    <section id="features" className="relative py-24 px-6 lg:px-8 bg-black overflow-hidden">
+      {/* Global Noise Overlay - prevents flatness on OLED displays */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.015]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+        }}
+      />
+      <div className="relative max-w-5xl mx-auto">
+        {/* Tab Navigation - Instrument Panel Tray */}
+        <div
+          className="relative flex flex-wrap justify-center gap-2 mb-8 p-1.5 rounded-xl mx-auto w-fit"
+          style={{
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            background: 'rgba(255, 255, 255, 0.02)',
+          }}
+        >
           {features.map((feature, index) => {
             const isActive = activeIndex === index;
             return (
               <button
                 key={feature.id}
                 onClick={() => setActiveIndex(index)}
-                className={`
-                  relative px-6 py-1.5 text-sm font-semibold tracking-[-0.02em]
-                  rounded-lg overflow-hidden
-                  ${isActive
-                    ? "text-white border border-[#3D1A2E] shadow-[inset_0px_1px_0px_rgba(255,255,255,0.15)]"
-                    : "bg-white text-[#6B2D4A] border border-[#B34B71]/20"
-                  }
-                `}
+                className="relative px-5 py-2 text-xs font-semibold tracking-[0.08em] rounded-lg overflow-hidden transition-colors duration-200"
                 style={{
-                  transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
-                  ...(isActive && {
-                    background: 'radial-gradient(ellipse at 30% 20%, #B34B71 0%, #6B2D4A 35%, #3D1A2E 60%, #1A0912 100%)',
-                  }),
+                  color: isActive ? '#FFFFFF' : '#71717A',
+                  WebkitFontSmoothing: 'antialiased',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = '#FFFFFF';
+                    e.currentTarget.style.boxShadow = '0 0 20px rgba(179, 75, 113, 0.3)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = '#71717A';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }
                 }}
               >
-                {/* Dither grain overlay for active state */}
+                {/* Sliding Active Background with layoutId */}
                 {isActive && (
-                  <span
-                    className="absolute inset-0 pointer-events-none opacity-[0.15] mix-blend-overlay"
+                  <motion.span
+                    layoutId="activeTabBackground"
+                    className="absolute inset-0 rounded-lg"
+                    style={{
+                      background: 'linear-gradient(180deg, #B34B71 0%, #4A0404 100%)',
+                      borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+                      boxShadow: '0 10px 30px rgba(179, 75, 113, 0.4)',
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 30,
+                    }}
+                  />
+                )}
+                {/* Dither Layer - 4x4 Bayer matrix pattern */}
+                {isActive && (
+                  <motion.span
+                    className="absolute inset-0 pointer-events-none opacity-[0.15] mix-blend-soft-light"
                     style={{
                       backgroundImage: `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAACpJREFUGFdjZEADJgY0QCSTBaYByicmJmByyAImBl0AXQCmAsYA0wByAAsvBg8f889VAAAAAElFTkSuQmCC")`,
                       backgroundRepeat: 'repeat',
                     }}
+                    initial={{ scale: 0.98 }}
+                    animate={{ scale: [0.98, 1, 0.98] }}
+                    transition={{ duration: 0.15 }}
                   />
                 )}
-                <span className="relative z-10">{feature.label}</span>
+                <span
+                  className="relative z-10"
+                  style={{
+                    textShadow: isActive ? '0 1px 2px rgba(0,0,0,0.3)' : 'none'
+                  }}
+                >
+                  {feature.label}
+                </span>
               </button>
             );
           })}
@@ -109,32 +153,25 @@ export default function FeatureSwitcher() {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="relative"
           >
-            {/* Outer Frame - Extended Card with Gradient Border */}
-            <div
-              className="relative p-8 md:p-8 rounded-[24px]"
-              style={{
-                background: "linear-gradient(135deg, #B34B71 0%, #6B2D4A 35%, #3D1A2E 70%, #1A0912 100%)",
-                padding: "1px",
-              }}
-            >
-              {/* Inner backdrop - creates the "distance" between border and card */}
-              <div className="bg-white rounded-[23px] p-3 md:p-8">
-                {/* Internal Card with softened burgundy border */}
+            {/* Card container */}
+            <div className="relative rounded-xl p-3 md:p-8">
+                {/* Internal Card with visible border matching dotted grid */}
                 <div
-                  className="relative rounded-xl bg-white overflow-hidden"
+                  className="relative rounded-xl overflow-hidden"
                   style={{
-                    border: "1px solid rgba(179, 75, 113, 0.12)",
-                    boxShadow: "0 4px 40px rgba(61, 26, 46, 0.03)",
+                    background: "rgba(0, 0, 0, 0.4)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 40px rgba(0, 0, 0, 0.3)",
                   }}
                 >
               <div className="flex flex-col md:flex-row min-h-[380px]">
                 {/* Left: Content (40%) */}
                 <div className="w-full md:w-[40%] p-8 md:p-12 flex flex-col justify-center">
-                  {/* Top dotted line */}
+                  {/* Top dotted line - subtle white */}
                   <div
                     className="w-full h-px mb-6"
                     style={{
-                      backgroundImage: "linear-gradient(to right, #d1d5db 50%, transparent 50%)",
+                      backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
                       backgroundSize: "8px 1px",
                       backgroundRepeat: "repeat-x",
                     }}
@@ -144,7 +181,11 @@ export default function FeatureSwitcher() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="font-headline text-3xl md:text-4xl text-black mb-4 tracking-wide"
+                    className="font-headline text-3xl md:text-4xl text-white mb-4"
+                    style={{
+                      letterSpacing: "-0.04em",
+                      WebkitFontSmoothing: "antialiased",
+                    }}
                   >
                     {activeFeature.title.toUpperCase()}
                   </motion.h3>
@@ -153,7 +194,8 @@ export default function FeatureSwitcher() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
-                      className="text-gray-600 text-lg leading-relaxed mb-6"
+                      className="text-lg leading-relaxed mb-6"
+                      style={{ color: "#A1A1AA" }}
                     >
                       {activeFeature.description}
                     </motion.p>
@@ -176,19 +218,22 @@ export default function FeatureSwitcher() {
                             transition={{ delay: 0.3 + idx * 0.1 }}
                             className="flex items-start gap-2"
                           >
-                            <span className="text-gray-800 font-bold text-lg leading-none mt-px">|</span>
-                            <span className="font-sans text-sm md:text-base text-gray-900 tracking-wide leading-relaxed">
+                            <span className="text-[#4A0404] font-bold text-lg leading-none mt-px">|</span>
+                            <span
+                              className="font-sans text-sm md:text-base tracking-wide leading-relaxed"
+                              style={{ color: "#A1A1AA" }}
+                            >
                               {point}
                             </span>
                           </motion.li>
                         ))}
                       </motion.ul>
 
-                      {/* Bottom dotted line */}
+                      {/* Bottom dotted line - subtle white */}
                       <div
                         className="w-full h-px mt-6"
                         style={{
-                          backgroundImage: "linear-gradient(to right, #d1d5db 50%, transparent 50%)",
+                          backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
                           backgroundSize: "8px 1px",
                           backgroundRepeat: "repeat-x",
                         }}
@@ -197,12 +242,12 @@ export default function FeatureSwitcher() {
                   )}
                 </div>
 
-                {/* Dashed Divider */}
+                {/* Dashed Divider - subtle white for dark theme */}
                 <div className="hidden md:block w-px relative">
                   <div
                     className="absolute inset-0"
                     style={{
-                      backgroundImage: "linear-gradient(to bottom, #d1d5db 50%, transparent 50%)",
+                      backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,0.15) 50%, transparent 50%)",
                       backgroundSize: "1px 8px",
                       backgroundRepeat: "repeat-y",
                     }}
@@ -215,21 +260,38 @@ export default function FeatureSwitcher() {
                 </div>
               </div>
                 </div>
-              </div>
             </div>
           </motion.div>
         </AnimatePresence>
 
-        {/* Feature indicators */}
+        {/* Feature indicators - Burgundy accent on black */}
         <div className="flex justify-center gap-2 mt-8">
           {features.map((_, index) => (
             <button
               key={index}
               onClick={() => setActiveIndex(index)}
-              className={`h-1 ${
-                activeIndex === index ? "w-8 bg-[#B34B71]" : "w-2 bg-[#B34B71]/20 hover:bg-[#B34B71]/50"
+              className={`h-1 rounded-full ${
+                activeIndex === index ? "w-8" : "w-2"
               }`}
-              style={{ transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)' }}
+              style={{
+                transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+                background: activeIndex === index
+                  ? 'linear-gradient(90deg, #B34B71 0%, #4A0404 100%)'
+                  : 'rgba(179, 75, 113, 0.3)',
+                boxShadow: activeIndex === index
+                  ? '0 0 10px rgba(179, 75, 113, 0.5)'
+                  : 'none',
+              }}
+              onMouseEnter={(e) => {
+                if (activeIndex !== index) {
+                  e.currentTarget.style.background = 'rgba(179, 75, 113, 0.5)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeIndex !== index) {
+                  e.currentTarget.style.background = 'rgba(179, 75, 113, 0.3)';
+                }
+              }}
             />
           ))}
         </div>
