@@ -90,13 +90,11 @@ export default function FeatureSwitcher() {
                 onMouseEnter={(e) => {
                   if (!isActive) {
                     e.currentTarget.style.color = '#FFFFFF';
-                    e.currentTarget.style.boxShadow = '0 0 20px rgba(179, 75, 113, 0.3)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) {
                     e.currentTarget.style.color = '#71717A';
-                    e.currentTarget.style.boxShadow = 'none';
                   }
                 }}
               >
@@ -106,9 +104,8 @@ export default function FeatureSwitcher() {
                     layoutId="activeTabBackground"
                     className="absolute inset-0 rounded-lg"
                     style={{
-                      background: 'linear-gradient(180deg, #B34B71 0%, #4A0404 100%)',
-                      borderTop: '1px solid rgba(255, 255, 255, 0.15)',
-                      boxShadow: '0 10px 30px rgba(179, 75, 113, 0.4)',
+                      background: 'linear-gradient(90deg, #B34B71 0%, #8B2D5A 50%, #4A0404 100%)',
+                      borderTop: '1px solid rgba(255, 255, 255, 0.2)',
                     }}
                     transition={{
                       type: "spring",

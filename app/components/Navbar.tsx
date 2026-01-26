@@ -60,16 +60,7 @@ export default function Navbar() {
         <button
           className="text-white text-sm font-medium px-6 py-2.5 rounded-full transition-all duration-200"
           style={{
-            background: "linear-gradient(180deg, #4A0404 0%, #2E0202 100%)",
-            boxShadow: "0 4px 20px rgba(74, 4, 4, 0.4)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = "0 6px 30px rgba(74, 4, 4, 0.6)";
-            e.currentTarget.style.transform = "translateY(-1px)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = "0 4px 20px rgba(74, 4, 4, 0.4)";
-            e.currentTarget.style.transform = "translateY(0)";
+            background: "linear-gradient(90deg, #B34B71 0%, #8B2D5A 50%, #4A0404 100%)",
           }}
         >
           Join the Waitlist
