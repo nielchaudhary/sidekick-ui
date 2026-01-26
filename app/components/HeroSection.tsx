@@ -11,7 +11,7 @@ export default function HeroSection() {
         </h1>
 
         {/* Description */}
-        <p className="mt-8 text-lg md:text-xl text-gray-600 max-w-6xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200">
+        <p className="mt-8 text-lg md:text-xl text-gray-600 max-w-6xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200 font-semibold">
           Sidekick remembers what you said, why you said it, and what you decided. Ask anything—it gives you the data
           you need, with the context that matters.{" "}
           <span className="font-bold text-gray-800">Like a human sidekick that never forgets.</span>
