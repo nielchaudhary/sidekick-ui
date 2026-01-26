@@ -1,144 +1,180 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useRef } from "react";
 import { ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { SplineScene } from "@/components/ui/splite";
+import { SplineScene, type Application } from "@/components/ui/splite";
 
-const PROCESS_STEPS = ["CAPTURE", "STORE", "INDEX", "RECALL", "REASON"];
-
-function ProcessAnimation() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const showTimer = setTimeout(() => setIsVisible(true), 4000);
-    return () => clearTimeout(showTimer);
-  }, []);
-
-  useEffect(() => {
-    if (!isVisible) return;
-
-    const interval = setInterval(() => {
-      setCurrentStep((prev) => (prev + 1) % PROCESS_STEPS.length);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [isVisible]);
-
-  if (!isVisible) return null;
-
-  return (
-    <motion.div
-      className="absolute inset-0 flex items-center justify-center pointer-events-none"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-    >
-      <div className="relative flex flex-col items-center">
-        {/* Step indicator dots */}
-        <div className="flex gap-2 mb-4">
-          {PROCESS_STEPS.map((_, i) => (
-            <motion.div
-              key={i}
-              className="w-1.5 h-1.5 rounded-full"
-              animate={{
-                backgroundColor: i === currentStep ? "#B34B71" : "rgba(255,255,255,0.3)",
-                scale: i === currentStep ? 1.2 : 1,
-              }}
-              transition={{ duration: 0.3 }}
-            />
-          ))}
-        </div>
-
-        {/* Animated word */}
-        <div className="relative h-16 w-48 flex items-center justify-center overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={currentStep}
-              initial={{ y: 40, opacity: 0, filter: "blur(8px)" }}
-              animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-              exit={{ y: -40, opacity: 0, filter: "blur(8px)" }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="absolute text-2xl md:text2xl font-bold tracking-[0.2em] text-white"
-              style={{
-                textShadow: "0 0 30px rgba(179, 75, 113, 0.8), 0 0 60px rgba(139, 45, 90, 0.5)",
-              }}
-            >
-              {PROCESS_STEPS[currentStep]}
-            </motion.span>
-          </AnimatePresence>
-        </div>
-
-        {/* Step number */}
-        <motion.span
-          key={`step-${currentStep}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
-          className="text-xs tracking-[0.3em] text-white/60 mt-2"
-        >
-          STEP {currentStep + 1}/5
-        </motion.span>
-      </div>
-    </motion.div>
-  );
+interface Offering {
+  id: string;
+  title: string;
+  body: string;
+  splineEvent: string;
 }
 
+const offerings: Offering[] = [
+  {
+    id: "capture",
+    title: "Capture",
+    body: "WhatsApp-fast tradeoffs & reasoning.",
+    splineEvent: "Capture_Active",
+  },
+  {
+    id: "retrieve",
+    title: "Retrieve",
+    body: "Proactive recall of buried context.",
+    splineEvent: "Scan_Active",
+  },
+  {
+    id: "reason",
+    title: "Reason",
+    body: "A partner that challenges your bias.",
+    splineEvent: "Neural_Link",
+  },
+];
+
 export default function NexusHero() {
+  const splineRef = useRef<Application | null>(null);
+
+  const handleSplineLoad = (spline: Application) => {
+    splineRef.current = spline;
+  };
+
+  const handleOfferingHover = (offering: Offering) => {
+    if (splineRef.current) {
+      splineRef.current.emitEvent("mouseDown", offering.splineEvent);
+    }
+  };
+
+  const handleOfferingLeave = () => {
+    if (splineRef.current) {
+      splineRef.current.emitEvent("mouseDown", "Default_State");
+    }
+  };
+
   return (
-    <div className="relative h-screen w-full bg-black overflow-hidden flex flex-col md:flex-row items-center px-6 md:px-20">
-      {/* Left: Content */}
-      <div className="z-10 w-full md:w-1/2 flex flex-col gap-8 pt-24 md:pt-0 md:ml-20 lg:ml-32">
-        <header className="space-y-4">
-          <h1 className="text-5xl md:text-7xl font-medium tracking-tighter text-white leading-tight">
-            Stop starting <br />
-            <span className="text-zinc-600">from zero.</span>
-          </h1>
-          <p className="max-w-md text-zinc-400 text-lg leading-relaxed">
-            Intelligent memory for operators who make high-stakes decisions under cognitive overload.
-          </p>
-        </header>
-
-        <div className="grid grid-cols-1 gap-6 border-l border-white/10 pl-6">
-          {[
-            { title: "Capture", desc: "WhatsApp-fast tradeoffs & reasoning." },
-            { title: "Retrieve", desc: "Proactive recall of buried context." },
-            { title: "Reason", desc: "A partner that challenges your bias." },
-          ].map((item, i) => (
-            <div key={i} className="group cursor-default">
-              <h3 className="text-white font-semibold flex items-center gap-2">
-                <span className="text-[10px] text-zinc-600">0{i + 1}</span> {item.title}
-              </h3>
-              <p className="text-sm text-zinc-500 group-hover:text-zinc-300 transition-colors">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-6 mt-4">
-          <button className="bg-[#4A0404] hover:bg-[#6B0606] text-white px-8 py-3 rounded-sm text-sm font-medium transition-all shadow-[0_0_20px_rgba(74,4,4,0.3)]">
-            Start Your Sidekick
-          </button>
-          <button className="text-zinc-500 hover:text-white text-sm transition-colors flex items-center gap-2">
-            Watch reasoning in action <ChevronDown size={14} />
-          </button>
-        </div>
-      </div>
-
-      {/* Right: Interactive 3D Scene */}
-      <div className="absolute inset-0 md:relative md:w-1/2 h-full opacity-60 md:opacity-100">
-        <div className="relative w-full h-full">
-          <SplineScene scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode" className="w-full h-full" />
-          {/* Gradient overlay to colorize Spline character */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: "linear-gradient(to bottom, #B34B71 0%, #8B2D5A 50%, #4A0404 100%)",
-              mixBlendMode: "color",
-            }}
+    <section className="relative h-screen w-full bg-black overflow-hidden">
+      {/* SVG Filter for Grain Effect */}
+      <svg className="hidden">
+        <filter id="grain">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.65"
+            numOctaves="3"
+            stitchTiles="stitch"
           />
-          {/* Process steps animation on robot chest */}
-          <ProcessAnimation />
+        </filter>
+      </svg>
+
+      {/* Ghost Border - Vertical Separator */}
+      <div
+        className="absolute left-1/2 top-0 bottom-0 w-px hidden md:block z-10 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent)",
+        }}
+      />
+
+      <div className="relative h-full flex flex-col md:flex-row">
+        {/* Left Side: The Narrative */}
+        <div className="z-20 w-full md:w-1/2 flex flex-col justify-center px-6 md:px-12 lg:px-20 pt-24 md:pt-0">
+          {/* Typography */}
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-[-0.05em] leading-[0.9] text-white mb-6">
+            Memory is <br />
+            <span className="text-zinc-700 transition-colors duration-700 hover:text-zinc-500">
+              the moat.
+            </span>
+          </h1>
+
+          <p className="max-w-lg text-zinc-400 text-lg leading-relaxed mb-12">
+            Stop losing valuable thinking to the churn of meetings and docs.
+            Sidekick captures, retrieves, and reasons alongside you—turning
+            months of scattered context into a permanent competitive advantage.
+          </p>
+
+          {/* Interactive Offerings / Pillars */}
+          <div className="grid grid-cols-1 gap-6 border-l border-white/10 pl-6 mb-12">
+            {offerings.map((offering, i) => (
+              <div
+                key={offering.id}
+                onMouseEnter={() => handleOfferingHover(offering)}
+                onMouseLeave={handleOfferingLeave}
+                className="group cursor-pointer"
+              >
+                <h3 className="text-white font-semibold flex items-center gap-2">
+                  <span className="text-[10px] text-zinc-600">0{i + 1}</span>{" "}
+                  {offering.title}
+                </h3>
+                <p className="text-sm text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                  {offering.body}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex items-center gap-6">
+            <button className="bg-[#4A0404] hover:bg-[#6B0606] text-white px-8 py-3 rounded-sm text-sm font-medium transition-all shadow-[0_0_20px_rgba(74,4,4,0.3)]">
+              Start Your Sidekick
+            </button>
+            <button className="text-zinc-500 hover:text-white text-sm transition-colors flex items-center gap-2">
+              Watch reasoning in action <ChevronDown size={14} />
+            </button>
+          </div>
+        </div>
+
+        {/* Right Side: The Nexus Spline */}
+        <div className="absolute inset-0 md:relative md:w-1/2 h-full">
+          <div className="relative w-full h-full">
+            {/* Spline Scene */}
+            <div className="w-full h-full opacity-60 md:opacity-100">
+              <SplineScene
+                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                className="w-full h-full"
+                onLoad={handleSplineLoad}
+              />
+            </div>
+
+            {/* Gradient Overlay */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(to bottom, #B34B71 0%, #8B2D5A 50%, #4A0404 100%)",
+                mixBlendMode: "color",
+              }}
+            />
+
+            {/* Burgundy Bloom */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 50%, rgba(179,75,113,0.15), transparent 70%)",
+                animation: "pulse 4s ease-in-out infinite",
+              }}
+            />
+
+            {/* Noise/Grain Layer */}
+            <div
+              className="absolute inset-0 pointer-events-none opacity-[0.03]"
+              style={{ filter: "url(#grain)" }}
+            />
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Global Styles for Animations */}
+      <style jsx>{`
+        @keyframes pulse {
+          0%,
+          100% {
+            opacity: 0.5;
+          }
+          50% {
+            opacity: 1;
+          }
+        }
+      `}</style>
+    </section>
   );
 }
