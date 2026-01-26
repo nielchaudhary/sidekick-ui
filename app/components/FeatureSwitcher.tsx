@@ -61,18 +61,42 @@ export default function FeatureSwitcher() {
     <section id="features" className="relative py-24 px-6 lg:px-8 bg-white">
       <div className="max-w-5xl mx-auto">
         {/* Tab Navigation - Individual buttons above card */}
-        <div className="flex justify-center gap-3 mb-8">
-          {features.map((feature, index) => (
-            <button
-              key={feature.id}
-              onClick={() => setActiveIndex(index)}
-              className={`px-6 py-2 text-sm font-bold transition-all duration-300 border border-gray-300 rounded-md ${
-                activeIndex === index ? "bg-gray-100 text-black" : "bg-white text-gray-400 hover:text-gray-600"
-              }`}
-            >
-              {feature.label}
-            </button>
-          ))}
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
+          {features.map((feature, index) => {
+            const isActive = activeIndex === index;
+            return (
+              <button
+                key={feature.id}
+                onClick={() => setActiveIndex(index)}
+                className={`
+                  relative px-6 py-1.5 text-sm font-semibold tracking-[-0.02em]
+                  rounded-lg overflow-hidden
+                  ${isActive
+                    ? "text-white border border-[#3D1A2E] shadow-[inset_0px_1px_0px_rgba(255,255,255,0.15)]"
+                    : "bg-white text-[#6B2D4A] border border-[#B34B71]/20"
+                  }
+                `}
+                style={{
+                  transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+                  ...(isActive && {
+                    background: 'radial-gradient(ellipse at 30% 20%, #B34B71 0%, #6B2D4A 35%, #3D1A2E 60%, #1A0912 100%)',
+                  }),
+                }}
+              >
+                {/* Dither grain overlay for active state */}
+                {isActive && (
+                  <span
+                    className="absolute inset-0 pointer-events-none opacity-[0.15] mix-blend-overlay"
+                    style={{
+                      backgroundImage: `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAACpJREFUGFdjZEADJgY0QCSTBaYByicmJmByyAImBl0AXQCmAsYA0wByAAsvBg8f889VAAAAAElFTkSuQmCC")`,
+                      backgroundRepeat: 'repeat',
+                    }}
+                  />
+                )}
+                <span className="relative z-10">{feature.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Feature Card with Nested Canvas Design */}
@@ -202,9 +226,10 @@ export default function FeatureSwitcher() {
             <button
               key={index}
               onClick={() => setActiveIndex(index)}
-              className={`h-1 transition-all duration-300 ${
-                activeIndex === index ? "w-8 bg-black" : "w-2 bg-gray-300 hover:bg-gray-400"
+              className={`h-1 ${
+                activeIndex === index ? "w-8 bg-[#B34B71]" : "w-2 bg-[#B34B71]/20 hover:bg-[#B34B71]/50"
               }`}
+              style={{ transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)' }}
             />
           ))}
         </div>
