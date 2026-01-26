@@ -65,7 +65,7 @@ export default function NexusHero() {
             >
               Memory
             </span>{" "}
-            is <br />
+            <span className="text-zinc-700">is</span> <br />
             <span className="text-zinc-700 transition-colors duration-700 ">the MOAT.</span>
           </h1>
 
