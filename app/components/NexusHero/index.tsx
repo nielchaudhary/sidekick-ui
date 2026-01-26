@@ -1,14 +1,12 @@
 "use client";
 
-import { useRef } from "react";
 import { ChevronDown } from "lucide-react";
-import { SplineScene, type Application } from "@/components/ui/splite";
+import RetrievalNexus from "./RetrievalNexus";
 
 interface Offering {
   id: string;
   title: string;
   body: string;
-  splineEvent: string;
 }
 
 const offerings: Offering[] = [
@@ -16,52 +14,26 @@ const offerings: Offering[] = [
     id: "capture",
     title: "Capture",
     body: "WhatsApp-fast tradeoffs & reasoning.",
-    splineEvent: "Capture_Active",
   },
   {
     id: "retrieve",
     title: "Retrieve",
     body: "Proactive recall of buried context.",
-    splineEvent: "Scan_Active",
   },
   {
     id: "reason",
     title: "Reason",
     body: "A partner that challenges your bias.",
-    splineEvent: "Neural_Link",
   },
 ];
 
 export default function NexusHero() {
-  const splineRef = useRef<Application | null>(null);
-
-  const handleSplineLoad = (spline: Application) => {
-    splineRef.current = spline;
-  };
-
-  const handleOfferingHover = (offering: Offering) => {
-    if (splineRef.current) {
-      splineRef.current.emitEvent("mouseDown", offering.splineEvent);
-    }
-  };
-
-  const handleOfferingLeave = () => {
-    if (splineRef.current) {
-      splineRef.current.emitEvent("mouseDown", "Default_State");
-    }
-  };
-
   return (
-    <section className="relative h-screen w-full bg-black overflow-hidden">
+    <section className="relative h-screen w-full overflow-hidden">
       {/* SVG Filter for Grain Effect */}
       <svg className="hidden">
         <filter id="grain">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.65"
-            numOctaves="3"
-            stitchTiles="stitch"
-          />
+          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
         </filter>
       </svg>
 
@@ -69,8 +41,7 @@ export default function NexusHero() {
       <div
         className="absolute left-1/2 top-0 bottom-0 w-px hidden md:block z-10 pointer-events-none"
         style={{
-          background:
-            "linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent)",
+          background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent)",
         }}
       />
 
@@ -80,33 +51,22 @@ export default function NexusHero() {
           {/* Typography */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-[-0.05em] leading-[0.9] text-white mb-6">
             Memory is <br />
-            <span className="text-zinc-700 transition-colors duration-700 hover:text-zinc-500">
-              the moat.
-            </span>
+            <span className="text-zinc-700 transition-colors duration-700 hover:text-zinc-500">the MOAT.</span>
           </h1>
 
           <p className="max-w-lg text-zinc-400 text-lg leading-relaxed mb-12">
-            Stop losing valuable thinking to the churn of meetings and docs.
-            Sidekick captures, retrieves, and reasons alongside you—turning
-            months of scattered context into a permanent competitive advantage.
+            Stop losing valuable thinking to the churn of meetings and docs. Sidekick captures, retrieves, and reasons
+            alongside you—turning months of scattered context into a permanent competitive advantage.
           </p>
 
           {/* Interactive Offerings / Pillars */}
           <div className="grid grid-cols-1 gap-6 border-l border-white/10 pl-6 mb-12">
             {offerings.map((offering, i) => (
-              <div
-                key={offering.id}
-                onMouseEnter={() => handleOfferingHover(offering)}
-                onMouseLeave={handleOfferingLeave}
-                className="group cursor-pointer"
-              >
+              <div key={offering.id} className="group cursor-pointer">
                 <h3 className="text-white font-semibold flex items-center gap-2">
-                  <span className="text-[10px] text-zinc-600">0{i + 1}</span>{" "}
-                  {offering.title}
+                  <span className="text-[10px] text-zinc-600">0{i + 1}</span> {offering.title}
                 </h3>
-                <p className="text-sm text-zinc-500 group-hover:text-zinc-300 transition-colors">
-                  {offering.body}
-                </p>
+                <p className="text-sm text-zinc-500 group-hover:text-zinc-300 transition-colors">{offering.body}</p>
               </div>
             ))}
           </div>
@@ -122,43 +82,25 @@ export default function NexusHero() {
           </div>
         </div>
 
-        {/* Right Side: The Nexus Spline */}
+        {/* Right Side: The Retrieval Nexus */}
         <div className="absolute inset-0 md:relative md:w-1/2 h-full">
           <div className="relative w-full h-full">
-            {/* Spline Scene */}
+            {/* Retrieval Nexus Animation */}
             <div className="w-full h-full opacity-60 md:opacity-100">
-              <SplineScene
-                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-                className="w-full h-full"
-                onLoad={handleSplineLoad}
-              />
+              <RetrievalNexus />
             </div>
-
-            {/* Gradient Overlay */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  "linear-gradient(to bottom, #B34B71 0%, #8B2D5A 50%, #4A0404 100%)",
-                mixBlendMode: "color",
-              }}
-            />
 
             {/* Burgundy Bloom */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background:
-                  "radial-gradient(circle at 50% 50%, rgba(179,75,113,0.15), transparent 70%)",
+                background: "radial-gradient(circle at 50% 50%, rgba(179,75,113,0.1), transparent 70%)",
                 animation: "pulse 4s ease-in-out infinite",
               }}
             />
 
             {/* Noise/Grain Layer */}
-            <div
-              className="absolute inset-0 pointer-events-none opacity-[0.03]"
-              style={{ filter: "url(#grain)" }}
-            />
+            <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ filter: "url(#grain)" }} />
           </div>
         </div>
       </div>
