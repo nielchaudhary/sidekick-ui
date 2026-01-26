@@ -69,7 +69,7 @@ export default function NexusHero() {
             <span className="text-zinc-700 transition-colors duration-700 ">the MOAT.</span>
           </h1>
 
-          <p className="max-w-lg text-zinc-300 text-lg leading-relaxed mb-12">
+          <p className="max-w-lg text-zinc-300 text-lg leading-relaxed mb-12 font-semibold">
             What if you had instant answers from every decision you've made? Sidekick remembers your context and
             surfaces it exactly when it matters, turning past thinking into present clarity.
           </p>
