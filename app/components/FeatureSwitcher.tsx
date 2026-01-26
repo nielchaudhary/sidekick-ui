@@ -70,9 +70,9 @@ export default function FeatureSwitcher() {
       <div className="relative max-w-5xl mx-auto">
         {/* Tab Navigation - Instrument Panel Tray */}
         <div
-          className="relative flex flex-wrap justify-center gap-2 mb-8 p-1.5 rounded-xl mx-auto w-fit"
+          className="relative flex flex-wrap justify-center gap-2 mb-8 p-1.5 rounded-2xl mx-auto w-fit"
           style={{
-            border: '1px solid rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
             background: 'rgba(255, 255, 255, 0.02)',
           }}
         >
@@ -82,7 +82,7 @@ export default function FeatureSwitcher() {
               <button
                 key={feature.id}
                 onClick={() => setActiveIndex(index)}
-                className="relative px-5 py-2 text-xs font-semibold tracking-[0.08em] rounded-lg overflow-hidden transition-colors duration-200"
+                className="relative px-5 py-2 text-xs font-semibold tracking-[0.08em] rounded-xl overflow-hidden transition-colors duration-200"
                 style={{
                   color: isActive ? '#FFFFFF' : '#71717A',
                   WebkitFontSmoothing: 'antialiased',
@@ -102,7 +102,7 @@ export default function FeatureSwitcher() {
                 {isActive && (
                   <motion.span
                     layoutId="activeTabBackground"
-                    className="absolute inset-0 rounded-lg"
+                    className="absolute inset-0 rounded-xl"
                     style={{
                       background: 'linear-gradient(90deg, #B34B71 0%, #8B2D5A 50%, #4A0404 100%)',
                       borderTop: '1px solid rgba(255, 255, 255, 0.2)',

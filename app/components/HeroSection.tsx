@@ -25,7 +25,8 @@ export default function HeroSection() {
           <button
             className="text-white font-medium px-6 py-2 rounded-xl transition-all duration-200 text-base cursor-pointer"
             style={{
-              background: "linear-gradient(90deg, #B34B71 0%, #8B2D5A 50%, #4A0404 100%)",
+              background: "#000000",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
             }}
           >
             Join the Waitlist

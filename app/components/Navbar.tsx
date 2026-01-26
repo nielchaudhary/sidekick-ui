@@ -56,11 +56,12 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* CTA Button - Maroon-Burgundy accent */}
+        {/* CTA Button - Black with white border */}
         <button
           className="text-white text-sm font-medium px-6 py-2.5 rounded-full transition-all duration-200"
           style={{
-            background: "linear-gradient(90deg, #B34B71 0%, #8B2D5A 50%, #4A0404 100%)",
+            background: "#000000",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
           }}
         >
           Join the Waitlist
