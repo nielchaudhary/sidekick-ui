@@ -54,9 +54,9 @@ export default function NexusHero() {
             <span className="text-zinc-700 transition-colors duration-700 hover:text-zinc-500">the MOAT.</span>
           </h1>
 
-          <p className="max-w-lg text-zinc-400 text-lg leading-relaxed mb-12">
-            Stop losing valuable thinking to the churn of meetings and docs. Sidekick captures, retrieves, and reasons
-            alongside you—turning months of scattered context into a permanent competitive advantage.
+          <p className="max-w-lg text-zinc-300 text-lg leading-relaxed mb-12">
+            You make high-stakes decisions every week. What if you remembered all of them? Sidekick captures context,
+            surfaces patterns, and compounds your judgment over time—so every decision builds on the last.
           </p>
 
           {/* Interactive Offerings / Pillars */}
