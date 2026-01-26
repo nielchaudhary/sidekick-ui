@@ -1,6 +1,7 @@
 "use client";
 
 import RetrievalNexus from "./RetrievalNexus";
+import { Highlighter } from "@/components/ui/highlighter";
 
 interface Offering {
   id: string;
@@ -69,9 +70,13 @@ export default function NexusHero() {
             <span className="text-zinc-700 transition-colors duration-700 ">the MOAT.</span>
           </h1>
 
-          <p className="max-w-lg text-zinc-300 text-lg leading-relaxed mb-12 font-semibold">
+          <p className="max-w-xl text-zinc-300 text-lg leading-relaxed mb-10 font-semibold">
             What if you had instant answers from every decision you've made? Sidekick remembers your context and
-            surfaces it exactly when it matters, turning past thinking into present clarity.
+            surfaces it exactly when it matters,
+            <Highlighter action="underline" color="#B34B71" strokeWidth={2} isView>
+              turning past thinking into present clarity
+            </Highlighter>
+            .
           </p>
 
           {/* Interactive Offerings / Pillars */}
