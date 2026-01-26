@@ -274,6 +274,57 @@ function TypewriterText({
   );
 }
 
+// Bento Grid Background with gravitational well effect
+function BentoGrid({ isActive }: { isActive: boolean }) {
+  const gridSize = 20;
+  const dots: { x: number; y: number; distance: number }[] = [];
+
+  // Generate grid dots
+  for (let x = 0; x <= 340; x += gridSize) {
+    for (let y = 0; y <= 420; y += gridSize) {
+      const centerX = 170;
+      const centerY = 210;
+      const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+      dots.push({ x, y, distance });
+    }
+  }
+
+  return (
+    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 340 420">
+      <defs>
+        <radialGradient id="wellGlow" cx="50%" cy="50%">
+          <stop offset="0%" stopColor="white" stopOpacity="0.35" />
+          <stop offset="40%" stopColor="white" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="white" stopOpacity="0.05" />
+        </radialGradient>
+      </defs>
+      {dots.map((dot, i) => {
+        const maxDistance = 100;
+        const brightness = dot.distance < maxDistance ? 0.3 - (dot.distance / maxDistance) * 0.25 : 0.05;
+
+        return (
+          <motion.circle
+            key={`grid-dot-${i}`}
+            cx={dot.x}
+            cy={dot.y}
+            r="1"
+            fill="white"
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: isActive ? brightness : 0,
+              scale: isActive && dot.distance < 60 ? [1, 1.5, 1] : 1,
+            }}
+            transition={{
+              opacity: { duration: 0.8, delay: i * 0.002 },
+              scale: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: dot.distance * 0.01 },
+            }}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
 // Background Vector Neural Pathways - Animated during "thinking" state
 function NeuralPathwaysBackground({ isActive }: { isActive: boolean }) {
   // Generate neural pathway points
@@ -491,7 +542,7 @@ function MemoryAnimation() {
       // Phase 6: Storage
       setPhase("storage");
 
-      await delay(2500);
+      await delay(4200); // 1.2s for text to appear + 3s display time
 
       // Loop
       runAnimation();
@@ -516,9 +567,9 @@ function MemoryAnimation() {
 
   const magneticTransition = {
     type: "spring" as const,
-    stiffness: 80,
-    damping: 12,
-    duration: 0.8,
+    stiffness: 120,
+    damping: 14,
+    mass: 0.8,
   };
 
   return (
@@ -537,6 +588,17 @@ function MemoryAnimation() {
               <feMergeNode in="coloredBlur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
+          </filter>
+          {/* Gooey effect filter - creates liquid/melting appearance */}
+          <filter id="gooey">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+            <feColorMatrix
+              in="blur"
+              mode="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9"
+              result="gooey"
+            />
+            <feComposite in="SourceGraphic" in2="gooey" operator="atop" />
           </filter>
         </defs>
       </svg>
@@ -591,29 +653,39 @@ function MemoryAnimation() {
             phase === "responding" ||
             phase === "collapse") && (
             <motion.div
-              key="chat-window"
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{
-                opacity: phase === "collapse" ? 0 : 1,
-                scale: phase === "collapse" ? 0.15 : 1,
-                y: phase === "collapse" ? -20 : 0,
-                borderRadius: phase === "collapse" ? "50%" : "24px",
-              }}
-              exit={{
-                opacity: 0,
-                scale: 0.1,
-                borderRadius: "50%",
-              }}
-              transition={phase === "collapse" ? collapseTransition : layoutMorphTransition}
-              className="relative w-[280px] h-[320px] overflow-hidden flex flex-col"
+              key="chat-window-wrapper"
+              className="relative"
               style={{
-                background: "rgba(255, 255, 255, 0.95)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                boxShadow: "0 25px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.15)",
-                borderRadius: "24px",
+                filter: phase === "collapse" ? "url(#gooey)" : "none",
+                willChange: phase === "collapse" ? "filter" : "auto",
               }}
             >
+              <motion.div
+                key="chat-window"
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{
+                  opacity: phase === "collapse" ? 0 : 1,
+                  scale: phase === "collapse" ? 0.15 : 1,
+                  y: phase === "collapse" ? -20 : 0,
+                  borderRadius: phase === "collapse" ? "50%" : "24px",
+                  filter: phase === "collapse" ? "blur(4px)" : "blur(0px)",
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.1,
+                  borderRadius: "50%",
+                  filter: "blur(8px)",
+                }}
+                transition={phase === "collapse" ? collapseTransition : layoutMorphTransition}
+                className="relative w-[280px] h-[320px] overflow-hidden flex flex-col"
+                style={{
+                  background: "rgba(255, 255, 255, 0.95)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                  boxShadow: "0 25px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.15)",
+                  borderRadius: "24px",
+                }}
+              >
               {/* Chat Header */}
               <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100/80">
                 <motion.div
@@ -746,6 +818,7 @@ function MemoryAnimation() {
                   </div>
                 </motion.div>
               </motion.div>
+              </motion.div>
             </motion.div>
           )}
 
@@ -777,7 +850,7 @@ function MemoryAnimation() {
             />
           )}
 
-          {/* Phase C: Memory Storage Node */}
+          {/* Phase C: Atomic Persistence - Memory Storage Node */}
           {phase === "storage" && (
             <motion.div
               key="storage-node"
@@ -788,83 +861,82 @@ function MemoryAnimation() {
               transition={magneticTransition}
               className="relative flex items-center justify-center"
             >
-              {/* Data Receipt Pulse - Triggered when data arrives */}
+              {/* Bento Grid Background with Gravitational Well */}
+              <BentoGrid isActive={true} />
+
+              {/* Write-to-Disk Flash - High frequency radial flash */}
               <motion.div
                 className="absolute rounded-full"
-                initial={{ width: 20, height: 20, opacity: 0.8 }}
+                style={{
+                  background: "radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%)",
+                }}
+                initial={{ width: 20, height: 20, opacity: 0 }}
                 animate={{
-                  width: [20, 180],
-                  height: [20, 180],
-                  opacity: [0.8, 0],
+                  width: [20, 120],
+                  height: [20, 120],
+                  opacity: [0.9, 0],
                 }}
                 transition={{
-                  duration: 1.2,
+                  duration: 0.15,
                   ease: "easeOut",
-                }}
-                style={{
-                  border: "2px solid rgba(255,255,255,0.6)",
                 }}
               />
 
-              {/* Outer Pulse Rings - Expanding waves to acknowledge receipt */}
-              {[0, 1, 2].map((i) => (
+              {/* Pressure Wave - Background dilation */}
+              <motion.div
+                className="absolute inset-0"
+                initial={{ scale: 1 }}
+                animate={{ scale: [1, 1.02, 1] }}
+                transition={{
+                  duration: 0.3,
+                  delay: 0.1,
+                  ease: "easeOut",
+                }}
+              />
+
+              {/* Dynamic Lattice Core - 3 concentric rings at prime intervals */}
+              {[
+                { radius: 20, duration: 7, strokeDash: "2 4", opacity: 0.6 },
+                { radius: 32, duration: 13, strokeDash: "4 6", opacity: 0.5 },
+                { radius: 44, duration: 17, strokeDash: "3 5", opacity: 0.4 },
+              ].map((ring, i) => (
                 <motion.div
-                  key={`ring-${i}`}
-                  className="absolute rounded-full border border-white/30"
-                  initial={{ width: 40, height: 40, opacity: 0 }}
-                  animate={{
-                    width: [40, 140 + i * 40],
-                    height: [40, 140 + i * 40],
-                    opacity: [0.6, 0],
-                  }}
-                  transition={{
-                    duration: 2.5,
-                    delay: 0.3 + i * 0.5,
-                    repeat: Infinity,
-                    ease: "easeOut",
-                  }}
-                />
+                  key={`lattice-ring-${i}`}
+                  className="absolute"
+                  animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
+                  transition={{ duration: ring.duration, repeat: Infinity, ease: "linear" }}
+                >
+                  <svg
+                    width={ring.radius * 2 + 10}
+                    height={ring.radius * 2 + 10}
+                    viewBox={`0 0 ${ring.radius * 2 + 10} ${ring.radius * 2 + 10}`}
+                    fill="none"
+                  >
+                    <motion.circle
+                      cx={ring.radius + 5}
+                      cy={ring.radius + 5}
+                      r={ring.radius}
+                      stroke={`rgba(255,255,255,${ring.opacity})`}
+                      strokeWidth="1"
+                      strokeDasharray={ring.strokeDash}
+                      fill="none"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{
+                        scale: [0.9, 1.05, 0.9],
+                        opacity: [ring.opacity * 0.8, ring.opacity, ring.opacity * 0.8],
+                      }}
+                      transition={{
+                        duration: 2 + i * 0.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: i * 0.2,
+                      }}
+                    />
+                  </svg>
+                </motion.div>
               ))}
 
-              {/* Rotating Geometric Frame */}
-              <motion.div
-                className="absolute"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              >
-                <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
-                  <motion.polygon
-                    points="50,5 95,50 50,95 5,50"
-                    stroke="rgba(255,255,255,0.3)"
-                    strokeWidth="1"
-                    fill="none"
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: [0.8, 1, 0.8] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  />
-                </svg>
-              </motion.div>
-
-              {/* Counter-Rotating Inner Frame */}
-              <motion.div
-                className="absolute"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              >
-                <svg width="70" height="70" viewBox="0 0 70 70" fill="none">
-                  <motion.polygon
-                    points="35,5 65,35 35,65 5,35"
-                    stroke="rgba(255,255,255,0.4)"
-                    strokeWidth="1"
-                    fill="none"
-                    initial={{ scale: 0.9 }}
-                    animate={{ scale: [0.9, 1.1, 0.9] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                  />
-                </svg>
-              </motion.div>
-
-              {/* Central Memory Node - With "absorbing" effect */}
+              {/* Central Memory Core - The crystallized hub */}
               <motion.div
                 className="relative w-14 h-14 rounded-full flex items-center justify-center"
                 style={{
@@ -879,11 +951,11 @@ function MemoryAnimation() {
                   ease: "easeOut",
                 }}
               >
-                {/* Inner Glow - Pulses to show "absorption" */}
+                {/* Inner Glow - Pulses to show crystallization */}
                 <motion.div
                   className="absolute inset-1.5 rounded-full"
                   style={{
-                    background: "radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%)",
+                    background: "radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%)",
                   }}
                   animate={{
                     opacity: [0.3, 1, 0.5],
@@ -896,72 +968,113 @@ function MemoryAnimation() {
                   }}
                 />
 
-                {/* Neural Icon */}
+                {/* Crystal/Database Icon */}
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <motion.circle
-                    cx="12"
-                    cy="12"
-                    r="3"
-                    fill="white"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: [0, 1.3, 1] }}
-                    transition={{ duration: 0.6, times: [0, 0.6, 1] }}
-                  />
                   <motion.path
-                    d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
+                    d="M12 2L2 7l10 5 10-5-10-5z"
                     stroke="white"
                     strokeWidth="1.5"
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: 1 }}
-                    transition={{ duration: 1, delay: 0.3 }}
+                    fill="none"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.6 }}
+                  />
+                  <motion.path
+                    d="M2 17l10 5 10-5"
+                    stroke="white"
+                    strokeWidth="1.5"
+                    fill="none"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  />
+                  <motion.path
+                    d="M2 12l10 5 10-5"
+                    stroke="white"
+                    strokeWidth="1.5"
+                    fill="none"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
                   />
                 </svg>
               </motion.div>
 
-              {/* Incoming Data Particles - Converging from outside */}
+              {/* Particle Accumulation Grid - Particles snap to hexagonal positions */}
               {[...Array(12)].map((_, i) => {
                 const angle = (i / 12) * Math.PI * 2;
-                const radius = 70;
+                const startRadius = 80;
+                const endRadius = 26; // Inside the middle ring
+                const endX = Math.cos(angle) * endRadius;
+                const endY = Math.sin(angle) * endRadius;
+
                 return (
                   <motion.div
                     key={`particle-${i}`}
-                    className="absolute w-1.5 h-1.5 rounded-full"
+                    className="absolute w-2 h-2 rounded-full"
                     style={{
                       background: "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 100%)",
-                      boxShadow: "0 0 6px rgba(255,255,255,0.8)",
+                      boxShadow: "0 0 8px rgba(255,255,255,0.9)",
                     }}
                     initial={{
-                      x: Math.cos(angle) * radius,
-                      y: Math.sin(angle) * radius,
+                      x: Math.cos(angle) * startRadius,
+                      y: Math.sin(angle) * startRadius,
                       opacity: 0,
                       scale: 0,
                     }}
                     animate={{
-                      x: [Math.cos(angle) * radius, 0],
-                      y: [Math.sin(angle) * radius, 0],
-                      opacity: [0, 1, 0],
-                      scale: [0, 1.2, 0],
+                      x: [Math.cos(angle) * startRadius, endX],
+                      y: [Math.sin(angle) * startRadius, endY],
+                      opacity: [0, 1, 1],
+                      scale: [0, 1.3, 0.8],
                     }}
                     transition={{
-                      duration: 1.2,
-                      delay: i * 0.08,
-                      ease: [0.25, 0.1, 0.25, 1], // Custom bezier for magnetic feel
+                      duration: 0.8,
+                      delay: i * 0.06,
+                      ease: [0.68, -0.55, 0.265, 1.55], // Snap bezier with overshoot
                     }}
                   />
                 );
               })}
 
-              {/* "Stored" Label with subtle animation */}
+              {/* Locked Particles - Pulse after snapping into place */}
+              {[...Array(12)].map((_, i) => {
+                const angle = (i / 12) * Math.PI * 2;
+                const radius = 26;
+                return (
+                  <motion.div
+                    key={`locked-particle-${i}`}
+                    className="absolute w-1.5 h-1.5 rounded-full bg-white/70"
+                    style={{
+                      x: Math.cos(angle) * radius,
+                      y: Math.sin(angle) * radius,
+                    }}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{
+                      opacity: [0, 0, 0.8],
+                      scale: [0, 0, 1, 1.2, 1],
+                    }}
+                    transition={{
+                      duration: 2,
+                      delay: 0.8 + i * 0.05,
+                      times: [0, 0.4, 0.5, 0.7, 1],
+                      repeat: Infinity,
+                      repeatDelay: 1,
+                    }}
+                  />
+                );
+              })}
+
+              {/* Memory Stored Label */}
               <motion.div
-                className="absolute -bottom-10 whitespace-nowrap"
-                initial={{ opacity: 0, y: -15, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
+                className="absolute -bottom-12 whitespace-nowrap"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.4 }}
               >
                 <motion.span
-                  className="text-[10px] font-semibold tracking-[0.2em] text-white/80 uppercase"
-                  animate={{ opacity: [0.7, 1, 0.7] }}
+                  className="text-[11px] font-bold tracking-[0.2em] text-white uppercase"
+                  animate={{ opacity: [0.8, 1, 0.8] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 >
                   Memory Stored
