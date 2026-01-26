@@ -75,7 +75,7 @@ export default function FeatureSwitcher() {
           ))}
         </div>
 
-        {/* Feature Card */}
+        {/* Feature Card with Nested Canvas Design */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeFeature.id}
@@ -85,8 +85,24 @@ export default function FeatureSwitcher() {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="relative"
           >
-            {/* Card with border */}
-            <div className="relative rounded-xl border border-gray-300 bg-white overflow-hidden">
+            {/* Outer Frame - Extended Card with Gradient Border */}
+            <div
+              className="relative p-8 md:p-8 rounded-[24px]"
+              style={{
+                background: "linear-gradient(135deg, #B34B71 0%, #6B2D4A 35%, #3D1A2E 70%, #1A0912 100%)",
+                padding: "1px",
+              }}
+            >
+              {/* Inner backdrop - creates the "distance" between border and card */}
+              <div className="bg-white rounded-[23px] p-3 md:p-8">
+                {/* Internal Card with softened burgundy border */}
+                <div
+                  className="relative rounded-xl bg-white overflow-hidden"
+                  style={{
+                    border: "1px solid rgba(179, 75, 113, 0.12)",
+                    boxShadow: "0 4px 40px rgba(61, 26, 46, 0.03)",
+                  }}
+                >
               <div className="flex flex-col md:flex-row min-h-[380px]">
                 {/* Left: Content (40%) */}
                 <div className="w-full md:w-[40%] p-8 md:p-12 flex flex-col justify-center">
@@ -172,6 +188,8 @@ export default function FeatureSwitcher() {
                 {/* Right: Animation Area (60%) */}
                 <div className="w-full md:w-[60%] flex items-center justify-center p-6 md:p-8">
                   <activeFeature.icon />
+                </div>
+              </div>
                 </div>
               </div>
             </div>
