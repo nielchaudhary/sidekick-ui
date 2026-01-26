@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Database, FileText, MessageSquare, Mail, Sheet } from "lucide-react";
+import { Database } from "lucide-react";
 
 type AppPhase =
   | "idle"
@@ -22,40 +22,88 @@ interface MemorySource {
   color: string;
 }
 
-interface Message {
-  role: "user" | "assistant";
-  content: string;
+interface BulletPoint {
+  text: string;
+  keyword: string;
+  suffix: string;
 }
 
-// Five data sources positioned closer to the orb (pentagon arrangement)
+interface Message {
+  role: "user" | "assistant";
+  content?: string;
+  bullets?: BulletPoint[];
+}
+
+// Five data sources positioned around the orb (pentagon arrangement, 20% longer connectors)
 const MEMORY_SOURCES: MemorySource[] = [
-  { id: "sidekick-db", label: "Sidekick DB", x: 50, y: 28, color: "#B34B71" },
-  { id: "notion", label: "Notion", x: 70, y: 40, color: "#FFFFFF" },
-  { id: "slack", label: "Slack", x: 64, y: 68, color: "#E01E5A" },
-  { id: "gmail", label: "Gmail", x: 36, y: 68, color: "#EA4335" },
-  { id: "sheets", label: "Google Sheets", x: 30, y: 40, color: "#34A853" },
+  { id: "sidekick-db", label: "Sidekick DB", x: 50, y: 24, color: "#B34B71" },
+  { id: "notion", label: "Notion", x: 74, y: 38, color: "#FFFFFF" },
+  { id: "slack", label: "Slack", x: 67, y: 72, color: "#E01E5A" },
+  { id: "gmail", label: "Gmail", x: 33, y: 72, color: "#EA4335" },
+  { id: "sheets", label: "Google Sheets", x: 26, y: 38, color: "#34A853" },
 ];
 
 const DEMO_CONVERSATION = {
   userMessage: "What were the key decisions from my Pfizer meetings?",
-  assistantMessage:
-    "Based on your Sidekick DB, Notion docs, Slack threads, emails, and spreadsheets: Budget was approved ($2.4M), the API blocker was resolved by switching to the new SDK, and next review is scheduled for March 15th.",
+  assistantBullets: [
+    { text: "Budget approved at ", keyword: "$2.4M", suffix: " for Q2 expansion" },
+    { text: "API blocker resolved by switching to ", keyword: "new SDK", suffix: "" },
+    { text: "Next review scheduled for ", keyword: "March 15th", suffix: "" },
+  ],
   sourcesToActivate: ["sidekick-db", "notion", "slack", "gmail", "sheets"],
 };
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Lucide Icon Wrapper
-function SourceIcon({ id, color, isActive }: { id: string; color: string; isActive: boolean }) {
-  const iconProps = { size: 20, strokeWidth: 1.5 };
+// Brand Logo Components
+function NotionLogo() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
+      <path d="M6.017 4.313l55.333 -4.087c6.797 -0.583 8.543 -0.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277 -1.553 6.807 -6.99 7.193L24.467 99.967c-4.08 0.193 -6.023 -0.39 -8.16 -3.113L3.3 79.94c-2.333 -3.113 -3.3 -5.443 -3.3 -8.167V11.113c0 -3.497 1.553 -6.413 6.017 -6.8z" fill="#fff"/>
+      <path fillRule="evenodd" clipRule="evenodd" d="M61.35 0.227l-55.333 4.087C1.553 4.7 0 7.617 0 11.113v60.66c0 2.723 0.967 5.053 3.3 8.167l13.007 16.913c2.137 2.723 4.08 3.307 8.16 3.113l64.257 -3.89c5.433 -0.387 6.99 -2.917 6.99 -7.193V20.64c0 -2.21 -0.873 -2.847 -3.443 -4.733L74.167 3.143c-4.273 -3.107 -6.02 -3.5 -12.817 -2.917zM25.92 19.523c-5.247 0.353 -6.437 0.433 -9.417 -1.99L8.927 11.507c-0.77 -0.78 -0.383 -1.753 1.557 -1.947l53.193 -3.887c4.467 -0.39 6.793 1.167 8.54 2.527l9.123 6.61c0.39 0.197 1.36 1.36 0.193 1.36l-54.933 3.307 -0.68 0.047zM19.803 88.3V30.367c0 -2.53 0.777 -3.697 3.103 -3.893L86 22.78c2.14 -0.193 3.107 1.167 3.107 3.693v57.547c0 2.53 -0.39 4.67 -3.883 4.863l-60.377 3.5c-3.493 0.193 -5.043 -0.97 -5.043 -4.083zm59.6 -54.827c0.387 1.75 0 3.5 -1.75 3.7l-2.91 0.577v42.773c-2.527 1.36 -4.853 2.137 -6.797 2.137 -3.107 0 -3.883 -0.973 -6.21 -3.887l-19.03 -29.94v28.967l6.02 1.363s0 3.5 -4.857 3.5l-13.39 0.777c-0.39 -0.78 0 -2.723 1.357 -3.11l3.497 -0.97v-38.3L30.48 40.667c-0.39 -1.75 0.58 -4.277 3.3 -4.473l14.367 -0.967 19.8 30.327v-26.83l-5.047 -0.58c-0.39 -2.143 1.163 -3.7 3.103 -3.89l13.4 -0.78z" fill="#000"/>
+    </svg>
+  );
+}
 
+function SlackLogo() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 128 128" fill="none">
+      <path d="M27.255 80.719c0 7.33-5.978 13.317-13.309 13.317C6.616 94.036.63 88.049.63 80.719s5.987-13.317 13.317-13.317h13.309zm6.709 0c0-7.33 5.987-13.317 13.317-13.317s13.317 5.986 13.317 13.317v33.335c0 7.33-5.986 13.317-13.317 13.317-7.33 0-13.317-5.987-13.317-13.317z" fill="#DE1C59"/>
+      <path d="M47.281 27.255c-7.33 0-13.317-5.978-13.317-13.309C33.964 6.616 39.951.63 47.281.63s13.317 5.987 13.317 13.317v13.309zm0 6.709c7.33 0 13.317 5.987 13.317 13.317s-5.986 13.317-13.317 13.317H13.946C6.616 60.598.63 54.612.63 47.281c0-7.33 5.987-13.317 13.317-13.317z" fill="#35C5F0"/>
+      <path d="M100.745 47.281c0-7.33 5.978-13.317 13.309-13.317 7.33 0 13.317 5.987 13.317 13.317s-5.987 13.317-13.317 13.317h-13.309zm-6.709 0c0 7.33-5.987 13.317-13.317 13.317s-13.317-5.986-13.317-13.317V13.946C67.402 6.616 73.388.63 80.719.63c7.33 0 13.317 5.987 13.317 13.317z" fill="#2EB67D"/>
+      <path d="M80.719 100.745c7.33 0 13.317 5.978 13.317 13.309 0 7.33-5.987 13.317-13.317 13.317s-13.317-5.987-13.317-13.317v-13.309zm0-6.709c-7.33 0-13.317-5.987-13.317-13.317s5.986-13.317 13.317-13.317h33.335c7.33 0 13.317 5.986 13.317 13.317 0 7.33-5.987 13.317-13.317 13.317z" fill="#ECB22D"/>
+    </svg>
+  );
+}
+
+function GmailLogo() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z" fill="#EA4335"/>
+    </svg>
+  );
+}
+
+function GoogleSheetsLogo() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M19.5 24h-15A2.5 2.5 0 0 1 2 21.5v-19A2.5 2.5 0 0 1 4.5 0h10l7.5 7.5v14a2.5 2.5 0 0 1-2.5 2.5z" fill="#0F9D58"/>
+      <path d="M14.5 0v5a2.5 2.5 0 0 0 2.5 2.5h5" fill="#87CEAC"/>
+      <path d="M6 12h12v9H6z" fill="#fff"/>
+      <path d="M6 15h12M6 18h12M10 12v9M14 12v9" stroke="#0F9D58" strokeWidth="0.5"/>
+    </svg>
+  );
+}
+
+// Icon Wrapper
+function SourceIcon({ id, color, isActive }: { id: string; color: string; isActive: boolean }) {
   const getIcon = () => {
     switch (id) {
-      case "sidekick-db": return <Database {...iconProps} />;
-      case "notion": return <FileText {...iconProps} />;
-      case "slack": return <MessageSquare {...iconProps} />;
-      case "gmail": return <Mail {...iconProps} />;
-      case "sheets": return <Sheet {...iconProps} />;
+      case "sidekick-db": return <Database size={20} strokeWidth={1.5} />;
+      case "notion": return <NotionLogo />;
+      case "slack": return <SlackLogo />;
+      case "gmail": return <GmailLogo />;
+      case "sheets": return <GoogleSheetsLogo />;
       default: return null;
     }
   };
@@ -64,7 +112,9 @@ function SourceIcon({ id, color, isActive }: { id: string; color: string; isActi
     <motion.div
       className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg border border-white/10"
       style={{
-        background: `linear-gradient(135deg, rgba(20,20,20,0.9) 0%, rgba(10,10,10,0.95) 100%)`,
+        background: id === "sidekick-db"
+          ? `linear-gradient(135deg, rgba(20,20,20,0.9) 0%, rgba(10,10,10,0.95) 100%)`
+          : `linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,240,240,0.9) 100%)`,
         color: color,
       }}
       animate={isActive ? {
@@ -145,6 +195,79 @@ function TypewriterText({
         />
       )}
     </span>
+  );
+}
+
+// Gradient keyword component
+function GradientKeyword({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className="font-semibold"
+      style={{
+        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        backgroundClip: "text",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+// Bullet list component with animated reveal
+function BulletList({ bullets, animate }: { bullets: BulletPoint[]; animate: boolean }) {
+  const [visibleCount, setVisibleCount] = useState(0);
+
+  useEffect(() => {
+    if (!animate) {
+      setVisibleCount(bullets.length);
+      return;
+    }
+
+    setVisibleCount(0);
+    const timers: NodeJS.Timeout[] = [];
+
+    bullets.forEach((_, idx) => {
+      const timer = setTimeout(() => {
+        setVisibleCount(idx + 1);
+      }, (idx + 1) * 800);
+      timers.push(timer);
+    });
+
+    return () => timers.forEach(clearTimeout);
+  }, [bullets, animate]);
+
+  return (
+    <ul className="space-y-2 list-none">
+      {bullets.slice(0, visibleCount).map((bullet, idx) => (
+        <motion.li
+          key={idx}
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex items-start gap-2"
+        >
+          <span className="text-white/40 mt-0.5">•</span>
+          <span>
+            {bullet.text}
+            <GradientKeyword>{bullet.keyword}</GradientKeyword>
+            {bullet.suffix}
+          </span>
+        </motion.li>
+      ))}
+      {animate && visibleCount < bullets.length && (
+        <motion.div
+          className="flex gap-1 ml-4"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 1, repeat: Infinity }}
+        >
+          <span className="w-1 h-1 rounded-full bg-white/40" />
+          <span className="w-1 h-1 rounded-full bg-white/40" />
+          <span className="w-1 h-1 rounded-full bg-white/40" />
+        </motion.div>
+      )}
+    </ul>
   );
 }
 
@@ -545,22 +668,15 @@ function ChatWindow({
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           className="absolute inset-0 flex items-center justify-center z-20"
         >
-          <div className="w-[70%] h-[70%] bg-black/50 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+          <div className="w-[70%] h-[70%] bg-black backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="px-5 py-3.5 flex items-center justify-between border-b border-white/5 bg-white/5">
-              <div className="flex items-center gap-2">
-                <motion.div
-                  className="w-2 h-2 rounded-full bg-[#B34B71]"
-                  animate={{ scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/50">
-                  Sidekick
-                </span>
-              </div>
+            <div className="px-5 py-3.5 flex items-center justify-between border-b border-white/20">
+              <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/70">
+                Sidekick
+              </span>
               <div className="flex gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-white/10" />
-                <div className="w-2 h-2 rounded-full bg-white/10" />
+                <div className="w-2 h-2 rounded-full bg-white/20" />
+                <div className="w-2 h-2 rounded-full bg-white/20" />
               </div>
             </div>
 
@@ -581,12 +697,12 @@ function ChatWindow({
                     className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-[13px] leading-relaxed
                       ${
                         msg.role === "user"
-                          ? "bg-[#4A0404] text-white rounded-br-md"
-                          : "bg-white/10 text-white/90 border border-white/10 rounded-bl-md"
+                          ? "bg-black text-white border border-white/20 rounded-br-md"
+                          : "bg-black text-white border border-white/10 rounded-bl-md"
                       }`}
                   >
-                    {msg.role === "assistant" && idx === messages.length - 1 ? (
-                      <TypewriterText text={msg.content} />
+                    {msg.role === "assistant" && msg.bullets ? (
+                      <BulletList bullets={msg.bullets} animate={idx === messages.length - 1} />
                     ) : (
                       msg.content
                     )}
@@ -601,11 +717,11 @@ function ChatWindow({
                     animate={{ opacity: 1 }}
                     className="flex justify-start"
                   >
-                    <div className="bg-white/5 px-4 py-3 rounded-2xl rounded-bl-md flex gap-1.5 items-center">
+                    <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl rounded-bl-md flex gap-1.5 items-center">
                       {[0, 1, 2].map((i) => (
                         <motion.div
                           key={i}
-                          className="w-1.5 h-1.5 rounded-full bg-white/40"
+                          className="w-1.5 h-1.5 rounded-full bg-white/50"
                           animate={{ scale: [1, 1.4, 1] }}
                           transition={{
                             repeat: Infinity,
@@ -620,24 +736,24 @@ function ChatWindow({
             </div>
 
             {/* Footer Input Area */}
-            <div className="p-3.5 bg-white/5 border-t border-white/5">
-              <div className="relative flex items-center bg-white/10 rounded-xl border border-white/10 px-4 py-3">
-                <div className="flex-1 text-[12px] text-white/70 font-medium truncate">
+            <div className="p-3.5 border-t border-white/20">
+              <div className="relative flex items-center bg-white/5 rounded-xl border border-white/15 px-4 py-3">
+                <div className="flex-1 text-[12px] text-white font-medium truncate">
                   {inputValue || (
-                    <span className="text-white/20 italic font-normal">
+                    <span className="text-white/30 italic font-normal">
                       Ask Sidekick anything...
                     </span>
                   )}
                   {inputValue && (
                     <motion.span
-                      className="inline-block w-[2px] h-[12px] bg-white/70 ml-0.5 align-middle"
+                      className="inline-block w-0.5 h-3 bg-white ml-0.5 align-middle"
                       animate={{ opacity: [1, 0, 1] }}
                       transition={{ duration: 0.5, repeat: Infinity }}
                     />
                   )}
                 </div>
                 <svg
-                  className="w-4 h-4 text-white/20 ml-2"
+                  className="w-4 h-4 text-white/30 ml-2"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -716,7 +832,7 @@ export default function RetrievalNexus() {
       setPhase("responding");
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: DEMO_CONVERSATION.assistantMessage },
+        { role: "assistant", bullets: DEMO_CONVERSATION.assistantBullets },
       ]);
 
       await delay(5000);
@@ -771,9 +887,9 @@ export default function RetrievalNexus() {
       <ChatWindow phase={phase} messages={messages} inputValue={inputValue} />
 
       {/* Phase Label HUD */}
-      <div className="absolute bottom-6 left-6 hidden md:block">
+      <div className="absolute top-6 left-6 hidden md:block">
         <div className="flex flex-col">
-          <span className="text-[8px] font-bold tracking-[0.4em] uppercase text-white/10 mb-1">
+          <span className="text-[8px] font-bold tracking-[0.4em] uppercase text-white/40 mb-1">
             Context Formation
           </span>
           <AnimatePresence mode="wait">
@@ -782,7 +898,7 @@ export default function RetrievalNexus() {
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              className="text-[10px] font-medium tracking-[0.2em] text-[#B34B71]/70 uppercase"
+              className="text-[10px] font-medium tracking-[0.2em] text-[#B34B71] uppercase"
             >
               {phase === "crossReferencing" ? "cross-referencing" : phase}
             </motion.span>

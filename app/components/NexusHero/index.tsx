@@ -49,7 +49,13 @@ export default function NexusHero() {
         {/* Left Side: The Narrative */}
         <div className="z-20 w-full md:w-1/2 flex flex-col justify-center px-6 md:px-12 lg:px-20 pt-24 md:pt-0">
           {/* Typography */}
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-[-0.05em] leading-[0.9] text-white mb-6">
+          <h1
+            className="text-5xl md:text-7xl lg:text-8xl tracking-[-0.02em] leading-[0.9] text-white mb-6"
+            style={{
+              fontFamily: '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+              fontWeight: 300,
+            }}
+          >
             Memory is <br />
             <span className="text-zinc-700 transition-colors duration-700 hover:text-zinc-500">the MOAT.</span>
           </h1>
