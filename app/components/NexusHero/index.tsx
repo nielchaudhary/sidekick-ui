@@ -87,7 +87,7 @@ export default function NexusHero() {
   return (
     <div className="relative h-screen w-full bg-black overflow-hidden flex flex-col md:flex-row items-center px-6 md:px-20">
       {/* Left: Content */}
-      <div className="z-10 w-full md:w-1/2 flex flex-col gap-8 pt-24 md:pt-0">
+      <div className="z-10 w-full md:w-1/2 flex flex-col gap-8 pt-24 md:pt-0 md:ml-20 lg:ml-32">
         <header className="space-y-4">
           <h1 className="text-5xl md:text-7xl font-medium tracking-tighter text-white leading-tight">
             Stop starting <br />
