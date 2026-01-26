@@ -102,3 +102,21 @@ body {
 .font-headline {
   font-family: var(--font-headline);
 }
+
+/* Nexus Hero Styles */
+.fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sidekick Dither Effect for Buttons */
+.bg-burgundy-dither {
+  background-color: #4A0404;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAACpJREFUGFdjZEADJgY0QCSTBaYByicmJmByyAImBl0AXQCmAsYA0wByAAsvBg8f889VAAAAAElFTkSuQmCC");
+  background-repeat: repeat;
+  mix-blend-mode: screen;
+}
