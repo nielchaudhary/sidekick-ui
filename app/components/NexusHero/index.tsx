@@ -1,6 +1,5 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
 import RetrievalNexus from "./RetrievalNexus";
 
 interface Offering {
@@ -13,17 +12,17 @@ const offerings: Offering[] = [
   {
     id: "capture",
     title: "Capture",
-    body: "WhatsApp-fast tradeoffs & reasoning.",
+    body: "Voice, text, data captured instantly.",
   },
   {
     id: "retrieve",
     title: "Retrieve",
-    body: "Proactive recall of buried context.",
+    body: "Find what you decided, exactly when needed.",
   },
   {
     id: "reason",
     title: "Reason",
-    body: "A partner that challenges your bias.",
+    body: "Challenge assumptions with your own history.",
   },
 ];
 
@@ -50,19 +49,29 @@ export default function NexusHero() {
         <div className="z-20 w-full md:w-1/2 flex flex-col justify-center px-6 md:px-12 lg:px-20 pt-24 md:pt-0">
           {/* Typography */}
           <h1
-            className="text-5xl md:text-7xl lg:text-8xl tracking-[-0.02em] leading-[0.9] text-white mb-6"
+            className="text-5xl md:text-7xl lg:text-8xl tracking-[-0.02em] leading-[0.9] text-white mb-6 mt-5"
             style={{
               fontFamily: '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
               fontWeight: 300,
             }}
           >
-            Memory is <br />
-            <span className="text-zinc-700 transition-colors duration-700 hover:text-zinc-500">the MOAT.</span>
+            <span
+              style={{
+                background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              Memory
+            </span>{" "}
+            is <br />
+            <span className="text-zinc-700 transition-colors duration-700 ">the MOAT.</span>
           </h1>
 
           <p className="max-w-lg text-zinc-300 text-lg leading-relaxed mb-12">
-            You make high-stakes decisions every week. What if you remembered all of them? Sidekick captures context,
-            surfaces patterns, and compounds your judgment over time—so every decision builds on the last.
+            What if you had instant answers from every decision you've made? Sidekick remembers your context and
+            surfaces it exactly when it matters, turning past thinking into present clarity.
           </p>
 
           {/* Interactive Offerings / Pillars */}
@@ -79,11 +88,23 @@ export default function NexusHero() {
 
           {/* CTA Buttons */}
           <div className="flex items-center gap-6">
-            <button className="bg-[#4A0404] hover:bg-[#6B0606] text-white px-8 py-3 rounded-sm text-sm font-medium transition-all shadow-[0_0_20px_rgba(74,4,4,0.3)]">
-              Start Your Sidekick
-            </button>
-            <button className="text-zinc-500 hover:text-white text-sm transition-colors flex items-center gap-2">
-              Watch reasoning in action <ChevronDown size={14} />
+            <button className="group bg-black text-white px-8 py-3 text-sm font-medium border rounded-2xl border-gray-800 cursor-pointer flex items-center gap-2 transition-all duration-300 hover:border-gray-600">
+              Join the waitlist
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                className="transition-transform duration-300 ease-out rotate-0 group-hover:-rotate-30"
+              >
+                <path
+                  d="M3 8H13M13 8L9 4M13 8L9 12"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
           </div>
         </div>

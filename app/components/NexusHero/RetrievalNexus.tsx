@@ -846,7 +846,7 @@ export default function RetrievalNexus() {
   }, []);
 
   return (
-    <div className="relative w-full h-full overflow-hidden flex items-center justify-center">
+    <div className="relative w-full h-full overflow-hidden flex items-center justify-center mt-5">
       {/* Background Neural Grid */}
       <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
         <div
