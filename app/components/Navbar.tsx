@@ -41,7 +41,7 @@ export default function Navbar() {
             isScrolled ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
         >
-          {["Agents", "Resources", "Pricing"].map((label) => (
+          {["Agents", "Features", "Pricing"].map((label) => (
             <a key={label} href="#" className="relative font-sans font-normal text-sm leading-5 text-white group">
               {label}
               <span
