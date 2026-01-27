@@ -26,16 +26,16 @@ export default function Footer() {
 
           {/* Right: Navigation Links (Spans 7 columns on desktop) */}
           <div className="col-span-full lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
-            {/* Services */}
+            {/* Integrations */}
             <div>
-              <h3 className="text-xs uppercase tracking-widest text-white/40 mb-4">Services</h3>
+              <h3 className="text-xs uppercase tracking-widest text-white/40 mb-4">Integrations</h3>
               <ul className="space-y-3">
                 <li>
                   <a
-                    href="#services"
+                    href="#"
                     className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
                   >
-                    AI Strategy
+                    Notion
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
@@ -46,10 +46,10 @@ export default function Footer() {
                 </li>
                 <li>
                   <a
-                    href="#services"
+                    href="#"
                     className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
                   >
-                    UX for AI
+                    Gmail
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
@@ -60,10 +60,38 @@ export default function Footer() {
                 </li>
                 <li>
                   <a
-                    href="#services"
+                    href="#"
                     className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
                   >
-                    Memory Systems
+                    Google Meet
+                    <span
+                      className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                      style={{
+                        background: GRADIENTS.primary,
+                      }}
+                    />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
+                  >
+                    Google Docs
+                    <span
+                      className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                      style={{
+                        background: GRADIENTS.primary,
+                      }}
+                    />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
+                  >
+                    Google Sheets
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
