@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ReactElement } from "react";
 import { Spotlight } from "./Spotlight";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
-
-// --- Enhanced Sub-components with focus-ring removal ---
+import { toast } from "sonner";
 
 const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   ({ className, type, ...props }, ref) => {
@@ -45,7 +44,7 @@ export function WaitlistExperience(): ReactElement {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Engineering Note: Use a target date for the countdown to avoid drift
-  const targetDate = useMemo(() => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), []);
+  const [targetDate] = useState(() => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -69,10 +68,38 @@ export function WaitlistExperience(): ReactElement {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && role) {
-      setIsSubmitted(true);
-      // Logic for backend submission goes here
+
+    // Validation: Check if role is selected
+    if (!role) {
+      toast.error("Selection Required", {
+        description: "Please choose a role before joining the waitlist.",
+      });
+      return;
     }
+
+    // Validation: Check if email is provided
+    if (!email) {
+      toast.error("Email Required", {
+        description: "Please enter your email address to continue.",
+      });
+      return;
+    }
+
+    // Validation: Check if email format is valid
+    if (!email.includes("@") || !email.includes(".")) {
+      toast.error("Invalid Email", {
+        description: "Please enter a valid email address (e.g., tech@sidekick.ai).",
+      });
+      return;
+    }
+
+    // Success: Submit the form
+    setIsSubmitted(true);
+    toast.success("Welcome to the future", {
+      description: "You've been added to the waitlist. We'll reach out soon.",
+    });
+
+    // Logic for backend submission goes here
   };
 
   return (
@@ -111,7 +138,7 @@ export function WaitlistExperience(): ReactElement {
 
                 <form onSubmit={handleSubmit} className="space-y-4 mb-8">
                   {/* Role Dropdown - Cinematic Smooth Feel with No Persistent Focus */}
-                  <Select onValueChange={setRole} required>
+                  <Select onValueChange={setRole}>
                     <SelectTrigger className="w-full bg-white/[0.05] border-white/10 text-white h-12 rounded-xl">
                       <SelectValue placeholder="What is your role?" />
                     </SelectTrigger>
@@ -136,11 +163,11 @@ export function WaitlistExperience(): ReactElement {
 
                   <div className="flex flex-col gap-3">
                     <Input
-                      type="email"
+                      type="text"
                       placeholder="tech@sidekick.ai"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      required
+                      autoComplete="off"
                     />
                     <Button type="submit" className="w-full">
                       Get Notified
