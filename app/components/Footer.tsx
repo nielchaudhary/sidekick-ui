@@ -5,124 +5,179 @@ export default function Footer() {
 
   return (
     <footer id="contact" className="relative py-24 md:py-32">
-      {/* Top Border */}
-      <div className="border-t border-gray-800"></div>
+      {/* Top Border - Subtle gradient fade */}
+      <div className="border-t border-white/[0.05]"></div>
 
       {/* Footer Content */}
-      <div className="max-w-8xl mx-auto px-6 pt-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-6 lg:mb-10 2xl:mb-12">
-          {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
-            <div className="font-medium text-lg mb-2 lg:mb-3 2xl:mb-4">Sidekick</div>
-            <p className="text-sm text-[var(--text-secondary)] max-w-xs">
-              Intelligent memory for people who can&apos;t afford to forget.{" "}
-            </p>
+      <div className="max-w-7xl mx-auto px-6 pt-16">
+        <div className="grid grid-cols-12 gap-y-12 lg:gap-y-0 gap-x-8 mb-16">
+          {/* Left: Brand Identity (Spans 5 columns on desktop) */}
+          <div className="col-span-full lg:col-span-5 flex flex-col justify-between">
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight">Sidekick</h2>
+              <p className="mt-4 text-sm text-white/60 max-w-[280px] leading-relaxed">
+                Intelligent memory for people who can&apos;t afford to forget.
+              </p>
+              <div className="mt-4 text-sm text-white/40">
+                &copy; {currentYear} Sidekick. All rights reserved.
+              </div>
+            </div>
           </div>
 
-          {/* Services */}
-          <div>
-            <div className="label mb-2 lg:mb-3 2xl:mb-4">Services</div>
-            <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              <li>
-                <a href="#services" className="hover:text-white transition-colors">
-                  Product Design
-                </a>
-              </li>
-              <li>
-                <a href="#services" className="hover:text-white transition-colors">
-                  App Development
-                </a>
-              </li>
-              <li>
-                <a href="#services" className="hover:text-white transition-colors">
-                  AI Integration
-                </a>
-              </li>
-              <li>
-                <a href="#services" className="hover:text-white transition-colors">
-                  Landing Pages
-                </a>
-              </li>
-            </ul>
-          </div>
+          {/* Right: Navigation Links (Spans 7 columns on desktop) */}
+          <div className="col-span-full lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+            {/* Services */}
+            <div>
+              <h3 className="text-xs uppercase tracking-widest text-white/40 mb-4">Services</h3>
+              <ul className="space-y-3">
+                <li>
+                  <a
+                    href="#services"
+                    className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
+                  >
+                    AI Strategy
+                    <span
+                      className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                      style={{
+                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                      }}
+                    />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#services"
+                    className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
+                  >
+                    UX for AI
+                    <span
+                      className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                      style={{
+                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                      }}
+                    />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#services"
+                    className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
+                  >
+                    Memory Systems
+                    <span
+                      className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                      style={{
+                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                      }}
+                    />
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-          {/* Company */}
-          <div>
-            <div className="label mb-2 lg:mb-3 2xl:mb-4">Company</div>
-            <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              <li>
-                <a href="#services" className="hover:text-white transition-colors">
-                  About
-                </a>
-              </li>
+            {/* Company */}
+            <div>
+              <h3 className="text-xs uppercase tracking-widest text-white/40 mb-4">Company</h3>
+              <ul className="space-y-3">
+                <li>
+                  <a
+                    href="#about"
+                    className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
+                  >
+                    About
+                    <span
+                      className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                      style={{
+                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                      }}
+                    />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#pricing"
+                    className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
+                  >
+                    Pricing
+                    <span
+                      className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                      style={{
+                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                      }}
+                    />
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-              <li>
-                <a href="#pricing" className="hover:text-white transition-colors">
-                  Pricing
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Connect */}
-          <div>
-            <div className="label mb-2 lg:mb-3 2xl:mb-4">Connect</div>
-            <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              <li>
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
-                >
-                  Twitter / X
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
-                >
-                  LinkedIn
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
-                >
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a href="mailto:hello@runtimelabs.dev" className="hover:text-white transition-colors">
-                  Email
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Border */}
-
-      {/* Bottom Bar */}
-      <div className="max-w-8xl mx-auto px-6 pt-8">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-sm text-[var(--text-secondary)]">
-            &copy; {currentYear} Sidekick. All rights reserved.
-          </div>
-          <div className="flex gap-6 text-sm text-[var(--text-secondary)]">
-            <a href="#" className="hover:text-white transition-colors">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Terms of Service
-            </a>
+            {/* Connect */}
+            <div>
+              <h3 className="text-xs uppercase tracking-widest text-white/40 mb-4">Connect</h3>
+              <ul className="space-y-3">
+                <li>
+                  <a
+                    href="https://twitter.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
+                  >
+                    Twitter / X
+                    <span
+                      className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                      style={{
+                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                      }}
+                    />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://linkedin.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
+                  >
+                    LinkedIn
+                    <span
+                      className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                      style={{
+                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                      }}
+                    />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
+                  >
+                    GitHub
+                    <span
+                      className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                      style={{
+                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                      }}
+                    />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="mailto:hello@sidekick.ai"
+                    className="relative text-sm text-white/60 hover:text-white transition-colors duration-200 inline-block group"
+                  >
+                    Email
+                    <span
+                      className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
+                      style={{
+                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                      }}
+                    />
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

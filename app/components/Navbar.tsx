@@ -24,16 +24,7 @@ export default function Navbar() {
     >
       <nav className="flex items-center justify-between h-16 px-6 lg:px-8 mx-auto max-w-7xl">
         {/* Logo - Ghost White */}
-        <div
-          className="font-sans text-xl tracking-wide"
-          style={{
-            color: "#FFFFFF",
-            fontFamily: '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
-            fontWeight: 300,
-          }}
-        >
-          Sidekick
-        </div>
+        <div className="font-sans text-xl tracking-tight font-semibold">Sidekick</div>
 
         {/* Navigation Links - hidden on scroll */}
         <div
