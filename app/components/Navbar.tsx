@@ -19,16 +19,18 @@ export default function Navbar() {
       className="sticky top-0 z-50 w-full box-border transition-all duration-350 ease-[cubic-bezier(0.33,1,0.68,1)]"
       style={{
         backgroundColor: "#000000",
-        borderBottom: isScrolled
-          ? "1px solid rgba(255, 255, 255, 0.12)"
-          : "1px solid transparent",
+        borderBottom: isScrolled ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid transparent",
       }}
     >
       <nav className="flex items-center justify-between h-16 px-6 lg:px-8 mx-auto max-w-7xl">
         {/* Logo - Ghost White */}
         <div
           className="font-sans text-xl tracking-wide"
-          style={{ color: "#FFFFFF" }}
+          style={{
+            color: "#FFFFFF",
+            fontFamily: '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+            fontWeight: 300,
+          }}
         >
           Sidekick
         </div>
@@ -40,11 +42,7 @@ export default function Navbar() {
           }`}
         >
           {["Agents", "Resources", "Pricing"].map((label) => (
-            <a
-              key={label}
-              href="#"
-              className="relative font-sans font-normal text-sm leading-5 text-white group"
-            >
+            <a key={label} href="#" className="relative font-sans font-normal text-sm leading-5 text-white group">
               {label}
               <span
                 className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"

@@ -58,7 +58,7 @@ export default function FeatureSwitcher() {
   const activeFeature = features[activeIndex];
 
   return (
-    <section id="features" className="relative py-24 px-6 lg:px-8 bg-black overflow-hidden">
+    <section id="features" className="relative py-24 px-6 lg:px-8 overflow-hidden">
       {/* Global Noise Overlay - prevents flatness on OLED displays */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.015]"
@@ -72,8 +72,8 @@ export default function FeatureSwitcher() {
         <div
           className="relative flex flex-wrap justify-center gap-2 mb-8 p-1.5 rounded-2xl mx-auto w-fit"
           style={{
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            background: 'rgba(255, 255, 255, 0.02)',
+            border: "1px solid rgba(255, 255, 255, 0.15)",
+            background: "rgba(255, 255, 255, 0.02)",
           }}
         >
           {features.map((feature, index) => {
@@ -84,17 +84,17 @@ export default function FeatureSwitcher() {
                 onClick={() => setActiveIndex(index)}
                 className="relative px-5 py-2 text-xs font-semibold tracking-[0.08em] rounded-xl overflow-hidden transition-colors duration-200"
                 style={{
-                  color: isActive ? '#FFFFFF' : '#71717A',
-                  WebkitFontSmoothing: 'antialiased',
+                  color: isActive ? "#FFFFFF" : "#71717A",
+                  WebkitFontSmoothing: "antialiased",
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.color = '#FFFFFF';
+                    e.currentTarget.style.color = "#FFFFFF";
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive) {
-                    e.currentTarget.style.color = '#71717A';
+                    e.currentTarget.style.color = "#71717A";
                   }
                 }}
               >
@@ -104,8 +104,8 @@ export default function FeatureSwitcher() {
                     layoutId="activeTabBackground"
                     className="absolute inset-0 rounded-xl"
                     style={{
-                      background: 'linear-gradient(90deg, #B34B71 0%, #8B2D5A 50%, #4A0404 100%)',
-                      borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: "linear-gradient(90deg, #B34B71 0%, #8B2D5A 50%, #4A0404 100%)",
+                      borderTop: "1px solid rgba(255, 255, 255, 0.2)",
                     }}
                     transition={{
                       type: "spring",
@@ -120,7 +120,7 @@ export default function FeatureSwitcher() {
                     className="absolute inset-0 pointer-events-none opacity-[0.15] mix-blend-soft-light"
                     style={{
                       backgroundImage: `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAACpJREFUGFdjZEADJgY0QCSTBaYByicmJmByyAImBl0AXQCmAsYA0wByAAsvBg8f889VAAAAAElFTkSuQmCC")`,
-                      backgroundRepeat: 'repeat',
+                      backgroundRepeat: "repeat",
                     }}
                     initial={{ scale: 0.98 }}
                     animate={{ scale: [0.98, 1, 0.98] }}
@@ -130,7 +130,7 @@ export default function FeatureSwitcher() {
                 <span
                   className="relative z-10"
                   style={{
-                    textShadow: isActive ? '0 1px 2px rgba(0,0,0,0.3)' : 'none'
+                    textShadow: isActive ? "0 1px 2px rgba(0,0,0,0.3)" : "none",
                   }}
                 >
                   {feature.label}
@@ -152,111 +152,106 @@ export default function FeatureSwitcher() {
           >
             {/* Card container */}
             <div className="relative rounded-xl p-3 md:p-8">
-                {/* Internal Card with visible border matching dotted grid */}
-                <div
-                  className="relative rounded-xl overflow-hidden"
-                  style={{
-                    background: "rgba(0, 0, 0, 0.4)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 40px rgba(0, 0, 0, 0.3)",
-                  }}
-                >
-              <div className="flex flex-col md:flex-row min-h-[380px]">
-                {/* Left: Content (40%) */}
-                <div className="w-full md:w-[40%] p-8 md:p-12 flex flex-col justify-center">
-                  {/* Top dotted line - subtle white */}
-                  <div
-                    className="w-full h-px mb-6"
-                    style={{
-                      backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
-                      backgroundSize: "8px 1px",
-                      backgroundRepeat: "repeat-x",
-                    }}
-                  />
+              {/* Internal Card with visible border matching dotted grid */}
+              <div
+                className="relative rounded-3xl overflow-hidden border border-white/20"
+              >
+                <div className="flex flex-col md:flex-row min-h-[380px]">
+                  {/* Left: Content (40%) */}
+                  <div className="w-full md:w-[40%] p-8 md:p-12 flex flex-col justify-center">
+                    {/* Top dotted line - subtle white */}
+                    <div
+                      className="w-full h-px mb-6"
+                      style={{
+                        backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
+                        backgroundSize: "8px 1px",
+                        backgroundRepeat: "repeat-x",
+                      }}
+                    />
 
-                  <motion.h3
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="font-headline text-3xl md:text-4xl text-white mb-4"
-                    style={{
-                      letterSpacing: "-0.04em",
-                      WebkitFontSmoothing: "antialiased",
-                    }}
-                  >
-                    {activeFeature.title.toUpperCase()}
-                  </motion.h3>
-                  {activeFeature.description && (
-                    <motion.p
+                    <motion.h3
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="text-lg leading-relaxed mb-6"
-                      style={{ color: "#A1A1AA" }}
+                      transition={{ delay: 0.1 }}
+                      className="font-headline text-3xl md:text-4xl text-white mb-4"
+                      style={{
+                        letterSpacing: "-0.04em",
+                        WebkitFontSmoothing: "antialiased",
+                      }}
                     >
-                      {activeFeature.description}
-                    </motion.p>
-                  )}
-
-                  {/* Feature Points */}
-                  {activeFeature.points && (
-                    <>
-                      <motion.ul
+                      {activeFeature.title.toUpperCase()}
+                    </motion.h3>
+                    {activeFeature.description && (
+                      <motion.p
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="space-y-4"
+                        transition={{ delay: 0.2 }}
+                        className="text-lg leading-relaxed mb-6"
+                        style={{ color: "#A1A1AA" }}
                       >
-                        {activeFeature.points.map((point: string, idx: number) => (
-                          <motion.li
-                            key={idx}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.3 + idx * 0.1 }}
-                            className="flex items-start gap-2"
-                          >
-                            <span className="text-[#4A0404] font-bold text-lg leading-none mt-px">|</span>
-                            <span
-                              className="font-sans text-sm md:text-base tracking-wide leading-relaxed"
-                              style={{ color: "#A1A1AA" }}
+                        {activeFeature.description}
+                      </motion.p>
+                    )}
+
+                    {/* Feature Points */}
+                    {activeFeature.points && (
+                      <>
+                        <motion.ul
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3 }}
+                          className="space-y-4"
+                        >
+                          {activeFeature.points.map((point: string, idx: number) => (
+                            <motion.li
+                              key={idx}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.3 + idx * 0.1 }}
+                              className="flex items-start gap-2"
                             >
-                              {point}
-                            </span>
-                          </motion.li>
-                        ))}
-                      </motion.ul>
+                              <span className="text-[#6A2424] font-bold text-lg leading-none mt-px">|</span>
+                              <span
+                                className="font-sans text-sm md:text-base tracking-wide leading-relaxed"
+                                style={{ color: "#A1A1AA" }}
+                              >
+                                {point}
+                              </span>
+                            </motion.li>
+                          ))}
+                        </motion.ul>
 
-                      {/* Bottom dotted line - subtle white */}
-                      <div
-                        className="w-full h-px mt-6"
-                        style={{
-                          backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
-                          backgroundSize: "8px 1px",
-                          backgroundRepeat: "repeat-x",
-                        }}
-                      />
-                    </>
-                  )}
-                </div>
+                        {/* Bottom dotted line - subtle white */}
+                        <div
+                          className="w-full h-px mt-6"
+                          style={{
+                            backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
+                            backgroundSize: "8px 1px",
+                            backgroundRepeat: "repeat-x",
+                          }}
+                        />
+                      </>
+                    )}
+                  </div>
 
-                {/* Dashed Divider - subtle white for dark theme */}
-                <div className="hidden md:block w-px relative">
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,0.15) 50%, transparent 50%)",
-                      backgroundSize: "1px 8px",
-                      backgroundRepeat: "repeat-y",
-                    }}
-                  />
-                </div>
+                  {/* Dashed Divider - subtle white for dark theme */}
+                  <div className="hidden md:block w-px relative">
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,0.15) 50%, transparent 50%)",
+                        backgroundSize: "1px 8px",
+                        backgroundRepeat: "repeat-y",
+                      }}
+                    />
+                  </div>
 
-                {/* Right: Animation Area (60%) */}
-                <div className="w-full md:w-[60%] flex items-center justify-center p-6 md:p-8">
-                  <activeFeature.icon />
+                  {/* Right: Animation Area (60%) */}
+                  <div className="w-full md:w-[60%] flex items-center justify-center p-6 md:p-8">
+                    <activeFeature.icon />
+                  </div>
                 </div>
               </div>
-                </div>
             </div>
           </motion.div>
         </AnimatePresence>
@@ -267,26 +262,23 @@ export default function FeatureSwitcher() {
             <button
               key={index}
               onClick={() => setActiveIndex(index)}
-              className={`h-1 rounded-full ${
-                activeIndex === index ? "w-8" : "w-2"
-              }`}
+              className={`h-1 rounded-full ${activeIndex === index ? "w-8" : "w-2"}`}
               style={{
-                transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
-                background: activeIndex === index
-                  ? 'linear-gradient(90deg, #B34B71 0%, #4A0404 100%)'
-                  : 'rgba(179, 75, 113, 0.3)',
-                boxShadow: activeIndex === index
-                  ? '0 0 10px rgba(179, 75, 113, 0.5)'
-                  : 'none',
+                transition: "all 250ms cubic-bezier(0.4, 0, 0.2, 1)",
+                background:
+                  activeIndex === index
+                    ? "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)"
+                    : "rgba(179, 75, 113, 0.3)",
+                boxShadow: activeIndex === index ? "0 0 10px rgba(179, 75, 113, 0.5)" : "none",
               }}
               onMouseEnter={(e) => {
                 if (activeIndex !== index) {
-                  e.currentTarget.style.background = 'rgba(179, 75, 113, 0.5)';
+                  e.currentTarget.style.background = "rgba(179, 75, 113, 0.5)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (activeIndex !== index) {
-                  e.currentTarget.style.background = 'rgba(179, 75, 113, 0.3)';
+                  e.currentTarget.style.background = "rgba(179, 75, 113, 0.3)";
                 }
               }}
             />
@@ -770,138 +762,138 @@ function MemoryAnimation() {
                   borderRadius: "24px",
                 }}
               >
-              {/* Chat Header */}
-              <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100/80">
-                <motion.div
-                  className="w-2 h-2 rounded-full bg-emerald-500"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              </div>
+                {/* Chat Header */}
+                <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100/80">
+                  <motion.div
+                    className="w-2 h-2 rounded-full bg-emerald-500"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </div>
 
-              {/* Messages Container */}
-              <div className="flex-1 p-4 space-y-3 min-h-[200px] overflow-hidden">
-                {/* User Message - iOS style bubble */}
-                <AnimatePresence>
-                  {showUserMessage && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.85, x: 20, y: 5 }}
-                      animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.5, y: -20 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 25,
-                        duration: 0.5,
-                      }}
-                      className="flex justify-end"
-                    >
+                {/* Messages Container */}
+                <div className="flex-1 p-4 space-y-3 min-h-[200px] overflow-hidden">
+                  {/* User Message - iOS style bubble */}
+                  <AnimatePresence>
+                    {showUserMessage && (
                       <motion.div
-                        className="px-3.5 py-2 rounded-2xl rounded-br-md max-w-[180px]"
-                        style={{ background: "#1a1a1a" }}
-                      >
-                        <span className="text-[11px] text-white font-medium leading-relaxed">{userMessage}</span>
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* AI Response - Typewriter effect */}
-                <AnimatePresence>
-                  {showAiResponse && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0, scale: 0.5, y: -20 }}
-                      transition={{ duration: 0.5, ease: "easeOut" }}
-                      className="flex justify-start"
-                    >
-                      <motion.div
-                        className="relative flex items-start gap-2 px-3 py-2.5 rounded-2xl max-w-[220px] overflow-hidden"
-                        style={{
-                          background: "#000000",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                        initial={{ opacity: 0, scale: 0.85, x: 20, y: 5 }}
+                        animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.5, y: -20 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 25,
+                          duration: 0.5,
                         }}
+                        className="flex justify-end"
                       >
-                        {/* Typewriter Text Response */}
-                        <TypewriterText
-                          text={aiResponse}
-                          className="text-[11px] text-white font-medium leading-relaxed"
-                        />
+                        <motion.div
+                          className="px-3.5 py-2 rounded-2xl rounded-br-md max-w-[180px]"
+                          style={{ background: "#1a1a1a" }}
+                        >
+                          <span className="text-[11px] text-white font-medium leading-relaxed">{userMessage}</span>
+                        </motion.div>
                       </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Input Bar */}
-              <motion.div
-                className="px-3 pb-3"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <motion.div
-                  className="flex items-center gap-2 px-3 py-2 rounded-full"
-                  style={{
-                    background: "rgba(255, 255, 255, 0.5)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(0, 0, 0, 0.08)",
-                  }}
-                  animate={{
-                    borderColor: inputText ? "rgba(0, 0, 0, 0.2)" : "rgba(0, 0, 0, 0.08)",
-                  }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {/* Text Input Area */}
-                  <div className="flex-1 min-h-[20px] flex items-center overflow-hidden">
-                    {inputText ? (
-                      <span className="text-[11px] text-gray-800 font-medium whitespace-nowrap">
-                        {inputText}
-                        <motion.span
-                          className="inline-block w-[2px] h-[12px] bg-gray-800 ml-[1px] align-middle"
-                          animate={{ opacity: [1, 0, 1] }}
-                          transition={{ duration: 0.53, repeat: Infinity, ease: "linear" }}
-                        />
-                      </span>
-                    ) : (
-                      <span className="text-[11px] text-gray-400 font-medium">Write your message...</span>
                     )}
-                  </div>
+                  </AnimatePresence>
 
-                  {/* Send Button */}
-                  <motion.button
-                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                  {/* AI Response - Typewriter effect */}
+                  <AnimatePresence>
+                    {showAiResponse && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0, scale: 0.5, y: -20 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        className="flex justify-start"
+                      >
+                        <motion.div
+                          className="relative flex items-start gap-2 px-3 py-2.5 rounded-2xl max-w-[220px] overflow-hidden"
+                          style={{
+                            background: "#000000",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                          }}
+                        >
+                          {/* Typewriter Text Response */}
+                          <TypewriterText
+                            text={aiResponse}
+                            className="text-[11px] text-white font-medium leading-relaxed"
+                          />
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Input Bar */}
+                <motion.div
+                  className="px-3 pb-3"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <motion.div
+                    className="flex items-center gap-2 px-3 py-2 rounded-full"
                     style={{
-                      background: inputText ? "#1a1a1a" : "#e5e5e5",
+                      background: "rgba(255, 255, 255, 0.5)",
+                      backdropFilter: "blur(10px)",
+                      border: "1px solid rgba(0, 0, 0, 0.08)",
                     }}
                     animate={{
-                      background: inputText ? "#1a1a1a" : "#e5e5e5",
-                      scale: inputText ? 1 : 0.95,
+                      borderColor: inputText ? "rgba(0, 0, 0, 0.2)" : "rgba(0, 0, 0, 0.08)",
                     }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke={inputText ? "white" : "#9ca3af"}
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <line x1="12" y1="19" x2="12" y2="5" />
-                      <polyline points="5 12 12 5 19 12" />
-                    </svg>
-                  </motion.button>
+                    {/* Text Input Area */}
+                    <div className="flex-1 min-h-[20px] flex items-center overflow-hidden">
+                      {inputText ? (
+                        <span className="text-[11px] text-gray-800 font-medium whitespace-nowrap">
+                          {inputText}
+                          <motion.span
+                            className="inline-block w-[2px] h-[12px] bg-gray-800 ml-[1px] align-middle"
+                            animate={{ opacity: [1, 0, 1] }}
+                            transition={{ duration: 0.53, repeat: Infinity, ease: "linear" }}
+                          />
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-gray-400 font-medium">Write your message...</span>
+                      )}
+                    </div>
 
-                  {/* Mic Icon */}
-                  <div className="text-gray-400">
-                    <MicIcon isActive={!inputText && phase === "input"} />
-                  </div>
+                    {/* Send Button */}
+                    <motion.button
+                      className="w-6 h-6 rounded-full flex items-center justify-center"
+                      style={{
+                        background: inputText ? "#1a1a1a" : "#e5e5e5",
+                      }}
+                      animate={{
+                        background: inputText ? "#1a1a1a" : "#e5e5e5",
+                        scale: inputText ? 1 : 0.95,
+                      }}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    >
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke={inputText ? "white" : "#9ca3af"}
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="12" y1="19" x2="12" y2="5" />
+                        <polyline points="5 12 12 5 19 12" />
+                      </svg>
+                    </motion.button>
+
+                    {/* Mic Icon */}
+                    <div className="text-gray-400">
+                      <MicIcon isActive={!inputText && phase === "input"} />
+                    </div>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
               </motion.div>
             </motion.div>
           )}
