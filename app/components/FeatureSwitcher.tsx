@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { delay } from "@/lib/utils";
 
 const features = [
   {
@@ -351,19 +352,20 @@ function TypewriterText({
 }
 
 // Bento Grid Background with gravitational well effect
-function BentoGrid({ isActive }: { isActive: boolean }) {
-  const gridSize = 20;
-  const dots: { x: number; y: number; distance: number }[] = [];
-
-  // Generate grid dots
-  for (let x = 0; x <= 340; x += gridSize) {
-    for (let y = 0; y <= 420; y += gridSize) {
-      const centerX = 170;
-      const centerY = 210;
-      const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-      dots.push({ x, y, distance });
+const BentoGrid = memo(function BentoGrid({ isActive }: { isActive: boolean }) {
+  const dots = useMemo(() => {
+    const gridSize = 20;
+    const result: { x: number; y: number; distance: number }[] = [];
+    for (let x = 0; x <= 340; x += gridSize) {
+      for (let y = 0; y <= 420; y += gridSize) {
+        const centerX = 170;
+        const centerY = 210;
+        const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+        result.push({ x, y, distance });
+      }
     }
-  }
+    return result;
+  }, []);
 
   return (
     <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 340 420">
@@ -399,7 +401,7 @@ function BentoGrid({ isActive }: { isActive: boolean }) {
       })}
     </svg>
   );
-}
+});
 
 // Background Vector Neural Pathways - Animated during "thinking" state
 function NeuralPathwaysBackground({ isActive }: { isActive: boolean }) {
@@ -564,9 +566,6 @@ function MemoryAnimation() {
   const [inputText, setInputText] = useState("");
   const [showUserMessage, setShowUserMessage] = useState(false);
   const [showAiResponse, setShowAiResponse] = useState(false);
-
-  // Memory node reference position (center of the card)
-  const memoryNodeRef = useRef<HTMLDivElement>(null);
 
   // The message content
   const userMessage = "need to close deal today";
@@ -930,7 +929,6 @@ function MemoryAnimation() {
           {phase === "storage" && (
             <motion.div
               key="storage-node"
-              ref={memoryNodeRef}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
@@ -1163,9 +1161,6 @@ function MemoryAnimation() {
     </div>
   );
 }
-
-// Utility delay function
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function ContextAnimation() {
   return (

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Database } from "lucide-react";
+import { delay } from "@/lib/utils";
 
 type AppPhase =
   | "idle"
@@ -44,7 +45,7 @@ const MEMORY_SOURCES: MemorySource[] = [
 ];
 
 const DEMO_CONVERSATION = {
-  userMessage: "What were the key decisions from my Pfizer meetings?",
+  userMessage: "What were the last month's key decisions from my Sidekick meetings?",
   assistantBullets: [
     { text: "Budget approved at ", keyword: "$2.4M", suffix: " for Q2 expansion" },
     { text: "API blocker resolved by switching to ", keyword: "new SDK", suffix: "" },
@@ -52,8 +53,6 @@ const DEMO_CONVERSATION = {
   ],
   sourcesToActivate: ["sidekick-db", "notion", "slack", "gmail", "sheets"],
 };
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Brand Logo Components
 function NotionLogo() {
@@ -180,53 +179,6 @@ function hexToRgb(hex: string): string {
   return result
     ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
     : "255, 255, 255";
-}
-
-// Typewriter effect component
-function TypewriterText({ text, onComplete }: { text: string; onComplete?: () => void }) {
-  const [displayedText, setDisplayedText] = useState("");
-  const [isComplete, setIsComplete] = useState(false);
-
-  useEffect(() => {
-    let index = 0;
-    setDisplayedText("");
-    setIsComplete(false);
-
-    const typeNextChar = () => {
-      if (index < text.length) {
-        setDisplayedText(text.slice(0, index + 1));
-        index++;
-        const char = text[index - 1];
-        const baseDelay = 20;
-        const charDelay =
-          char === " "
-            ? baseDelay * 0.5
-            : [".", ",", "!", "?"].includes(char)
-              ? baseDelay * 2.5
-              : baseDelay + Math.random() * 8;
-        setTimeout(typeNextChar, charDelay);
-      } else {
-        setIsComplete(true);
-        onComplete?.();
-      }
-    };
-
-    const timer = setTimeout(typeNextChar, 100);
-    return () => clearTimeout(timer);
-  }, [text, onComplete]);
-
-  return (
-    <span>
-      {displayedText}
-      {!isComplete && (
-        <motion.span
-          className="inline-block w-[2px] h-[12px] bg-white/80 ml-[1px] align-middle"
-          animate={{ opacity: [1, 0, 1] }}
-          transition={{ duration: 0.5, repeat: Infinity }}
-        />
-      )}
-    </span>
-  );
 }
 
 // Gradient keyword component
