@@ -13,7 +13,7 @@ const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLI
     return (
       <input
         type={type}
-        className={`flex h-12 w-full rounded-xl border border-white/20 bg-black/40 px-4 py-2 text-sm text-white placeholder:text-white/50 backdrop-blur-sm transition-all outline-none focus:border-white/40 focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+        className={`flex h-12 w-full rounded-xl border border-white/20 bg-black/40 px-4 py-2 text-sm text-white placeholder:text-white/50 backdrop-blur-sm transition-all duration-500 ease-out outline-none focus:border-white/40 hover:border-white/30 hover:bg-black/50 focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
         ref={ref}
         {...props}
       />
@@ -26,7 +26,7 @@ const Button = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HT
   ({ className, children, ...props }, ref) => {
     return (
       <button
-        className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 bg-black border border-white/10 text-white hover:bg-white/5 hover:border-white/40 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 h-12 px-6 cursor-pointer outline-none focus:outline-none focus:ring-0 ${className}`}
+        className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-500 ease-out disabled:pointer-events-none disabled:opacity-50 bg-black border border-white/10 text-white hover:bg-white/5 hover:border-white/40 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 h-12 px-6 cursor-pointer outline-none focus:outline-none focus:ring-0 ${className}`}
         ref={ref}
         {...props}
       >
@@ -110,18 +110,27 @@ export function WaitlistExperience(): ReactElement {
                 </header>
 
                 <form onSubmit={handleSubmit} className="space-y-4 mb-8">
-                  {/* Role Dropdown - Focus on "Smooth Feel" and No Outline */}
+                  {/* Role Dropdown - Cinematic Smooth Feel with No Persistent Focus */}
                   <Select onValueChange={setRole} required>
-                    <SelectTrigger className="w-full bg-white/[0.05] border-white/10 text-white h-12 rounded-xl focus:ring-0 focus:outline-none outline-none border transition-colors hover:border-white/30">
+                    <SelectTrigger className="w-full bg-white/[0.05] border-white/10 text-white h-12 rounded-xl">
                       <SelectValue placeholder="What is your role?" />
                     </SelectTrigger>
-                    {/* The SelectContent needs to handle the Framer Motion animation internally or via CSS */}
-                    <SelectContent className="bg-[#0A0A0A] border-white/10 text-white rounded-xl shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-                      <SelectItem value="engineer">Software Engineer</SelectItem>
-                      <SelectItem value="pm">Product Manager</SelectItem>
-                      <SelectItem value="executive">Executive</SelectItem>
-                      <SelectItem value="founder">Founder</SelectItem>
-                      <SelectItem value="student">Student</SelectItem>
+                    <SelectContent className="bg-[#0A0A0A] border-white/10 text-white rounded-xl shadow-2xl">
+                      <SelectItem value="engineer" className="hover:bg-white/5 focus:bg-white/10">
+                        Software Engineer
+                      </SelectItem>
+                      <SelectItem value="pm" className="hover:bg-white/5 focus:bg-white/10">
+                        Product Manager
+                      </SelectItem>
+                      <SelectItem value="executive" className="hover:bg-white/5 focus:bg-white/10">
+                        Executive
+                      </SelectItem>
+                      <SelectItem value="founder" className="hover:bg-white/5 focus:bg-white/10">
+                        Founder
+                      </SelectItem>
+                      <SelectItem value="student" className="hover:bg-white/5 focus:bg-white/10">
+                        Student
+                      </SelectItem>
                     </SelectContent>
                   </Select>
 
