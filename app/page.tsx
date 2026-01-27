@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar";
 import NexusHero from "./components/NexusHero";
 import FeatureSwitcher from "./components/FeatureSwitcher";
 import { WaitlistExperience } from "./components/WaitlistExperience";
+import Footer from "./components/Footer";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <div className="mb-8 sm:mb-12 md:mb-16 lg:mb-20 xl:mb-24 2xl:mb-32">
         <WaitlistExperience />
       </div>
+      <Footer />
     </main>
   );
 }
