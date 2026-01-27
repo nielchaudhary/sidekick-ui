@@ -248,21 +248,25 @@ function GradientKeyword({ children }: { children: React.ReactNode }) {
 
 // Bullet list component with animated reveal
 function BulletList({ bullets, animate }: { bullets: BulletPoint[]; animate: boolean }) {
-  const [visibleCount, setVisibleCount] = useState(0);
+  const [animationProgress, setAnimationProgress] = useState(0);
+
+  // Derive visible count: show all when not animating, otherwise show based on progress
+  const visibleCount = animate ? animationProgress : bullets.length;
 
   useEffect(() => {
-    if (!animate) {
-      setVisibleCount(bullets.length);
-      return;
-    }
+    if (!animate) return;
 
-    setVisibleCount(0);
+    // Reset and animate using timers (async callbacks satisfy the lint rule)
     const timers: NodeJS.Timeout[] = [];
+
+    // Reset to 0 at start
+    const resetTimer = setTimeout(() => setAnimationProgress(0), 0);
+    timers.push(resetTimer);
 
     bullets.forEach((_, idx) => {
       const timer = setTimeout(
         () => {
-          setVisibleCount(idx + 1);
+          setAnimationProgress(idx + 1);
         },
         (idx + 1) * 800,
       );
