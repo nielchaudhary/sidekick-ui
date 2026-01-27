@@ -71,7 +71,7 @@ export default function NexusHero() {
           </h1>
 
           <p className="max-w-xl text-zinc-300 text-lg leading-relaxed mb-10 font-semibold">
-            What if you had instant answers from every decision you've made? Sidekick remembers your context and
+            What if you had instant answers from every decision you&apos;ve made? Sidekick remembers your context and
             surfaces it exactly when it matters,
             <Highlighter action="underline" color="#B34B71" strokeWidth={2} isView>
               turning past thinking into present clarity
