@@ -154,9 +154,7 @@ export default function FeatureSwitcher() {
             {/* Card container */}
             <div className="relative rounded-xl p-3 md:p-8">
               {/* Internal Card with visible border matching dotted grid */}
-              <div
-                className="relative rounded-3xl overflow-hidden border border-white/20"
-              >
+              <div className="relative rounded-3xl overflow-hidden border border-white/20">
                 <div className="flex flex-col md:flex-row min-h-[380px]">
                   {/* Left: Content (40%) */}
                   <div className="w-full md:w-[40%] p-8 md:p-12 flex flex-col justify-center">

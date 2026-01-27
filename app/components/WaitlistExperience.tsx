@@ -1,21 +1,11 @@
 "use client";
 
 import React from "react";
-
-import {
-  Scene,
-  PerspectiveCamera,
-  WebGLRenderer,
-  QuadraticBezierCurve3,
-  Vector3,
-  TubeGeometry,
-  ShaderMaterial,
-  Mesh,
-  AdditiveBlending,
-  DoubleSide,
-} from "three";
+import { motion } from "framer-motion";
 import type { ReactElement } from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { Spotlight } from "./Spotlight";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 
 const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   ({ className, type, ...props }, ref) => {
@@ -47,14 +37,8 @@ const Button = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HT
 Button.displayName = "Button";
 
 export function WaitlistExperience(): ReactElement {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mountRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<Scene | null>(null);
-  const rendererRef = useRef<WebGLRenderer | null>(null);
-  const cameraRef = useRef<PerspectiveCamera | null>(null);
-  const animationIdRef = useRef<number | null>(null);
-
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState<string>("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
     days: 30,
@@ -62,180 +46,6 @@ export function WaitlistExperience(): ReactElement {
     minutes: 60,
     seconds: 60,
   });
-
-  // Three.js background effect - contained within section
-  useEffect(() => {
-    if (!mountRef.current || !containerRef.current) return;
-
-    const container = containerRef.current;
-
-    // Scene setup
-    const scene = new Scene();
-    sceneRef.current = scene;
-
-    const camera = new PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    cameraRef.current = camera;
-
-    const renderer = new WebGLRenderer({
-      antialias: true,
-      alpha: true,
-    });
-    rendererRef.current = renderer;
-
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setClearColor(0x000000, 0);
-    mountRef.current.appendChild(renderer.domElement);
-
-    // Create curved light geometry - symmetric arc
-    const curve = new QuadraticBezierCurve3(
-      new Vector3(-15, -4, 0), // Start point (bottom-left)
-      new Vector3(0, 3, 0),    // Control point (top center - apex)
-      new Vector3(15, -4, 0)   // End point (bottom-right - mirrored)
-    );
-
-    // Create tube geometry for the light streak
-    const tubeGeometry = new TubeGeometry(curve, 200, 0.8, 32, false);
-
-    // Create gradient material
-    const vertexShader = `
-      varying vec2 vUv;
-      varying vec3 vPosition;
-
-      void main() {
-        vUv = uv;
-        vPosition = position;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `;
-
-    const fragmentShader = `
-      uniform float time;
-      varying vec2 vUv;
-      varying vec3 vPosition;
-
-      void main() {
-        // Create the gradient from red/orange to purple/magenta
-        vec3 color1 = vec3(1.0, 0.2, 0.1); // Red/Orange
-        vec3 color2 = vec3(0.8, 0.1, 0.6); // Purple/Magenta
-        vec3 color3 = vec3(0.4, 0.05, 0.8); // Deep purple
-
-        // Mix colors based on UV coordinates
-        vec3 finalColor = mix(color1, color2, vUv.x);
-        finalColor = mix(finalColor, color3, vUv.x * 0.7);
-
-        // Add glow effect
-        float glow = 1.0 - abs(vUv.y - 0.5) * 2.0;
-        glow = pow(glow, 2.0);
-
-        // Add subtle animation
-        float pulse = sin(time * 2.0) * 0.1 + 0.9;
-
-        gl_FragColor = vec4(finalColor * glow * pulse, glow * 0.8);
-      }
-    `;
-
-    const material = new ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms: {
-        time: { value: 0 },
-      },
-      transparent: true,
-      blending: AdditiveBlending,
-      side: DoubleSide,
-    });
-
-    const lightStreak = new Mesh(tubeGeometry, material);
-    scene.add(lightStreak);
-
-    // Add additional glow layers for more realistic effect
-    const glowGeometry = new TubeGeometry(curve, 200, 1.5, 32, false);
-    const glowMaterial = new ShaderMaterial({
-      vertexShader,
-      fragmentShader: `
-        uniform float time;
-        varying vec2 vUv;
-        varying vec3 vPosition;
-
-        void main() {
-          vec3 color1 = vec3(1.0, 0.3, 0.2);
-          vec3 color2 = vec3(0.6, 0.2, 0.8);
-
-          vec3 finalColor = mix(color1, color2, vUv.x);
-
-          float glow = 1.0 - abs(vUv.y - 0.5) * 2.0;
-          glow = pow(glow, 4.0);
-
-          float pulse = sin(time * 1.5) * 0.05 + 0.95;
-
-          gl_FragColor = vec4(finalColor * glow * pulse, glow * 0.3);
-        }
-      `,
-      uniforms: {
-        time: { value: 0 },
-      },
-      transparent: true,
-      blending: AdditiveBlending,
-      side: DoubleSide,
-    });
-
-    const glowLayer = new Mesh(glowGeometry, glowMaterial);
-    scene.add(glowLayer);
-
-    // Position camera
-    camera.position.z = 7;
-    camera.position.y = -0.8;
-
-    // Animation loop
-    const animate = () => {
-      animationIdRef.current = requestAnimationFrame(animate);
-
-      const time = Date.now() * 0.001;
-      material.uniforms.time.value = time;
-      glowMaterial.uniforms.time.value = time;
-
-      // Subtle rotation for dynamic effect
-      lightStreak.rotation.z = Math.sin(time * 0.2) * 0.05;
-      glowLayer.rotation.z = Math.sin(time * 0.2) * 0.05;
-
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
-    // Handle resize - use container dimensions
-    const handleResize = () => {
-      if (!cameraRef.current || !rendererRef.current || !containerRef.current) return;
-
-      const width = containerRef.current.clientWidth;
-      const height = containerRef.current.clientHeight;
-
-      cameraRef.current.aspect = width / height;
-      cameraRef.current.updateProjectionMatrix();
-      rendererRef.current.setSize(width, height);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener("resize", handleResize);
-
-      if (animationIdRef.current) {
-        cancelAnimationFrame(animationIdRef.current);
-      }
-
-      if (mountRef.current && renderer.domElement) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
-
-      renderer.dispose();
-      tubeGeometry.dispose();
-      glowGeometry.dispose();
-      material.dispose();
-      glowMaterial.dispose();
-    };
-  }, []);
 
   // Countdown timer
   useEffect(() => {
@@ -268,48 +78,84 @@ export function WaitlistExperience(): ReactElement {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (email && role) {
       setIsSubmitted(true);
-      console.log("Email submitted:", email);
+      console.log("Submission:", { email, role });
     }
   };
 
   return (
-    <section
-      ref={containerRef}
-      className="relative w-full overflow-hidden py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-40"
-    >
-      {/* Three.js Background - contained within section */}
-      <div ref={mountRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }} />
+    <section className="relative w-full overflow-hidden py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-40">
+      {/* Cinematic Spotlight Background */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.8, ease: "circOut" }}
+        viewport={{ once: true, amount: 0.3 }}
+        className="absolute inset-0 z-0"
+        style={{ mixBlendMode: "screen" }}
+      >
+        <Spotlight
+          gradientFirst="radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(255, 51, 26, 0.12) 0%, rgba(204, 26, 153, 0.04) 50%, transparent 80%)"
+          gradientSecond="radial-gradient(50% 50% at 50% 50%, rgba(204, 26, 153, 0.10) 0%, rgba(102, 13, 204, 0.04) 80%, transparent 100%)"
+          gradientThird="radial-gradient(50% 50% at 50% 50%, rgba(102, 13, 204, 0.08) 0%, rgba(102, 13, 204, 0.02) 80%, transparent 100%)"
+          translateY={-200}
+          width={560}
+          height={1380}
+          smallWidth={240}
+          duration={7}
+          xOffset={100}
+        />
+      </motion.div>
 
       {/* Content Layer */}
-      <div className="relative z-10">
-        {/* Waitlist Card */}
+      <div className="relative z-20">
         <div className="flex items-center justify-center px-4">
           <div className="relative">
-            <div className="relative backdrop-blur-xl bg-black/60 border border-white/20 rounded-3xl p-6 sm:p-8 w-full max-w-[420px] shadow-2xl">
+            <div className="relative backdrop-blur-xl bg-black border border-white/20 rounded-3xl p-6 sm:p-8 w-full max-w-[420px] shadow-2xl">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
 
               <div className="relative z-10">
                 {!isSubmitted ? (
                   <>
                     <div className="mb-6 sm:mb-8 text-center">
-                      <h1 className="text-3xl sm:text-4xl font-light text-white mb-3 sm:mb-4 tracking-wide">
+                      <h1
+                        className="text-3xl sm:text-4xl font-light text-white mb-3 sm:mb-4 tracking-wide"
+                        style={{
+                          color: "#FFFFFF",
+                          fontFamily: '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+                          fontWeight: 300,
+                        }}
+                      >
                         Join the waitlist
                       </h1>
-                      <p className="text-white/70 text-sm sm:text-base leading-relaxed">
-                        Get early access to Sidekick
+                      <p className="text-white/70 text-sm sm:text-base leading-relaxed font-semibold">
+                        Get early access to Sidekick,
                         <br className="hidden sm:block" />
-                        <span className="sm:hidden"> </span>
-                        workflow automation platform launching soon
+                        <span className="sm:hidden font-semibold"> </span>
+                        your second brain in action!
                       </p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="mb-6">
+                    <form onSubmit={handleSubmit} className="mb-6 space-y-4">
+                      {/* Role Dropdown */}
+                      <Select onValueChange={setRole} required>
+                        <SelectTrigger className="w-full bg-black/40 border-white/20 text-white h-12 rounded-xl focus:ring-white/20 backdrop-blur-sm">
+                          <SelectValue placeholder="What is your role?" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-zinc-900 border-white/20 text-white">
+                          <SelectItem value="engineer">Software Engineer</SelectItem>
+                          <SelectItem value="pm">Product Manager</SelectItem>
+                          <SelectItem value="executive">Executive</SelectItem>
+                          <SelectItem value="founder">Founder</SelectItem>
+                          <SelectItem value="student">Student</SelectItem>
+                        </SelectContent>
+                      </Select>
+
                       <div className="flex flex-col sm:flex-row gap-3">
                         <Input
                           type="email"
-                          placeholder="saleem@21st.dev"
+                          placeholder="tech@sidekick.ai"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           required
@@ -317,27 +163,12 @@ export function WaitlistExperience(): ReactElement {
                         />
                         <Button
                           type="submit"
-                          className="h-12 px-6 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-red-500/25"
+                          className="h-12 px-6 bg-black border  border-gray-600  text-white font-medium rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-red-500/25 cursor-pointer"
                         >
                           Get Notified
                         </Button>
                       </div>
                     </form>
-
-                    <div className="flex items-center justify-center gap-3 mb-6">
-                      <div className="flex -space-x-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white/20 flex items-center justify-center text-white text-xs font-medium">
-                          J
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-green-600 border-2 border-white/20 flex items-center justify-center text-white text-xs font-medium">
-                          A
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border-2 border-white/20 flex items-center justify-center text-white text-xs font-medium">
-                          M
-                        </div>
-                      </div>
-                      <span className="text-white/70 text-sm">~2k+ Peoples already joined</span>
-                    </div>
 
                     <div className="flex items-center justify-center gap-4 sm:gap-6 text-center">
                       <div>
@@ -373,9 +204,9 @@ export function WaitlistExperience(): ReactElement {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-semibold text-white mb-2 drop-shadow-lg">You're on the list!</h3>
+                    <h3 className="text-xl font-semibold text-white mb-2 drop-shadow-lg">you&apos;re on the list!</h3>
                     <p className="text-white/90 text-sm drop-shadow-md">
-                      We'll notify you when we launch. Thanks for joining!
+                      We&apos;ll notify you when we launch. Thanks for joining!
                     </p>
                   </div>
                 )}
