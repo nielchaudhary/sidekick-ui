@@ -59,8 +59,16 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 function NotionLogo() {
   return (
     <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
-      <path d="M6.017 4.313l55.333 -4.087c6.797 -0.583 8.543 -0.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277 -1.553 6.807 -6.99 7.193L24.467 99.967c-4.08 0.193 -6.023 -0.39 -8.16 -3.113L3.3 79.94c-2.333 -3.113 -3.3 -5.443 -3.3 -8.167V11.113c0 -3.497 1.553 -6.413 6.017 -6.8z" fill="#fff"/>
-      <path fillRule="evenodd" clipRule="evenodd" d="M61.35 0.227l-55.333 4.087C1.553 4.7 0 7.617 0 11.113v60.66c0 2.723 0.967 5.053 3.3 8.167l13.007 16.913c2.137 2.723 4.08 3.307 8.16 3.113l64.257 -3.89c5.433 -0.387 6.99 -2.917 6.99 -7.193V20.64c0 -2.21 -0.873 -2.847 -3.443 -4.733L74.167 3.143c-4.273 -3.107 -6.02 -3.5 -12.817 -2.917zM25.92 19.523c-5.247 0.353 -6.437 0.433 -9.417 -1.99L8.927 11.507c-0.77 -0.78 -0.383 -1.753 1.557 -1.947l53.193 -3.887c4.467 -0.39 6.793 1.167 8.54 2.527l9.123 6.61c0.39 0.197 1.36 1.36 0.193 1.36l-54.933 3.307 -0.68 0.047zM19.803 88.3V30.367c0 -2.53 0.777 -3.697 3.103 -3.893L86 22.78c2.14 -0.193 3.107 1.167 3.107 3.693v57.547c0 2.53 -0.39 4.67 -3.883 4.863l-60.377 3.5c-3.493 0.193 -5.043 -0.97 -5.043 -4.083zm59.6 -54.827c0.387 1.75 0 3.5 -1.75 3.7l-2.91 0.577v42.773c-2.527 1.36 -4.853 2.137 -6.797 2.137 -3.107 0 -3.883 -0.973 -6.21 -3.887l-19.03 -29.94v28.967l6.02 1.363s0 3.5 -4.857 3.5l-13.39 0.777c-0.39 -0.78 0 -2.723 1.357 -3.11l3.497 -0.97v-38.3L30.48 40.667c-0.39 -1.75 0.58 -4.277 3.3 -4.473l14.367 -0.967 19.8 30.327v-26.83l-5.047 -0.58c-0.39 -2.143 1.163 -3.7 3.103 -3.89l13.4 -0.78z" fill="#000"/>
+      <path
+        d="M6.017 4.313l55.333 -4.087c6.797 -0.583 8.543 -0.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277 -1.553 6.807 -6.99 7.193L24.467 99.967c-4.08 0.193 -6.023 -0.39 -8.16 -3.113L3.3 79.94c-2.333 -3.113 -3.3 -5.443 -3.3 -8.167V11.113c0 -3.497 1.553 -6.413 6.017 -6.8z"
+        fill="#fff"
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M61.35 0.227l-55.333 4.087C1.553 4.7 0 7.617 0 11.113v60.66c0 2.723 0.967 5.053 3.3 8.167l13.007 16.913c2.137 2.723 4.08 3.307 8.16 3.113l64.257 -3.89c5.433 -0.387 6.99 -2.917 6.99 -7.193V20.64c0 -2.21 -0.873 -2.847 -3.443 -4.733L74.167 3.143c-4.273 -3.107 -6.02 -3.5 -12.817 -2.917zM25.92 19.523c-5.247 0.353 -6.437 0.433 -9.417 -1.99L8.927 11.507c-0.77 -0.78 -0.383 -1.753 1.557 -1.947l53.193 -3.887c4.467 -0.39 6.793 1.167 8.54 2.527l9.123 6.61c0.39 0.197 1.36 1.36 0.193 1.36l-54.933 3.307 -0.68 0.047zM19.803 88.3V30.367c0 -2.53 0.777 -3.697 3.103 -3.893L86 22.78c2.14 -0.193 3.107 1.167 3.107 3.693v57.547c0 2.53 -0.39 4.67 -3.883 4.863l-60.377 3.5c-3.493 0.193 -5.043 -0.97 -5.043 -4.083zm59.6 -54.827c0.387 1.75 0 3.5 -1.75 3.7l-2.91 0.577v42.773c-2.527 1.36 -4.853 2.137 -6.797 2.137 -3.107 0 -3.883 -0.973 -6.21 -3.887l-19.03 -29.94v28.967l6.02 1.363s0 3.5 -4.857 3.5l-13.39 0.777c-0.39 -0.78 0 -2.723 1.357 -3.11l3.497 -0.97v-38.3L30.48 40.667c-0.39 -1.75 0.58 -4.277 3.3 -4.473l14.367 -0.967 19.8 30.327v-26.83l-5.047 -0.58c-0.39 -2.143 1.163 -3.7 3.103 -3.89l13.4 -0.78z"
+        fill="#000"
+      />
     </svg>
   );
 }
@@ -68,10 +76,22 @@ function NotionLogo() {
 function SlackLogo() {
   return (
     <svg width="20" height="20" viewBox="0 0 128 128" fill="none">
-      <path d="M27.255 80.719c0 7.33-5.978 13.317-13.309 13.317C6.616 94.036.63 88.049.63 80.719s5.987-13.317 13.317-13.317h13.309zm6.709 0c0-7.33 5.987-13.317 13.317-13.317s13.317 5.986 13.317 13.317v33.335c0 7.33-5.986 13.317-13.317 13.317-7.33 0-13.317-5.987-13.317-13.317z" fill="#DE1C59"/>
-      <path d="M47.281 27.255c-7.33 0-13.317-5.978-13.317-13.309C33.964 6.616 39.951.63 47.281.63s13.317 5.987 13.317 13.317v13.309zm0 6.709c7.33 0 13.317 5.987 13.317 13.317s-5.986 13.317-13.317 13.317H13.946C6.616 60.598.63 54.612.63 47.281c0-7.33 5.987-13.317 13.317-13.317z" fill="#35C5F0"/>
-      <path d="M100.745 47.281c0-7.33 5.978-13.317 13.309-13.317 7.33 0 13.317 5.987 13.317 13.317s-5.987 13.317-13.317 13.317h-13.309zm-6.709 0c0 7.33-5.987 13.317-13.317 13.317s-13.317-5.986-13.317-13.317V13.946C67.402 6.616 73.388.63 80.719.63c7.33 0 13.317 5.987 13.317 13.317z" fill="#2EB67D"/>
-      <path d="M80.719 100.745c7.33 0 13.317 5.978 13.317 13.309 0 7.33-5.987 13.317-13.317 13.317s-13.317-5.987-13.317-13.317v-13.309zm0-6.709c-7.33 0-13.317-5.987-13.317-13.317s5.986-13.317 13.317-13.317h33.335c7.33 0 13.317 5.986 13.317 13.317 0 7.33-5.987 13.317-13.317 13.317z" fill="#ECB22D"/>
+      <path
+        d="M27.255 80.719c0 7.33-5.978 13.317-13.309 13.317C6.616 94.036.63 88.049.63 80.719s5.987-13.317 13.317-13.317h13.309zm6.709 0c0-7.33 5.987-13.317 13.317-13.317s13.317 5.986 13.317 13.317v33.335c0 7.33-5.986 13.317-13.317 13.317-7.33 0-13.317-5.987-13.317-13.317z"
+        fill="#DE1C59"
+      />
+      <path
+        d="M47.281 27.255c-7.33 0-13.317-5.978-13.317-13.309C33.964 6.616 39.951.63 47.281.63s13.317 5.987 13.317 13.317v13.309zm0 6.709c7.33 0 13.317 5.987 13.317 13.317s-5.986 13.317-13.317 13.317H13.946C6.616 60.598.63 54.612.63 47.281c0-7.33 5.987-13.317 13.317-13.317z"
+        fill="#35C5F0"
+      />
+      <path
+        d="M100.745 47.281c0-7.33 5.978-13.317 13.309-13.317 7.33 0 13.317 5.987 13.317 13.317s-5.987 13.317-13.317 13.317h-13.309zm-6.709 0c0 7.33-5.987 13.317-13.317 13.317s-13.317-5.986-13.317-13.317V13.946C67.402 6.616 73.388.63 80.719.63c7.33 0 13.317 5.987 13.317 13.317z"
+        fill="#2EB67D"
+      />
+      <path
+        d="M80.719 100.745c7.33 0 13.317 5.978 13.317 13.309 0 7.33-5.987 13.317-13.317 13.317s-13.317-5.987-13.317-13.317v-13.309zm0-6.709c-7.33 0-13.317-5.987-13.317-13.317s5.986-13.317 13.317-13.317h33.335c7.33 0 13.317 5.986 13.317 13.317 0 7.33-5.987 13.317-13.317 13.317z"
+        fill="#ECB22D"
+      />
     </svg>
   );
 }
@@ -79,7 +99,10 @@ function SlackLogo() {
 function GmailLogo() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z" fill="#EA4335"/>
+      <path
+        d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"
+        fill="#EA4335"
+      />
     </svg>
   );
 }
@@ -87,10 +110,13 @@ function GmailLogo() {
 function GoogleSheetsLogo() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <path d="M19.5 24h-15A2.5 2.5 0 0 1 2 21.5v-19A2.5 2.5 0 0 1 4.5 0h10l7.5 7.5v14a2.5 2.5 0 0 1-2.5 2.5z" fill="#0F9D58"/>
-      <path d="M14.5 0v5a2.5 2.5 0 0 0 2.5 2.5h5" fill="#87CEAC"/>
-      <path d="M6 12h12v9H6z" fill="#fff"/>
-      <path d="M6 15h12M6 18h12M10 12v9M14 12v9" stroke="#0F9D58" strokeWidth="0.5"/>
+      <path
+        d="M19.5 24h-15A2.5 2.5 0 0 1 2 21.5v-19A2.5 2.5 0 0 1 4.5 0h10l7.5 7.5v14a2.5 2.5 0 0 1-2.5 2.5z"
+        fill="#0F9D58"
+      />
+      <path d="M14.5 0v5a2.5 2.5 0 0 0 2.5 2.5h5" fill="#87CEAC" />
+      <path d="M6 12h12v9H6z" fill="#fff" />
+      <path d="M6 15h12M6 18h12M10 12v9M14 12v9" stroke="#0F9D58" strokeWidth="0.5" />
     </svg>
   );
 }
@@ -99,12 +125,18 @@ function GoogleSheetsLogo() {
 function SourceIcon({ id, color, isActive }: { id: string; color: string; isActive: boolean }) {
   const getIcon = () => {
     switch (id) {
-      case "sidekick-db": return <Database size={20} strokeWidth={1.5} />;
-      case "notion": return <NotionLogo />;
-      case "slack": return <SlackLogo />;
-      case "gmail": return <GmailLogo />;
-      case "sheets": return <GoogleSheetsLogo />;
-      default: return null;
+      case "sidekick-db":
+        return <Database size={20} strokeWidth={1.5} />;
+      case "notion":
+        return <NotionLogo />;
+      case "slack":
+        return <SlackLogo />;
+      case "gmail":
+        return <GmailLogo />;
+      case "sheets":
+        return <GoogleSheetsLogo />;
+      default:
+        return null;
     }
   };
 
@@ -112,20 +144,25 @@ function SourceIcon({ id, color, isActive }: { id: string; color: string; isActi
     <motion.div
       className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg border border-white/10"
       style={{
-        background: id === "sidekick-db"
-          ? `linear-gradient(135deg, rgba(20,20,20,0.9) 0%, rgba(10,10,10,0.95) 100%)`
-          : `linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,240,240,0.9) 100%)`,
+        background:
+          id === "sidekick-db"
+            ? `linear-gradient(135deg, rgba(20,20,20,0.9) 0%, rgba(10,10,10,0.95) 100%)`
+            : `linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,240,240,0.9) 100%)`,
         color: color,
       }}
-      animate={isActive ? {
-        scale: [1, 1.08, 1],
-        opacity: [0.5, 1, 1],
-        boxShadow: [
-          `0 0 0 rgba(${hexToRgb(color)}, 0)`,
-          `0 0 20px rgba(${hexToRgb(color)}, 0.5)`,
-          `0 0 10px rgba(${hexToRgb(color)}, 0.3)`,
-        ],
-      } : { opacity: 0.4 }}
+      animate={
+        isActive
+          ? {
+              scale: [1, 1.08, 1],
+              opacity: [0.5, 1, 1],
+              boxShadow: [
+                `0 0 0 rgba(${hexToRgb(color)}, 0)`,
+                `0 0 20px rgba(${hexToRgb(color)}, 0.5)`,
+                `0 0 10px rgba(${hexToRgb(color)}, 0.3)`,
+              ],
+            }
+          : { opacity: 0.4 }
+      }
       transition={{
         scale: { duration: 0.6, repeat: isActive ? Infinity : 0 },
         opacity: { duration: 0.3 },
@@ -146,13 +183,7 @@ function hexToRgb(hex: string): string {
 }
 
 // Typewriter effect component
-function TypewriterText({
-  text,
-  onComplete,
-}: {
-  text: string;
-  onComplete?: () => void;
-}) {
+function TypewriterText({ text, onComplete }: { text: string; onComplete?: () => void }) {
   const [displayedText, setDisplayedText] = useState("");
   const [isComplete, setIsComplete] = useState(false);
 
@@ -204,7 +235,7 @@ function GradientKeyword({ children }: { children: React.ReactNode }) {
     <span
       className="font-semibold"
       style={{
-        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+        background: "linear-gradient(90deg, #B34B71 0%, #7A3434 100%)",
         WebkitBackgroundClip: "text",
         WebkitTextFillColor: "transparent",
         backgroundClip: "text",
@@ -229,9 +260,12 @@ function BulletList({ bullets, animate }: { bullets: BulletPoint[]; animate: boo
     const timers: NodeJS.Timeout[] = [];
 
     bullets.forEach((_, idx) => {
-      const timer = setTimeout(() => {
-        setVisibleCount(idx + 1);
-      }, (idx + 1) * 800);
+      const timer = setTimeout(
+        () => {
+          setVisibleCount(idx + 1);
+        },
+        (idx + 1) * 800,
+      );
       timers.push(timer);
     });
 
@@ -282,33 +316,27 @@ function DataPulse({ sourceX, sourceY, delay: pulseDelay }: { sourceX: number; s
         cx: `${sourceX}%`,
         cy: `${sourceY}%`,
         opacity: 0,
-        scale: 0
+        scale: 0,
       }}
       animate={{
         cx: ["50%"],
         cy: ["50%"],
         opacity: [0, 1, 1, 0],
-        scale: [0.5, 1.2, 1, 0.5]
+        scale: [0.5, 1.2, 1, 0.5],
       }}
       transition={{
         duration: 0.8,
         delay: pulseDelay,
         ease: [0.16, 1, 0.3, 1], // easeOutExpo approximation
         repeat: Infinity,
-        repeatDelay: 1.5
+        repeatDelay: 1.5,
       }}
     />
   );
 }
 
 // Memory Lattice Component with iOS icons and dashed connectors
-function MemoryLattice({
-  phase,
-  activeSources,
-}: {
-  phase: AppPhase;
-  activeSources: string[];
-}) {
+function MemoryLattice({ phase, activeSources }: { phase: AppPhase; activeSources: string[] }) {
   const isVisible = ["retrieving", "ingestion", "crossReferencing", "judgment"].includes(phase);
   const showShatter = phase === "judgment";
 
@@ -335,10 +363,10 @@ function MemoryLattice({
                   <stop offset="100%" stopColor="#B34B71" />
                 </linearGradient>
                 <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur" />
                   <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
                   </feMerge>
                 </filter>
               </defs>
@@ -369,11 +397,11 @@ function MemoryLattice({
                       initial={{ pathLength: 0, opacity: 0 }}
                       animate={{
                         pathLength: isActive ? 1 : 0,
-                        opacity: showShatter ? 0 : (isActive ? 1 : 0),
+                        opacity: showShatter ? 0 : isActive ? 1 : 0,
                       }}
                       transition={{
                         pathLength: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
-                        opacity: { duration: showShatter ? 0.15 : 0.3 }
+                        opacity: { duration: showShatter ? 0.15 : 0.3 },
                       }}
                     />
 
@@ -391,39 +419,40 @@ function MemoryLattice({
 
             {/* Shatter Particles */}
             <AnimatePresence>
-              {showShatter && MEMORY_SOURCES.map((source) => {
-                const isActive = activeSources.includes(source.id);
-                if (!isActive) return null;
+              {showShatter &&
+                MEMORY_SOURCES.map((source) => {
+                  const isActive = activeSources.includes(source.id);
+                  if (!isActive) return null;
 
-                // Generate particles along the line
-                return [...Array(8)].map((_, i) => {
-                  const t = i / 7;
-                  const startX = source.x + (50 - source.x) * t;
-                  const startY = source.y + (50 - source.y) * t;
-                  const angle = Math.random() * Math.PI * 2;
-                  const distance = 30 + Math.random() * 50;
+                  // Generate particles along the line
+                  return [...Array(8)].map((_, i) => {
+                    const t = i / 7;
+                    const startX = source.x + (50 - source.x) * t;
+                    const startY = source.y + (50 - source.y) * t;
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 30 + Math.random() * 50;
 
-                  return (
-                    <motion.div
-                      key={`shatter-${source.id}-${i}`}
-                      className="absolute w-1 h-1 rounded-full bg-white"
-                      style={{
-                        left: `${startX}%`,
-                        top: `${startY}%`,
-                        boxShadow: "0 0 4px rgba(179,75,113,0.8)",
-                      }}
-                      initial={{ opacity: 1, scale: 1 }}
-                      animate={{
-                        x: Math.cos(angle) * distance,
-                        y: Math.sin(angle) * distance,
-                        opacity: 0,
-                        scale: 0,
-                      }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                    />
-                  );
-                });
-              })}
+                    return (
+                      <motion.div
+                        key={`shatter-${source.id}-${i}`}
+                        className="absolute w-1 h-1 rounded-full bg-white"
+                        style={{
+                          left: `${startX}%`,
+                          top: `${startY}%`,
+                          boxShadow: "0 0 4px rgba(179,75,113,0.8)",
+                        }}
+                        initial={{ opacity: 1, scale: 1 }}
+                        animate={{
+                          x: Math.cos(angle) * distance,
+                          y: Math.sin(angle) * distance,
+                          opacity: 0,
+                          scale: 0,
+                        }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                      />
+                    );
+                  });
+                })}
             </AnimatePresence>
 
             {/* iOS Icon Nodes */}
@@ -437,7 +466,7 @@ function MemoryLattice({
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{
                     scale: showShatter ? 0.8 : 1,
-                    opacity: showShatter ? 0 : 1
+                    opacity: showShatter ? 0 : 1,
                   }}
                   transition={{
                     type: "spring",
@@ -477,7 +506,7 @@ function OrbCore({ phase }: { phase: AppPhase }) {
   const isVisible = ["retrieving", "ingestion", "crossReferencing", "judgment"].includes(phase);
 
   // Scale: 15% larger during ingestion
-  const orbScale = isIngestion ? 1.15 : (isCrossRef ? 1.1 : (isJudgment ? 1.2 : 1));
+  const orbScale = isIngestion ? 1.15 : isCrossRef ? 1.1 : isJudgment ? 1.2 : 1;
 
   return (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
@@ -539,7 +568,10 @@ function OrbCore({ phase }: { phase: AppPhase }) {
                   }
                   transition={
                     isIngestion
-                      ? { rotate: { duration: 1.2, repeat: Infinity, ease: "linear" }, scale: { duration: 0.6, repeat: Infinity } }
+                      ? {
+                          rotate: { duration: 1.2, repeat: Infinity, ease: "linear" },
+                          scale: { duration: 0.6, repeat: Infinity },
+                        }
                       : { duration: 0.1 }
                   }
                 />
@@ -550,11 +582,7 @@ function OrbCore({ phase }: { phase: AppPhase }) {
                   style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E")`,
                   }}
-                  animate={
-                    isIngestion
-                      ? { rotate: [0, -180], opacity: [0.3, 0.5, 0.3] }
-                      : { rotate: 0 }
-                  }
+                  animate={isIngestion ? { rotate: [0, -180], opacity: [0.3, 0.5, 0.3] } : { rotate: 0 }}
                   transition={{ duration: 1.2, repeat: isIngestion ? Infinity : 0, ease: "linear" }}
                 />
 
@@ -577,12 +605,12 @@ function OrbCore({ phase }: { phase: AppPhase }) {
                           animate={{
                             opacity: 1,
                             scale: 1,
-                            rotate: [0, idx % 2 === 0 ? 360 : -360]
+                            rotate: [0, idx % 2 === 0 ? 360 : -360],
                           }}
                           exit={{ opacity: 0, scale: 1.5 }}
                           transition={{
                             rotate: { duration: durations[idx], repeat: Infinity, ease: "linear" as const },
-                            opacity: { duration: 0.3, delay: idx * 0.05 }
+                            opacity: { duration: 0.3, delay: idx * 0.05 },
                           }}
                           className="absolute rounded-full"
                           style={{
@@ -595,9 +623,9 @@ function OrbCore({ phase }: { phase: AppPhase }) {
                             className="absolute w-1.5 h-1.5 rounded-full"
                             style={{
                               background: source.color,
-                              top: idx % 2 === 0 ? 0 : '50%',
-                              left: idx % 2 === 0 ? '50%' : 0,
-                              transform: idx % 2 === 0 ? 'translateX(-50%)' : 'translateY(-50%)',
+                              top: idx % 2 === 0 ? 0 : "50%",
+                              left: idx % 2 === 0 ? "50%" : 0,
+                              transform: idx % 2 === 0 ? "translateX(-50%)" : "translateY(-50%)",
                             }}
                             animate={{ opacity: [0.5, 1, 0.5] }}
                             transition={{ duration: 0.8 + idx * 0.2, repeat: Infinity }}
@@ -623,7 +651,7 @@ function OrbCore({ phase }: { phase: AppPhase }) {
                           duration: 1.5,
                           repeat: Infinity,
                           delay: i * 0.4,
-                          ease: "easeOut"
+                          ease: "easeOut",
                         }}
                       />
                     ))}
@@ -639,15 +667,7 @@ function OrbCore({ phase }: { phase: AppPhase }) {
 }
 
 // Chat Window Component
-function ChatWindow({
-  phase,
-  messages,
-  inputValue,
-}: {
-  phase: AppPhase;
-  messages: Message[];
-  inputValue: string;
-}) {
+function ChatWindow({ phase, messages, inputValue }: { phase: AppPhase; messages: Message[]; inputValue: string }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -671,9 +691,7 @@ function ChatWindow({
           <div className="w-[70%] h-[70%] bg-black backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
             {/* Header */}
             <div className="px-5 py-3.5 flex items-center justify-between border-b border-white/20">
-              <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/70">
-                Sidekick
-              </span>
+              <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/70">Sidekick</span>
               <div className="flex gap-1.5">
                 <div className="w-2 h-2 rounded-full bg-white/20" />
                 <div className="w-2 h-2 rounded-full bg-white/20" />
@@ -681,10 +699,7 @@ function ChatWindow({
             </div>
 
             {/* Messages */}
-            <div
-              ref={scrollRef}
-              className="flex-1 overflow-y-auto p-5 space-y-4"
-            >
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-4">
               {messages.map((msg, idx) => (
                 <motion.div
                   key={idx}
@@ -710,40 +725,31 @@ function ChatWindow({
                 </motion.div>
               ))}
 
-              {phase === "responding" &&
-                messages[messages.length - 1]?.role === "user" && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex justify-start"
-                  >
-                    <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl rounded-bl-md flex gap-1.5 items-center">
-                      {[0, 1, 2].map((i) => (
-                        <motion.div
-                          key={i}
-                          className="w-1.5 h-1.5 rounded-full bg-white/50"
-                          animate={{ scale: [1, 1.4, 1] }}
-                          transition={{
-                            repeat: Infinity,
-                            duration: 0.8,
-                            delay: i * 0.15,
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
+              {phase === "responding" && messages[messages.length - 1]?.role === "user" && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                  <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl rounded-bl-md flex gap-1.5 items-center">
+                    {[0, 1, 2].map((i) => (
+                      <motion.div
+                        key={i}
+                        className="w-1.5 h-1.5 rounded-full bg-white/50"
+                        animate={{ scale: [1, 1.4, 1] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 0.8,
+                          delay: i * 0.15,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
             </div>
 
             {/* Footer Input Area */}
             <div className="p-3.5 border-t border-white/20">
               <div className="relative flex items-center bg-white/5 rounded-xl border border-white/15 px-4 py-3">
                 <div className="flex-1 text-[12px] text-white font-medium truncate">
-                  {inputValue || (
-                    <span className="text-white/30 italic font-normal">
-                      Ask Sidekick anything...
-                    </span>
-                  )}
+                  {inputValue || <span className="text-white/30 italic font-normal">Ask Sidekick anything...</span>}
                   {inputValue && (
                     <motion.span
                       className="inline-block w-0.5 h-3 bg-white ml-0.5 align-middle"
@@ -752,12 +758,7 @@ function ChatWindow({
                     />
                   )}
                 </div>
-                <svg
-                  className="w-4 h-4 text-white/30 ml-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
+                <svg className="w-4 h-4 text-white/30 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -830,10 +831,7 @@ export default function RetrievalNexus() {
 
       // Responding
       setPhase("responding");
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", bullets: DEMO_CONVERSATION.assistantBullets },
-      ]);
+      setMessages((prev) => [...prev, { role: "assistant", bullets: DEMO_CONVERSATION.assistantBullets }]);
 
       await delay(5000);
 
@@ -889,16 +887,14 @@ export default function RetrievalNexus() {
       {/* Phase Label HUD */}
       <div className="absolute top-6 left-6 hidden md:block">
         <div className="flex flex-col">
-          <span className="text-[8px] font-bold tracking-[0.4em] uppercase text-white/40 mb-1">
-            Context Formation
-          </span>
+          <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40 mb-1">Context Formation</span>
           <AnimatePresence mode="wait">
             <motion.span
               key={phase}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              className="text-[10px] font-medium tracking-[0.2em] text-[#B34B71] uppercase"
+              className="text-[12px] font-medium tracking-[0.2em] text-[#B34B71] uppercase"
             >
               {phase === "crossReferencing" ? "cross-referencing" : phase}
             </motion.span>
