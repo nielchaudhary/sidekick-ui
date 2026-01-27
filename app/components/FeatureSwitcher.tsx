@@ -39,7 +39,8 @@ const features = [
     id: "retrieval",
     label: "RETRIEVAL",
     title: "Instant access",
-    description: "Query your past thoughts with natural language and get precise answers in milliseconds, not minutes.",
+    description:
+      "Query your past thoughts with natural language and get precise answers in milliseconds, not minutes.",
     icon: RetrievalAnimation,
     points: null,
   },
@@ -162,7 +163,8 @@ export default function FeatureSwitcher() {
                     <div
                       className="w-full h-px mb-6"
                       style={{
-                        backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
+                        backgroundImage:
+                          "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
                         backgroundSize: "8px 1px",
                         backgroundRepeat: "repeat-x",
                       }}
@@ -209,7 +211,9 @@ export default function FeatureSwitcher() {
                               transition={{ delay: 0.3 + idx * 0.1 }}
                               className="flex items-start gap-2"
                             >
-                              <span className="text-[#6A2424] font-bold text-lg leading-none mt-px">|</span>
+                              <span className="text-[#6A2424] font-bold text-lg leading-none mt-px">
+                                |
+                              </span>
                               <span
                                 className="font-sans text-sm md:text-base tracking-wide leading-relaxed"
                                 style={{ color: "#A1A1AA" }}
@@ -224,7 +228,8 @@ export default function FeatureSwitcher() {
                         <div
                           className="w-full h-px mt-6"
                           style={{
-                            backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
+                            backgroundImage:
+                              "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
                             backgroundSize: "8px 1px",
                             backgroundRepeat: "repeat-x",
                           }}
@@ -238,7 +243,8 @@ export default function FeatureSwitcher() {
                     <div
                       className="absolute inset-0"
                       style={{
-                        backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,0.15) 50%, transparent 50%)",
+                        backgroundImage:
+                          "linear-gradient(to bottom, rgba(255,255,255,0.15) 50%, transparent 50%)",
                         backgroundSize: "1px 8px",
                         backgroundRepeat: "repeat-y",
                       }}
@@ -288,7 +294,14 @@ export default function FeatureSwitcher() {
   );
 }
 
-type AnimationPhase = "idle" | "input" | "sending" | "thinking" | "responding" | "collapse" | "storage";
+type AnimationPhase =
+  | "idle"
+  | "input"
+  | "sending"
+  | "thinking"
+  | "responding"
+  | "collapse"
+  | "storage";
 
 // Shared pulse frequency for synchronization (1.2Hz = 833ms period)
 const PULSE_DURATION = 0.833;
@@ -376,7 +389,8 @@ const BentoGrid = memo(function BentoGrid({ isActive }: { isActive: boolean }) {
       </defs>
       {dots.map((dot, i) => {
         const maxDistance = 100;
-        const brightness = dot.distance < maxDistance ? 0.3 - (dot.distance / maxDistance) * 0.25 : 0.05;
+        const brightness =
+          dot.distance < maxDistance ? 0.3 - (dot.distance / maxDistance) * 0.25 : 0.05;
 
         return (
           <motion.circle
@@ -392,7 +406,12 @@ const BentoGrid = memo(function BentoGrid({ isActive }: { isActive: boolean }) {
             }}
             transition={{
               opacity: { duration: 0.8, delay: i * 0.002 },
-              scale: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: dot.distance * 0.01 },
+              scale: {
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: dot.distance * 0.01,
+              },
             }}
           />
         );
@@ -549,7 +568,14 @@ function MicIcon({ isActive }: { isActive: boolean }) {
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         />
       )}
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
         <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
         <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
         <line x1="12" y1="19" x2="12" y2="23" />
@@ -651,7 +677,13 @@ function MemoryAnimation() {
       <svg className="absolute w-0 h-0">
         <defs>
           <filter id="grain" x="0%" y="0%" width="100%" height="100%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch" result="noise" />
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.9"
+              numOctaves="4"
+              stitchTiles="stitch"
+              result="noise"
+            />
             <feColorMatrix type="saturate" values="0" in="noise" result="monoNoise" />
             <feBlend in="SourceGraphic" in2="monoNoise" mode="multiply" />
           </filter>
@@ -789,7 +821,9 @@ function MemoryAnimation() {
                           className="px-3.5 py-2 rounded-2xl rounded-br-md max-w-[180px]"
                           style={{ background: "#1a1a1a" }}
                         >
-                          <span className="text-[11px] text-white font-medium leading-relaxed">{userMessage}</span>
+                          <span className="text-[11px] text-white font-medium leading-relaxed">
+                            {userMessage}
+                          </span>
                         </motion.div>
                       </motion.div>
                     )}
@@ -854,7 +888,9 @@ function MemoryAnimation() {
                           />
                         </span>
                       ) : (
-                        <span className="text-[11px] text-gray-400 font-medium">Write your message...</span>
+                        <span className="text-[11px] text-gray-400 font-medium">
+                          Write your message...
+                        </span>
                       )}
                     </div>
 
@@ -940,7 +976,8 @@ function MemoryAnimation() {
               <motion.div
                 className="absolute rounded-full"
                 style={{
-                  background: "radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%)",
+                  background:
+                    "radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%)",
                 }}
                 initial={{ width: 20, height: 20, opacity: 0 }}
                 animate={{
@@ -1013,7 +1050,8 @@ function MemoryAnimation() {
                 className="relative w-14 h-14 rounded-full flex items-center justify-center"
                 style={{
                   background: "linear-gradient(135deg, #B34B71 0%, #6B2D4A 100%)",
-                  boxShadow: "0 0 40px rgba(179, 75, 113, 0.7), inset 0 0 25px rgba(255,255,255,0.15)",
+                  boxShadow:
+                    "0 0 40px rgba(179, 75, 113, 0.7), inset 0 0 25px rgba(255,255,255,0.15)",
                 }}
                 initial={{ scale: 0.5 }}
                 animate={{ scale: [0.5, 1.15, 1] }}
@@ -1027,7 +1065,8 @@ function MemoryAnimation() {
                 <motion.div
                   className="absolute inset-1.5 rounded-full"
                   style={{
-                    background: "radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%)",
+                    background:
+                      "radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%)",
                   }}
                   animate={{
                     opacity: [0.3, 1, 0.5],
@@ -1085,7 +1124,8 @@ function MemoryAnimation() {
                     key={`particle-${i}`}
                     className="absolute w-2 h-2 rounded-full"
                     style={{
-                      background: "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 100%)",
+                      background:
+                        "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 100%)",
                       boxShadow: "0 0 8px rgba(255,255,255,0.9)",
                     }}
                     initial={{
@@ -1307,7 +1347,10 @@ function RetentionAnimation() {
 
           {/* Data particles on layer */}
           {i === 0 && (
-            <motion.g animate={{ y: [0, -5, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>
+            <motion.g
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
               <circle cx="110" cy={layer.y - 5} r="2" fill="#000000" opacity="0.6" />
               <circle cx="140" cy={layer.y - 5} r="2" fill="#000000" opacity="0.6" />
               <circle cx="170" cy={layer.y - 5} r="2" fill="#000000" opacity="0.6" />
@@ -1332,8 +1375,20 @@ function RetentionAnimation() {
       />
 
       {/* Lock icon at top */}
-      <motion.g animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>
-        <rect x="130" y="5" width="20" height="14" rx="2" stroke="#000000" strokeWidth="1.5" fill="none" />
+      <motion.g
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <rect
+          x="130"
+          y="5"
+          width="20"
+          height="14"
+          rx="2"
+          stroke="#000000"
+          strokeWidth="1.5"
+          fill="none"
+        />
         <path d="M134 5 V0 A6 6 0 0 1 146 0 V5" stroke="#000000" strokeWidth="1.5" fill="none" />
         <circle cx="140" cy="12" r="2" fill="#000000" />
       </motion.g>
@@ -1538,8 +1593,19 @@ function ReasoningAnimation() {
       ))}
 
       {/* Thought bubbles */}
-      <motion.g animate={{ y: [0, -3, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>
-        <circle cx="220" cy="35" r="12" stroke="#000000" strokeWidth="1.5" fill="none" opacity="0.6" />
+      <motion.g
+        animate={{ y: [0, -3, 0] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <circle
+          cx="220"
+          cy="35"
+          r="12"
+          stroke="#000000"
+          strokeWidth="1.5"
+          fill="none"
+          opacity="0.6"
+        />
         <circle cx="235" cy="20" r="7" stroke="#000000" strokeWidth="1" fill="none" opacity="0.4" />
         <circle cx="245" cy="10" r="4" stroke="#000000" strokeWidth="1" fill="none" opacity="0.3" />
       </motion.g>

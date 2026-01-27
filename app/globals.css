@@ -2,9 +2,10 @@
 
 /* Bebas Neue font */
 @font-face {
-  font-family: 'Bebas Neue';
-  src: url('/fonts/BebasNeue-Regular.woff2') format('woff2'),
-       url('/fonts/BebasNeue-Regular.woff') format('woff');
+  font-family: "Bebas Neue";
+  src:
+    url("/fonts/BebasNeue-Regular.woff2") format("woff2"),
+    url("/fonts/BebasNeue-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -13,23 +14,23 @@
 :root {
   /* Noir Foundation - Absolute Black Canvas */
   --background: #000000;
-  --foreground: #FFFFFF;
+  --foreground: #ffffff;
 
   /* Ghost White Border System */
   --border-ghost: rgba(255, 255, 255, 0.12);
   --border-ghost-hover: rgba(255, 255, 255, 0.18);
 
   /* Maroon-Burgundy Accent */
-  --accent-burgundy: #4A0404;
-  --accent-burgundy-dark: #2E0202;
+  --accent-burgundy: #4a0404;
+  --accent-burgundy-dark: #2e0202;
 
   /* Typography */
-  --text-primary: #FFFFFF;
-  --text-secondary: #A1A1AA;
-  --text-muted: #71717A;
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
 
   /* Fonts */
-  --font-headline: 'Bebas Neue', sans-serif;
+  --font-headline: "Bebas Neue", sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
 }
 

@@ -2,6 +2,7 @@
 
 import RetrievalNexus from "./RetrievalNexus";
 import { Highlighter } from "@/components/ui/highlighter";
+import { GRADIENTS, COLORS } from "@/lib/theme";
 
 interface Offering {
   id: string;
@@ -33,7 +34,12 @@ export default function NexusHero() {
       {/* SVG Filter for Grain Effect */}
       <svg className="hidden">
         <filter id="grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.65"
+            numOctaves="3"
+            stitchTiles="stitch"
+          />
         </filter>
       </svg>
 
@@ -41,7 +47,7 @@ export default function NexusHero() {
       <div
         className="absolute left-1/2 top-0 bottom-0 w-px hidden md:block z-10 pointer-events-none"
         style={{
-          background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent)",
+          background: GRADIENTS.glassReflection,
         }}
       />
 
@@ -52,13 +58,14 @@ export default function NexusHero() {
           <h1
             className="text-5xl md:text-7xl lg:text-8xl tracking-[-0.02em] leading-[0.9] text-white mb-6 mt-5"
             style={{
-              fontFamily: '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+              fontFamily:
+                '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
               fontWeight: 300,
             }}
           >
             <span
               style={{
-                background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                background: GRADIENTS.primary,
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -71,9 +78,9 @@ export default function NexusHero() {
           </h1>
 
           <p className="max-w-xl text-zinc-300 text-lg leading-relaxed mb-10 font-semibold">
-            What if you had instant answers from every decision you&apos;ve made? Sidekick remembers your context and
-            surfaces it exactly when it matters,
-            <Highlighter action="underline" color="#B34B71" strokeWidth={2} isView>
+            What if you had instant answers from every decision you&apos;ve made? Sidekick remembers
+            your context and surfaces it exactly when it matters,
+            <Highlighter action="underline" color={COLORS.burgundy.primary} strokeWidth={2} isView>
               turning past thinking into present clarity
             </Highlighter>
             .
@@ -86,7 +93,9 @@ export default function NexusHero() {
                 <h3 className="text-white font-semibold flex items-center gap-2">
                   <span className="text-[10px] text-zinc-600">0{i + 1}</span> {offering.title}
                 </h3>
-                <p className="text-sm text-zinc-500 group-hover:text-zinc-300 transition-colors">{offering.body}</p>
+                <p className="text-sm text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                  {offering.body}
+                </p>
               </div>
             ))}
           </div>
@@ -126,13 +135,16 @@ export default function NexusHero() {
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: "radial-gradient(circle at 50% 50%, rgba(179,75,113,0.1), transparent 70%)",
+                background: GRADIENTS.burgundyBloom,
                 animation: "pulse 4s ease-in-out infinite",
               }}
             />
 
             {/* Noise/Grain Layer */}
-            <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ filter: "url(#grain)" }} />
+            <div
+              className="absolute inset-0 pointer-events-none opacity-[0.03]"
+              style={{ filter: "url(#grain)" }}
+            />
           </div>
         </div>
       </div>

@@ -220,7 +220,7 @@ function BulletList({ bullets, animate }: { bullets: BulletPoint[]; animate: boo
         () => {
           setAnimationProgress(idx + 1);
         },
-        (idx + 1) * 800,
+        (idx + 1) * 800
       );
       timers.push(timer);
     });
@@ -262,7 +262,15 @@ function BulletList({ bullets, animate }: { bullets: BulletPoint[]; animate: boo
 }
 
 // Data Pulse Component - travels along connector
-function DataPulse({ sourceX, sourceY, delay: pulseDelay }: { sourceX: number; sourceY: number; delay: number }) {
+function DataPulse({
+  sourceX,
+  sourceY,
+  delay: pulseDelay,
+}: {
+  sourceX: number;
+  sourceY: number;
+  delay: number;
+}) {
   return (
     <motion.circle
       r="3"
@@ -538,7 +546,9 @@ function OrbCore({ phase }: { phase: AppPhase }) {
                   style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E")`,
                   }}
-                  animate={isIngestion ? { rotate: [0, -180], opacity: [0.3, 0.5, 0.3] } : { rotate: 0 }}
+                  animate={
+                    isIngestion ? { rotate: [0, -180], opacity: [0.3, 0.5, 0.3] } : { rotate: 0 }
+                  }
                   transition={{ duration: 1.2, repeat: isIngestion ? Infinity : 0, ease: "linear" }}
                 />
 
@@ -565,7 +575,11 @@ function OrbCore({ phase }: { phase: AppPhase }) {
                           }}
                           exit={{ opacity: 0, scale: 1.5 }}
                           transition={{
-                            rotate: { duration: durations[idx], repeat: Infinity, ease: "linear" as const },
+                            rotate: {
+                              duration: durations[idx],
+                              repeat: Infinity,
+                              ease: "linear" as const,
+                            },
                             opacity: { duration: 0.3, delay: idx * 0.05 },
                           }}
                           className="absolute rounded-full"
@@ -623,7 +637,15 @@ function OrbCore({ phase }: { phase: AppPhase }) {
 }
 
 // Chat Window Component
-function ChatWindow({ phase, messages, inputValue }: { phase: AppPhase; messages: Message[]; inputValue: string }) {
+function ChatWindow({
+  phase,
+  messages,
+  inputValue,
+}: {
+  phase: AppPhase;
+  messages: Message[];
+  inputValue: string;
+}) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -647,7 +669,9 @@ function ChatWindow({ phase, messages, inputValue }: { phase: AppPhase; messages
           <div className="w-[70%] h-[70%] bg-black backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
             {/* Header */}
             <div className="px-5 py-3.5 flex items-center justify-between border-b border-white/20">
-              <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/70">Sidekick</span>
+              <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/70">
+                Sidekick
+              </span>
               <div className="flex gap-1.5">
                 <div className="w-2 h-2 rounded-full bg-white/20" />
                 <div className="w-2 h-2 rounded-full bg-white/20" />
@@ -682,7 +706,11 @@ function ChatWindow({ phase, messages, inputValue }: { phase: AppPhase; messages
               ))}
 
               {phase === "responding" && messages[messages.length - 1]?.role === "user" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex justify-start"
+                >
                   <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl rounded-bl-md flex gap-1.5 items-center">
                     {[0, 1, 2].map((i) => (
                       <motion.div
@@ -705,7 +733,11 @@ function ChatWindow({ phase, messages, inputValue }: { phase: AppPhase; messages
             <div className="p-3.5 border-t border-white/20">
               <div className="relative flex items-center bg-white/5 rounded-xl border border-white/15 px-4 py-3">
                 <div className="flex-1 text-[12px] text-white font-medium truncate">
-                  {inputValue || <span className="text-white/30 italic font-normal">Ask Sidekick anything...</span>}
+                  {inputValue || (
+                    <span className="text-white/30 italic font-normal">
+                      Ask Sidekick anything...
+                    </span>
+                  )}
                   {inputValue && (
                     <motion.span
                       className="inline-block w-0.5 h-3 bg-white ml-0.5 align-middle"
@@ -714,7 +746,12 @@ function ChatWindow({ phase, messages, inputValue }: { phase: AppPhase; messages
                     />
                   )}
                 </div>
-                <svg className="w-4 h-4 text-white/30 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  className="w-4 h-4 text-white/30 ml-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -787,7 +824,10 @@ export default function RetrievalNexus() {
 
       // Responding
       setPhase("responding");
-      setMessages((prev) => [...prev, { role: "assistant", bullets: DEMO_CONVERSATION.assistantBullets }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", bullets: DEMO_CONVERSATION.assistantBullets },
+      ]);
 
       await delay(5000);
 
@@ -843,7 +883,9 @@ export default function RetrievalNexus() {
       {/* Phase Label HUD */}
       <div className="absolute top-6 left-6 hidden md:block">
         <div className="flex flex-col">
-          <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40 mb-1">Context Formation</span>
+          <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40 mb-1">
+            Context Formation
+          </span>
           <AnimatePresence mode="wait">
             <motion.span
               key={phase}

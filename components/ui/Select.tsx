@@ -20,7 +20,7 @@ const SelectTrigger = React.forwardRef<
       "focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ring-offset-0 outline-none",
       "hover:border-white/40 hover:bg-white/[0.07]",
       "disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
-      className,
+      className
     )}
     {...props}
   >
@@ -76,7 +76,7 @@ const SelectContent = React.forwardRef<
         "data-[state=open]:duration-300 data-[state=closed]:duration-200",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-        className,
+        className
       )}
       position={position}
       {...props}
@@ -86,7 +86,7 @@ const SelectContent = React.forwardRef<
         className={cn(
           "p-1",
           position === "popper" &&
-            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]",
+            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
         )}
       >
         {children}
@@ -107,7 +107,7 @@ const SelectItem = React.forwardRef<
       "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
       "focus:bg-accent focus:text-accent-foreground transition-colors duration-150",
       "data-disabled:pointer-events-none data-disabled:opacity-50",
-      className,
+      className
     )}
     {...props}
   >

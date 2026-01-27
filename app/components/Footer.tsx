@@ -1,4 +1,4 @@
-"use client";
+import { GRADIENTS } from "@/lib/theme";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -39,7 +39,7 @@ export default function Footer() {
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
-                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                        background: GRADIENTS.primary,
                       }}
                     />
                   </a>
@@ -53,7 +53,7 @@ export default function Footer() {
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
-                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                        background: GRADIENTS.primary,
                       }}
                     />
                   </a>
@@ -67,7 +67,7 @@ export default function Footer() {
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
-                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                        background: GRADIENTS.primary,
                       }}
                     />
                   </a>
@@ -88,7 +88,7 @@ export default function Footer() {
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
-                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                        background: GRADIENTS.primary,
                       }}
                     />
                   </a>
@@ -102,7 +102,7 @@ export default function Footer() {
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
-                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                        background: GRADIENTS.primary,
                       }}
                     />
                   </a>
@@ -125,7 +125,7 @@ export default function Footer() {
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
-                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                        background: GRADIENTS.primary,
                       }}
                     />
                   </a>
@@ -141,7 +141,7 @@ export default function Footer() {
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
-                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                        background: GRADIENTS.primary,
                       }}
                     />
                   </a>
@@ -157,7 +157,7 @@ export default function Footer() {
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
-                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                        background: GRADIENTS.primary,
                       }}
                     />
                   </a>
@@ -171,7 +171,7 @@ export default function Footer() {
                     <span
                       className="absolute left-0 -bottom-1 h-[2px] w-0 group-hover:w-full transition-all duration-300 ease-out"
                       style={{
-                        background: "linear-gradient(90deg, #B34B71 0%, #4A0404 100%)",
+                        background: GRADIENTS.primary,
                       }}
                     />
                   </a>

@@ -84,16 +84,7 @@ export function Highlighter({
         resizeObserver.disconnect();
       }
     };
-  }, [
-    shouldShow,
-    action,
-    color,
-    strokeWidth,
-    animationDuration,
-    iterations,
-    padding,
-    multiline,
-  ]);
+  }, [shouldShow, action, color, strokeWidth, animationDuration, iterations, padding, multiline]);
 
   return (
     <span ref={elementRef} className="relative inline-block bg-transparent">

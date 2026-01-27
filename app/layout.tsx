@@ -10,7 +10,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Sidekick - Your Intelligent Virtual Sidekick",
-  description: "The thinking partner that remembers. For operators who make decisions under pressure.",
+  description:
+    "The thinking partner that remembers. For operators who make decisions under pressure.",
 };
 
 export default function RootLayout({

@@ -1,40 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ReactElement } from "react";
 import { Spotlight } from "./Spotlight";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-
-const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
-  ({ className, type, ...props }, ref) => {
-    return (
-      <input
-        type={type}
-        className={`flex h-12 w-full rounded-xl border border-white/20 bg-black/40 px-4 py-2 text-sm text-white placeholder:text-white/50 backdrop-blur-sm transition-all duration-500 ease-out outline-none focus:border-white/40 hover:border-white/30 hover:bg-black/50 focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
-        ref={ref}
-        {...props}
-      />
-    );
-  },
-);
-Input.displayName = "Input";
-
-const Button = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
-  ({ className, children, ...props }, ref) => {
-    return (
-      <button
-        className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-500 ease-out disabled:pointer-events-none disabled:opacity-50 bg-black border border-white/10 text-white hover:bg-white/5 hover:border-white/40 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95 h-12 px-6 cursor-pointer outline-none focus:outline-none focus:ring-0 ${className}`}
-        ref={ref}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  },
-);
-Button.displayName = "Button";
+import { GRADIENTS } from "@/lib/theme";
 
 // --- Main Experience ---
 
@@ -107,8 +87,8 @@ export function WaitlistExperience(): ReactElement {
       {/* Cinematic Spotlight Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <Spotlight
-          gradientFirst="radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(255, 51, 26, 0.15) 0%, rgba(204, 26, 153, 0.05) 50%, transparent 80%)"
-          gradientSecond="radial-gradient(50% 50% at 50% 50%, rgba(204, 26, 153, 0.12) 0%, rgba(102, 13, 204, 0.06) 80%, transparent 100%)"
+          gradientFirst={GRADIENTS.spotlightWarm.first}
+          gradientSecond={GRADIENTS.spotlightWarm.second}
           translateY={-200}
           width={600}
           height={1400}
@@ -127,9 +107,15 @@ export function WaitlistExperience(): ReactElement {
 
           <AnimatePresence mode="wait">
             {!isSubmitted ? (
-              <motion.div key="form" exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.4 }}>
+              <motion.div
+                key="form"
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4 }}
+              >
                 <header className="mb-10 text-center">
-                  <h1 className="text-4xl font-light text-white mb-4 tracking-tight font-serif">Join the waitlist</h1>
+                  <h1 className="text-4xl font-light text-white mb-4 tracking-tight font-serif">
+                    Join the waitlist
+                  </h1>
                   <p className="text-white/60 text-base font-medium">
                     Early access to Sidekick. <br />
                     Your second brain in action.
@@ -182,7 +168,9 @@ export function WaitlistExperience(): ReactElement {
                       <div className="text-2xl font-light text-white tabular-nums">
                         {value.toString().padStart(2, "0")}
                       </div>
-                      <div className="text-[10px] text-white/40 uppercase tracking-[0.1em] font-medium">{label}</div>
+                      <div className="text-[10px] text-white/40 uppercase tracking-[0.1em] font-medium">
+                        {label}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -203,7 +191,12 @@ export function WaitlistExperience(): ReactElement {
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M5 13l4 4L19 7"
+                    />
                   </motion.svg>
                 </div>
                 <h3 className="text-2xl font-light text-white mb-2 font-serif">You&apos;re in.</h3>
