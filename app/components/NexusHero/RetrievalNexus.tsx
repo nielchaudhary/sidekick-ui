@@ -59,7 +59,8 @@ const MEMORY_SOURCES: MemorySource[] = [
 ];
 
 const DEMO_CONVERSATION = {
-  userMessage: "What were the last month's key decisions? Also, schedule a follow-up for March 15th.",
+  userMessage:
+    "What were the last month's key decisions with development team? Also, schedule a follow-up for March 15th with OpenAI.",
   keywords: [
     { text: "last month's", type: "retrieval" as const },
     { text: "key decisions", type: "retrieval" as const },
@@ -151,7 +152,10 @@ function GoogleSheetsLogo() {
 function GoogleCalendarLogo() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M18 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" fill="#4285F4" />
+      <path
+        d="M18 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"
+        fill="#4285F4"
+      />
       <path d="M4 8h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8z" fill="#fff" />
       <path d="M8 2v4M16 2v4" stroke="#4285F4" strokeWidth="2" strokeLinecap="round" />
       <rect x="7" y="11" width="3" height="3" rx="0.5" fill="#EA4335" />
@@ -393,9 +397,7 @@ function ChronosCalendar({
                     <motion.div
                       key={day}
                       className={`aspect-square flex items-center justify-center rounded-lg text-[11px] font-medium relative ${
-                        isSelected
-                          ? "bg-[#B34B71] text-white"
-                          : "text-white/60 hover:bg-white/5"
+                        isSelected ? "bg-[#B34B71] text-white" : "text-white/60 hover:bg-white/5"
                       }`}
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={{
@@ -463,9 +465,7 @@ function ChronosCalendar({
                   transition={{ type: "spring", delay: 0.3 }}
                 >
                   <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                    <span className="text-[10px] text-white/50 uppercase tracking-wider">
-                      Time
-                    </span>
+                    <span className="text-[10px] text-white/50 uppercase tracking-wider">Time</span>
                     <motion.span
                       className="text-[12px] font-medium text-[#B34B71]"
                       initial={{ opacity: 0 }}
@@ -503,7 +503,7 @@ function GlowToast({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.95 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50"
         >
           <div
             className="flex items-center gap-3 px-4 py-3 rounded-xl border"
@@ -512,8 +512,7 @@ function GlowToast({
               backdropFilter: "blur(20px) saturate(180%)",
               WebkitBackdropFilter: "blur(20px) saturate(180%)",
               borderColor: "rgba(179,75,113,0.3)",
-              boxShadow:
-                "0 0 30px rgba(179,75,113,0.2), inset 0 1px 0 rgba(255,255,255,0.1)",
+              boxShadow: "0 0 30px rgba(179,75,113,0.2), inset 0 1px 0 rgba(255,255,255,0.1)",
             }}
           >
             {/* Calendar Icon */}
@@ -1133,7 +1132,6 @@ function OrbCore({ phase }: { phase: AppPhase }) {
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }
@@ -1228,8 +1226,10 @@ function ChatWindow({
               ref={scrollRef}
               className="flex-1 overflow-y-auto scrollbar-hide p-5 space-y-4"
               style={{
-                maskImage: "linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)",
-                WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)",
+                maskImage:
+                  "linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)",
               }}
             >
               <AnimatePresence mode="popLayout">
@@ -1257,24 +1257,21 @@ function ChatWindow({
                         letterSpacing: "-0.01em",
                       }}
                     >
-                    {msg.role === "assistant" && msg.bullets ? (
-                      msg.hasLiveCard && msg.calendarEvent ? (
-                        <LiveCard
-                          bullets={msg.bullets}
-                          calendarEvent={msg.calendarEvent}
-                          animate={idx === messages.length - 1}
-                        />
+                      {msg.role === "assistant" && msg.bullets ? (
+                        msg.hasLiveCard && msg.calendarEvent ? (
+                          <LiveCard
+                            bullets={msg.bullets}
+                            calendarEvent={msg.calendarEvent}
+                            animate={idx === messages.length - 1}
+                          />
+                        ) : (
+                          <BulletList bullets={msg.bullets} animate={idx === messages.length - 1} />
+                        )
+                      ) : msg.role === "user" && msg.content ? (
+                        <HighlightedUserMessage content={msg.content} isExtracting={isExtracting} />
                       ) : (
-                        <BulletList bullets={msg.bullets} animate={idx === messages.length - 1} />
-                      )
-                    ) : msg.role === "user" && msg.content ? (
-                      <HighlightedUserMessage
-                        content={msg.content}
-                        isExtracting={isExtracting}
-                      />
-                    ) : (
-                      msg.content
-                    )}
+                        msg.content
+                      )}
                     </div>
                   </motion.div>
                 ))}
@@ -1366,7 +1363,7 @@ export default function RetrievalNexus() {
       setActiveSources([]);
       setInputValue("");
       setShowToast(false);
-      
+
       await delay(1500);
 
       // Simulate typing
@@ -1433,7 +1430,7 @@ export default function RetrievalNexus() {
 
       // Reset and loop
       setActiveSources([]);
-            runDemo();
+      runDemo();
     };
 
     runDemo();
@@ -1478,7 +1475,8 @@ export default function RetrievalNexus() {
               <motion.div
                 className="w-64 h-72 rounded-2xl"
                 style={{
-                  background: "radial-gradient(ellipse at center, rgba(179,75,113,0.15) 0%, transparent 70%)",
+                  background:
+                    "radial-gradient(ellipse at center, rgba(179,75,113,0.15) 0%, transparent 70%)",
                 }}
                 animate={{
                   scale: [1, 1.1, 1],
