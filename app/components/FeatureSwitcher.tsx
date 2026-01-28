@@ -9,7 +9,6 @@ const features = [
     id: "memory",
     label: "MEMORY",
     title: "Never lose a thread",
-    description: null,
     icon: MemoryAnimation,
     points: [
       "Every conversation, decision, and thought automatically saved.",
@@ -21,37 +20,45 @@ const features = [
     id: "context",
     label: "CONTEXT",
     title: "Beyond keywords",
-    description:
-      "It understands the 'why' behind your projects, linking disparate ideas automatically across your entire knowledge base.",
     icon: ContextAnimation,
-    points: null,
+    points: [
+      "Links your Q3 budget to a stray comment from a November meeting.",
+      "Sees the intent behind the task, not just the data.",
+      "Bridges the gap between your Notion docs and GitHub PRs.",
+    ],
   },
   {
     id: "retention",
     label: "RETENTION",
     title: "Long-term storage",
-    description:
-      "High-stakes decisions preserved forever. Your data stays fresh, indexed, and accessible when you need it most.",
     icon: RetentionAnimation,
-    points: null,
+    points: [
+      "Data doesn't rot. Decisions from 3 years ago are as fresh as today's.",
+      "High-stakes info encrypted and mirrored across secure nodes.",
+      "Pull archived context into active workspace in under 50ms.",
+    ],
   },
   {
     id: "retrieval",
     label: "RETRIEVAL",
     title: "Instant access",
-    description:
-      "Query your past thoughts with natural language and get precise answers in milliseconds, not minutes.",
     icon: RetrievalAnimation,
-    points: null,
+    points: [
+      "Ask 'Who approved the Vercel spend?' instead of searching folders.",
+      "Finds what you mean, even if you don't remember the exact words.",
+      "Sub-100ms response times for your entire company history.",
+    ],
   },
   {
     id: "reasoning",
     label: "REASONING",
     title: "A second brain",
-    description:
-      "Stress-test your logic and surface blind spots. Let AI challenge your assumptions before reality does.",
     icon: ReasoningAnimation,
-    points: null,
+    points: [
+      "Flags when your current plan contradicts previous data.",
+      "Plays Devil's Advocate to ensure your strategy is watertight.",
+      "Condenses 4-hour meetings into 3 actionable bullet points.",
+    ],
   },
 ];
 
@@ -180,14 +187,6 @@ export default function FeatureSwitcher() {
                       >
                         {activeFeature.title.toUpperCase()}
                       </h3>
-                      {activeFeature.description && (
-                        <p
-                          className="text-lg leading-relaxed mb-6"
-                          style={{ color: "#A1A1AA" }}
-                        >
-                          {activeFeature.description}
-                        </p>
-                      )}
 
                       {/* Feature Points */}
                       {activeFeature.points && (
@@ -665,7 +664,7 @@ function MemoryAnimation() {
   };
 
   return (
-    <div className="relative w-[340px] h-[420px] overflow-hidden rounded-2xl">
+    <div className="relative w-[340px] h-[420px] overflow-hidden flex items-center justify-center">
       {/* SVG Defs for Filters */}
       <svg className="absolute w-0 h-0">
         <defs>
@@ -701,39 +700,42 @@ function MemoryAnimation() {
         </defs>
       </svg>
 
-      {/* Dithered Burgundy Gradient Background */}
-      <motion.div
-        className="absolute inset-0"
-        style={{
-          background: `radial-gradient(ellipse at 30% 20%, #B34B71 0%, #6B2D4A 35%, #3D1A2E 60%, #1A0912 100%)`,
-        }}
-        animate={{
-          filter: isBackgroundActive ? "brightness(1.1)" : "brightness(1)",
-        }}
-        transition={{ duration: 0.5 }}
-      />
+      {/* Background card with 10% vertical padding */}
+      <div className="absolute inset-x-0 top-[5%] bottom-[5%] rounded-2xl overflow-hidden">
+        {/* Dithered Burgundy Gradient Background */}
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            background: `radial-gradient(ellipse at 30% 20%, #B34B71 0%, #6B2D4A 35%, #3D1A2E 60%, #1A0912 100%)`,
+          }}
+          animate={{
+            filter: isBackgroundActive ? "brightness(1.1)" : "brightness(1)",
+          }}
+          transition={{ duration: 0.5 }}
+        />
 
-      {/* Neural Pathways Background - Activates during thinking */}
-      <NeuralPathwaysBackground isActive={isBackgroundActive} />
+        {/* Neural Pathways Background - Activates during thinking */}
+        <NeuralPathwaysBackground isActive={isBackgroundActive} />
 
-      {/* Grain Overlay */}
-      <div
-        className="absolute inset-0 opacity-40 pointer-events-none mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat",
-        }}
-      />
+        {/* Grain Overlay */}
+        <div
+          className="absolute inset-0 opacity-40 pointer-events-none mix-blend-overlay"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "repeat",
+          }}
+        />
 
-      {/* Secondary Grain Layer */}
-      <div
-        className="absolute inset-0 opacity-20 pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise2'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise2)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat",
-          mixBlendMode: "soft-light",
-        }}
-      />
+        {/* Secondary Grain Layer */}
+        <div
+          className="absolute inset-0 opacity-20 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise2'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise2)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "repeat",
+            mixBlendMode: "soft-light",
+          }}
+        />
+      </div>
 
       {/* Content Container with backdrop blur during thinking */}
       <motion.div
