@@ -68,8 +68,9 @@ const DEMO_CONVERSATION = {
     { text: "March 15th", type: "action" as const },
   ],
   assistantBullets: [
-    { text: "Budget approved at ", keyword: "$2.4M", suffix: " for Q2 expansion" },
-    { text: "API blocker resolved by switching to ", keyword: "new SDK", suffix: "" },
+    { text: "Ask anything. Get the ", keyword: "exact context", suffix: " you need." },
+    { text: "No digging through docs or ", keyword: "reconstructing threads", suffix: "." },
+    { text: "Right answer, right moment, ", keyword: "zero friction", suffix: "." },
   ],
   calendarEvent: {
     date: "2024-03-15",

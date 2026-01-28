@@ -9,23 +9,23 @@ const features = [
   {
     id: "retention",
     label: "RETENTION",
-    title: "Long-term storage",
+    title: "Judgment that compounds over time",
     icon: RetentionAnimation,
     points: [
-      "Data doesn't rot. Decisions from 3 years ago are as fresh as today's.",
-      "High-stakes info encrypted and mirrored across secure nodes.",
-      "Pull archived context into active workspace in under 50ms.",
+      "Every decision strengthens the next one.",
+      "Lessons learned once, applied forever.",
+      "Your thinking gets sharper, not repetitive.",
     ],
   },
   {
     id: "context",
     label: "CONTEXT",
-    title: "Beyond keywords",
+    title: "BUILD ON WHAT YOU KNOW",
     icon: ContextAnimation,
     points: [
-      "Links your Q3 budget to a stray comment from a November meeting.",
-      "Sees the intent behind the task, not just the data.",
-      "Bridges the gap between your Notion docs and GitHub PRs.",
+      "Decisions linked to past reasoning and outcomes.",
+      "Tradeoffs and patterns automatically connected.",
+      "Every choice informed by everything you've learned.",
     ],
   },
   {
@@ -42,23 +42,23 @@ const features = [
   {
     id: "retrieval",
     label: "RETRIEVAL",
-    title: "Instant access",
+    title: "Find what matters, instantly",
     icon: RetrievalAnimation,
     points: [
-      "Ask 'Who approved the Vercel spend?' instead of searching folders.",
-      "Finds what you mean, even if you don't remember the exact words.",
-      "Sub-100ms response times for your entire company history.",
+      "Ask anything. Get the exact context you need.",
+      "No digging through docs or reconstructing threads.",
+      "Right answer, right moment, zero friction.",
     ],
   },
   {
     id: "reasoning",
     label: "REASONING",
-    title: "YOUR Virtual Second Brain",
+    title: "Think alongside someone who remembers",
     icon: ReasoningAnimation,
     points: [
-      "Flags when your current plan contradicts previous data.",
-      "Plays Devil's Advocate to ensure your strategy is watertight.",
-      "Condenses 4-hour meetings into 3 actionable bullet points.",
+      "Challenges your assumptions with your own history.",
+      "Spots patterns you're too close to see.",
+      "Pushes back when past decisions contradict current thinking.",
     ],
   },
 ];
@@ -182,7 +182,7 @@ export default function FeatureSwitcher() {
                       <h3
                         className="font-headline text-2xl md:text-2xl text-white mb-4"
                         style={{
-                          letterSpacing: "-0.04em",
+                          letterSpacing: "0.03em",
                           WebkitFontSmoothing: "antialiased",
                         }}
                       >
@@ -1252,9 +1252,7 @@ function ContextAnimation() {
   const [phase, setPhase] = useState<SemanticGraphPhase>("idle");
   const [cycleKey, setCycleKey] = useState(0);
   const [queryPosition, setQueryPosition] = useState({ x: -30, y: 210 });
-  const [activeInfluenceNodes, setActiveInfluenceNodes] = useState<Set<number>>(
-    new Set()
-  );
+  const [activeInfluenceNodes, setActiveInfluenceNodes] = useState<Set<number>>(new Set());
   const [connectionProgress, setConnectionProgress] = useState(0);
   const [sparkProgress, setSparkProgress] = useState(0);
   const [similarityScore, setSimilarityScore] = useState(0);
@@ -1339,9 +1337,7 @@ function ContextAnimation() {
     queryY: number,
     radius: number = 90
   ): boolean => {
-    const distance = Math.sqrt(
-      Math.pow(nodeX - queryX, 2) + Math.pow(nodeY - queryY, 2)
-    );
+    const distance = Math.sqrt(Math.pow(nodeX - queryX, 2) + Math.pow(nodeY - queryY, 2));
     return distance <= radius;
   };
 
@@ -1377,9 +1373,7 @@ function ContextAnimation() {
   // Calculate warp displacement for grid dots (increased effect)
   const getWarpedPosition = (dotX: number, dotY: number) => {
     if (warpIntensity === 0) return { x: dotX, y: dotY };
-    const distance = Math.sqrt(
-      Math.pow(dotX - midPoint.x, 2) + Math.pow(dotY - midPoint.y, 2)
-    );
+    const distance = Math.sqrt(Math.pow(dotX - midPoint.x, 2) + Math.pow(dotY - midPoint.y, 2));
     if (distance > 120) return { x: dotX, y: dotY };
 
     const pullStrength = (1 - distance / 120) * (warpIntensity / 100) * 10;
@@ -1497,13 +1491,7 @@ function ContextAnimation() {
       >
         <defs>
           {/* Query node glow - enhanced */}
-          <filter
-            id="ctx-queryGlow"
-            x="-150%"
-            y="-150%"
-            width="400%"
-            height="400%"
-          >
+          <filter id="ctx-queryGlow" x="-150%" y="-150%" width="400%" height="400%">
             <feGaussianBlur stdDeviation="6" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -1513,13 +1501,7 @@ function ContextAnimation() {
           </filter>
 
           {/* Synapse spark glow - brighter */}
-          <filter
-            id="ctx-synapseGlow"
-            x="-150%"
-            y="-150%"
-            width="400%"
-            height="400%"
-          >
+          <filter id="ctx-synapseGlow" x="-150%" y="-150%" width="400%" height="400%">
             <feGaussianBlur stdDeviation="8" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -1530,13 +1512,7 @@ function ContextAnimation() {
           </filter>
 
           {/* Node glow */}
-          <filter
-            id="ctx-nodeGlow"
-            x="-100%"
-            y="-100%"
-            width="300%"
-            height="300%"
-          >
+          <filter id="ctx-nodeGlow" x="-100%" y="-100%" width="300%" height="300%">
             <feGaussianBlur stdDeviation="4" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -1545,13 +1521,7 @@ function ContextAnimation() {
           </filter>
 
           {/* Connection line glow */}
-          <filter
-            id="ctx-lineGlow"
-            x="-50%"
-            y="-50%"
-            width="200%"
-            height="200%"
-          >
+          <filter id="ctx-lineGlow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -1560,13 +1530,7 @@ function ContextAnimation() {
           </filter>
 
           {/* Burgundy gradient for connection */}
-          <linearGradient
-            id="ctx-connectionGradient"
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="0%"
-          >
+          <linearGradient id="ctx-connectionGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#B34B71" />
             <stop offset="50%" stopColor="#E05A8D" />
             <stop offset="100%" stopColor="#B34B71" />
@@ -1720,20 +1684,17 @@ function ContextAnimation() {
                 transition={{ duration: 0.3 }}
               >
                 {/* Logo icon using foreignObject */}
-                <foreignObject
-                  x={node.x - 50}
-                  y={node.y + 20}
-                  width="18"
-                  height="18"
-                >
-                  <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "100%",
-                    height: "100%",
-                    opacity: isConnected ? 1 : isInfluenced ? 0.9 : 0.7,
-                  }}>
+                <foreignObject x={node.x - 50} y={node.y + 20} width="18" height="18">
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "100%",
+                      height: "100%",
+                      opacity: isConnected ? 1 : isInfluenced ? 0.9 : 0.7,
+                    }}
+                  >
                     {LogoSVGs[node.logoType](16)}
                   </div>
                 </foreignObject>
@@ -1846,13 +1807,7 @@ function ContextAnimation() {
               animate={{ rotate: 360 }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             >
-              <circle
-                cx="0"
-                cy="-30"
-                r="2"
-                fill="#E05A8D"
-                opacity="0.6"
-              />
+              <circle cx="0" cy="-30" r="2" fill="#E05A8D" opacity="0.6" />
             </motion.g>
           </motion.g>
         )}
@@ -2009,19 +1964,8 @@ function ContextAnimation() {
 
         {/* Status indicator - top */}
         {phase === "scanning" && (
-          <motion.g
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <rect
-              x="110"
-              y="12"
-              width="120"
-              height="22"
-              rx="4"
-              fill="rgba(0,0,0,0.5)"
-            />
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <rect x="110" y="12" width="120" height="22" rx="4" fill="rgba(0,0,0,0.5)" />
             <motion.circle
               cx="120"
               cy="23"
@@ -2047,14 +1991,7 @@ function ContextAnimation() {
         {/* Similarity Score Counter - larger */}
         {phase === "synthesis" && (
           <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <rect
-              x="100"
-              y="365"
-              width="140"
-              height="24"
-              rx="4"
-              fill="rgba(0,0,0,0.5)"
-            />
+            <rect x="100" y="365" width="140" height="24" rx="4" fill="rgba(0,0,0,0.5)" />
             <text
               x="170"
               y="382"
@@ -2080,14 +2017,7 @@ function ContextAnimation() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.4 }}
             >
-              <rect
-                x="85"
-                y="392"
-                width="170"
-                height="18"
-                rx="3"
-                fill="rgba(0,0,0,0.4)"
-              />
+              <rect x="85" y="392" width="170" height="18" rx="3" fill="rgba(0,0,0,0.4)" />
               <text
                 x="170"
                 y="405"
