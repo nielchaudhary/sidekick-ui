@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { delay } from "@/lib/utils";
 import { SiliconInference } from "@/app/components/NexusHero";
+import { GRADIENTS } from "@/lib/theme";
 
 const features = [
   {
@@ -78,6 +79,20 @@ export default function FeatureSwitcher() {
         }}
       />
       <div className="relative max-w-5xl mx-auto">
+        {/* Section Header */}
+        <h2
+          className="text-center text-zinc-600 transition-colors duration-700 text-3xl sm:text-3xl md:text-4xl lg:text-5xl tracking-[-0.02em] leading-[0.9] mb-12 mt-10"
+          style={{
+            fontFamily:
+              '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+            fontWeight: 300,
+
+            backgroundClip: "text",
+          }}
+        >
+          What makes Sidekick intelligent{" "}
+        </h2>
+
         {/* Tab Navigation - Instrument Panel Tray */}
         <div
           className="relative flex flex-wrap justify-center gap-2 mb-8 p-1.5 rounded-2xl mx-auto w-fit"

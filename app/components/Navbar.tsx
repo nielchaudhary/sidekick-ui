@@ -21,7 +21,7 @@ export default function Navbar() {
       style={{
         backgroundColor: COLORS.black.full,
         borderBottom: isScrolled
-          ? `1px solid ${BORDERS.ghost}`
+          ? `1px solid ${BORDERS.ghostSubtle}`
           : `1px solid ${BORDERS.transparent}`,
       }}
     >

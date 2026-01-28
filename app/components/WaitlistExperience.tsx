@@ -81,8 +81,21 @@ export function WaitlistExperience(): ReactElement {
   };
 
   return (
-    <section className="relative w-full overflow-hidden pt-12 pb-8 lg:pt-20 lg:pb-12 bg-black flex items-center justify-center">
-      <div className="relative z-20 w-full max-w-[440px] px-6">
+    <section className="relative w-full overflow-hidden pt-12 pb-8 lg:pt-20 lg:pb-12 bg-black flex flex-col items-center justify-center">
+      {/* Section Header */}
+      <h2
+        className="text-center text-zinc-600 text-2xl sm:text-3xl md:text-3xl lg:text-5xl tracking-[-0.02em] leading-[0.9] mb-12 px-6"
+        style={{
+          fontFamily:
+            '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+          fontWeight: 300,
+          backgroundClip: "text",
+        }}
+      >
+        Memory is leverage, build yours first{" "}
+      </h2>
+
+      <div className="relative z-20 w-full max-w-[600px] px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
