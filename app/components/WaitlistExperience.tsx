@@ -21,8 +21,8 @@ export function WaitlistExperience(): ReactElement {
   const [role, setRole] = useState<string>("");
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Engineering Note: Use a target date for the countdown to avoid drift
-  const [targetDate] = useState(() => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
+  // Target date: March 1st, 2026 at 12:00 PM (noon)
+  const targetDate = new Date("2026-03-01T12:00:00");
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -40,9 +40,10 @@ export function WaitlistExperience(): ReactElement {
       };
     };
 
+    setTimeLeft(calculateTime());
     const timer = setInterval(() => setTimeLeft(calculateTime()), 1000);
     return () => clearInterval(timer);
-  }, [targetDate]);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
