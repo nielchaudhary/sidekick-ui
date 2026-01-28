@@ -12,12 +12,6 @@ type InferencePhase =
   | "ffn" // Phase III: FFN cores fire
   | "complete"; // Atomic inference flash
 
-interface ProcessorBlock {
-  id: "attention" | "ffn" | "kv_cache";
-  status: "idle" | "processing" | "committed";
-  load: number; // 0 to 100 for core glow intensity
-}
-
 // 6x6 Attention Matrix grid dimensions (compact for small containers)
 const ATTENTION_GRID_SIZE = 6;
 const ATTENTION_HEADS = 4; // 4 attention heads, each 3x3 region
@@ -86,17 +80,15 @@ function NeuralBus({ phase, busIndex }: { phase: InferencePhase; busIndex: numbe
 
 // Attention Matrix Cell - individual cell in the 8x8 grid
 function AttentionCell({
-  row,
-  col,
   isActive,
   headIndex,
   phase,
+  randomDelay,
 }: {
-  row: number;
-  col: number;
   isActive: boolean;
   headIndex: number;
   phase: InferencePhase;
+  randomDelay: number;
 }) {
   const headColors = [
     "rgba(179, 75, 113, 1)", // Head 0 - burgundy
@@ -123,11 +115,24 @@ function AttentionCell({
       transition={{
         duration: 0.3,
         repeat: isActive && phase === "attention" ? Infinity : 0,
-        repeatDelay: Math.random() * 0.5,
+        repeatDelay: randomDelay,
       }}
     />
   );
 }
+
+// Pre-computed random values for synapse lines
+const SYNAPSE_LINES = Array.from({ length: 6 }, (_, i) => ({
+  x1: 10 + ((i * 13 + 7) % 80),
+  y1: 10 + ((i * 17 + 23) % 80),
+  x2: 10 + ((i * 19 + 41) % 80),
+  y2: 10 + ((i * 11 + 59) % 80),
+}));
+
+// Pre-computed random delays for attention cells
+const CELL_RANDOM_DELAYS = Array.from({ length: ATTENTION_GRID_SIZE * ATTENTION_GRID_SIZE }, (_, i) =>
+  ((i * 7 + 3) % 50) / 100
+);
 
 // Attention Matrix - 8x8 grid representing Multi-Head Self-Attention
 function AttentionMatrix({
@@ -161,15 +166,15 @@ function AttentionMatrix({
             // Determine which attention head this cell belongs to (3x3 regions)
             const headIndex = Math.floor(row / 3) * 2 + Math.floor(col / 3);
             const isActive = activePattern[row]?.[col] ?? false;
+            const cellIndex = row * ATTENTION_GRID_SIZE + col;
 
             return (
               <AttentionCell
                 key={`${row}-${col}`}
-                row={row}
-                col={col}
                 isActive={isActive}
                 headIndex={headIndex}
                 phase={phase}
+                randomDelay={CELL_RANDOM_DELAYS[cellIndex]}
               />
             );
           })
@@ -185,14 +190,14 @@ function AttentionMatrix({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            {/* Random synapse lines between active cells */}
-            {[...Array(6)].map((_, i) => (
+            {/* Synapse lines between active cells */}
+            {SYNAPSE_LINES.map((line, i) => (
               <motion.line
                 key={i}
-                x1={`${10 + Math.random() * 80}%`}
-                y1={`${10 + Math.random() * 80}%`}
-                x2={`${10 + Math.random() * 80}%`}
-                y2={`${10 + Math.random() * 80}%`}
+                x1={`${line.x1}%`}
+                y1={`${line.y1}%`}
+                x2={`${line.x2}%`}
+                y2={`${line.y2}%`}
                 stroke="rgba(179, 75, 113, 0.4)"
                 strokeWidth="0.5"
                 initial={{ pathLength: 0, opacity: 0 }}
@@ -292,7 +297,7 @@ function ComputeCore({
 }
 
 // KV Cache - vertical bar that fills as context grows
-function KVCache({ phase, fillLevel }: { phase: InferencePhase; fillLevel: number }) {
+function KVCache({ fillLevel }: { fillLevel: number }) {
   return (
     <div className="relative h-full w-[26px] flex flex-col items-center">
       {/* Label */}
@@ -369,7 +374,7 @@ function ScanningLine({ isActive }: { isActive: boolean }) {
 }
 
 // Token Log - vertical scrolling list of generated tokens
-function TokenLog({ phase, tokens }: { phase: InferencePhase; tokens: string[] }) {
+function TokenLog({ tokens }: { tokens: string[] }) {
   return (
     <div className="h-full w-full flex flex-col">
       {/* Label */}
@@ -439,6 +444,9 @@ function StatusHUD({
   );
 }
 
+// Pre-computed random durations for bus activity
+const BUS_DURATIONS = Array.from({ length: 12 }, (_, i) => 0.8 + ((i * 7 + 3) % 40) / 100);
+
 // Bus Activity - rapid horizontal lines for inter-layer communication
 function BusActivity({ phase }: { phase: InferencePhase }) {
   const isActive = phase === "attention" || phase === "ffn";
@@ -457,7 +465,7 @@ function BusActivity({ phase }: { phase: InferencePhase }) {
             initial={{ left: "-30%" }}
             animate={{ left: "100%" }}
             transition={{
-              duration: 0.8 + Math.random() * 0.4,
+              duration: BUS_DURATIONS[i],
               delay: i * 0.1,
               repeat: Infinity,
               ease: "linear",
@@ -640,7 +648,7 @@ export default function SiliconInference() {
 
         {/* Left Column: KV Cache */}
         <div className="w-10 h-full py-5 shrink-0">
-          <KVCache phase={phase} fillLevel={kvFill} />
+          <KVCache fillLevel={kvFill} />
         </div>
 
         {/* Center Column: Main Die */}
@@ -691,7 +699,7 @@ export default function SiliconInference() {
 
         {/* Right Column: Token Log */}
         <div className="w-20 h-full py-5 shrink-0 ml-6">
-          <TokenLog phase={phase} tokens={tokenLog} />
+          <TokenLog tokens={tokenLog} />
         </div>
       </div>
 

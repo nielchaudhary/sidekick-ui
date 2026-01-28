@@ -167,47 +167,6 @@ function GoogleCalendarLogo() {
   );
 }
 
-// Photon Particle - flies from keyword to orb
-function PhotonParticle({
-  startX,
-  startY,
-  targetX,
-  targetY,
-  delay: particleDelay,
-  color,
-}: {
-  startX: number;
-  startY: number;
-  targetX: number;
-  targetY: number;
-  delay: number;
-  color: string;
-}) {
-  return (
-    <motion.div
-      className="absolute w-2 h-2 rounded-full pointer-events-none"
-      style={{
-        left: startX,
-        top: startY,
-        background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
-        boxShadow: `0 0 8px ${color}, 0 0 16px ${color}40`,
-      }}
-      initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-      animate={{
-        opacity: [0, 1, 1, 0],
-        scale: [0.5, 1.5, 1, 0.5],
-        x: targetX - startX,
-        y: targetY - startY,
-      }}
-      transition={{
-        duration: 0.6,
-        delay: particleDelay,
-        ease: [0.16, 1, 0.3, 1],
-      }}
-    />
-  );
-}
-
 // Keyword with underline glow effect
 function HighlightedKeyword({
   children,
