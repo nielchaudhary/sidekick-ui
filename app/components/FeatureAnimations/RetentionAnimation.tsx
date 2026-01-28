@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { delay } from "@/lib/utils";
 import { PULSE } from "@/lib/animation-constants";
@@ -25,7 +25,7 @@ const generateLogEntry = (): string => {
  * RetentionAnimation Component
  * Displays a Chronos Vault visualization with WAL logging, block allocation, and encryption
  */
-export default function RetentionAnimation() {
+const RetentionAnimation = memo(function RetentionAnimation() {
   const [phase, setPhase] = useState<RetentionAnimationPhase>("idle");
   const [cycleKey, setCycleKey] = useState(0);
   const [logEntries, setLogEntries] = useState<string[]>([]);
@@ -439,4 +439,6 @@ export default function RetentionAnimation() {
       </div>
     </div>
   );
-}
+});
+
+export default RetentionAnimation;

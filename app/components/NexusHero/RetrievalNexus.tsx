@@ -4,50 +4,21 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Database, Calendar, Check } from "lucide-react";
 import { delay } from "@/lib/utils";
-
-type AppPhase =
-  | "idle"
-  | "sending"
-  | "intentExtraction"
-  | "retrieving"
-  | "ingestion"
-  | "crossReferencing"
-  | "judgment"
-  | "calendar"
-  | "execution"
-  | "responding"
-  | "storing";
-
-interface MemorySource {
-  id: string;
-  label: string;
-  x: number;
-  y: number;
-  color: string;
-}
-
-interface BulletPoint {
-  text: string;
-  keyword: string;
-  suffix: string;
-}
-
-interface CalendarEvent {
-  date: string;
-  day: number;
-  month: string;
-  year: number;
-  time: string;
-  title: string;
-}
-
-interface Message {
-  role: "user" | "assistant";
-  content?: string;
-  bullets?: BulletPoint[];
-  calendarEvent?: CalendarEvent;
-  hasLiveCard?: boolean;
-}
+import {
+  NotionLogo,
+  SlackLogo,
+  GmailLogo,
+  GoogleSheetsLogo,
+  GoogleCalendarLogo,
+} from "@/lib/brand-logos";
+import type {
+  RetrievalNexusPhase as AppPhase,
+  MemorySource,
+  BulletPoint,
+  CalendarEvent,
+  ChatMessage as Message,
+} from "@/types";
+import { ChronosCalendar } from "./components/ChronosCalendar";
 
 // Five data sources positioned around the orb (pentagon arrangement, 20% longer connectors)
 const MEMORY_SOURCES: MemorySource[] = [
@@ -68,9 +39,21 @@ const DEMO_CONVERSATION = {
     { text: "March 15th", type: "action" as const },
   ],
   assistantBullets: [
-    { text: "Ask anything. Get the ", keyword: "exact context", suffix: " you need." },
-    { text: "No digging through docs or ", keyword: "reconstructing threads", suffix: "." },
-    { text: "Right answer, right moment, ", keyword: "zero friction", suffix: "." },
+    {
+      text: "Retrieved ",
+      keyword: "3 key decisions",
+      suffix: " from last month's dev team discussions:",
+    },
+    {
+      text: "• API architecture: REST over GraphQL • Sprint velocity: reduced for quality • DB migration: ",
+      keyword: "postponed to Q2",
+      suffix: "",
+    },
+    {
+      text: "Scheduled ",
+      keyword: "March 15th follow-up",
+      suffix: " with Product Team, context auto-attached.",
+    },
   ],
   calendarEvent: {
     date: "2024-03-15",
@@ -82,90 +65,6 @@ const DEMO_CONVERSATION = {
   },
   sourcesToActivate: ["sidekick-db", "notion", "slack", "gmail", "sheets"],
 };
-
-// Brand Logo Components
-function NotionLogo() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
-      <path
-        d="M6.017 4.313l55.333 -4.087c6.797 -0.583 8.543 -0.19 12.817 2.917l17.663 12.443c2.913 2.14 3.883 2.723 3.883 5.053v68.243c0 4.277 -1.553 6.807 -6.99 7.193L24.467 99.967c-4.08 0.193 -6.023 -0.39 -8.16 -3.113L3.3 79.94c-2.333 -3.113 -3.3 -5.443 -3.3 -8.167V11.113c0 -3.497 1.553 -6.413 6.017 -6.8z"
-        fill="#fff"
-      />
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M61.35 0.227l-55.333 4.087C1.553 4.7 0 7.617 0 11.113v60.66c0 2.723 0.967 5.053 3.3 8.167l13.007 16.913c2.137 2.723 4.08 3.307 8.16 3.113l64.257 -3.89c5.433 -0.387 6.99 -2.917 6.99 -7.193V20.64c0 -2.21 -0.873 -2.847 -3.443 -4.733L74.167 3.143c-4.273 -3.107 -6.02 -3.5 -12.817 -2.917zM25.92 19.523c-5.247 0.353 -6.437 0.433 -9.417 -1.99L8.927 11.507c-0.77 -0.78 -0.383 -1.753 1.557 -1.947l53.193 -3.887c4.467 -0.39 6.793 1.167 8.54 2.527l9.123 6.61c0.39 0.197 1.36 1.36 0.193 1.36l-54.933 3.307 -0.68 0.047zM19.803 88.3V30.367c0 -2.53 0.777 -3.697 3.103 -3.893L86 22.78c2.14 -0.193 3.107 1.167 3.107 3.693v57.547c0 2.53 -0.39 4.67 -3.883 4.863l-60.377 3.5c-3.493 0.193 -5.043 -0.97 -5.043 -4.083zm59.6 -54.827c0.387 1.75 0 3.5 -1.75 3.7l-2.91 0.577v42.773c-2.527 1.36 -4.853 2.137 -6.797 2.137 -3.107 0 -3.883 -0.973 -6.21 -3.887l-19.03 -29.94v28.967l6.02 1.363s0 3.5 -4.857 3.5l-13.39 0.777c-0.39 -0.78 0 -2.723 1.357 -3.11l3.497 -0.97v-38.3L30.48 40.667c-0.39 -1.75 0.58 -4.277 3.3 -4.473l14.367 -0.967 19.8 30.327v-26.83l-5.047 -0.58c-0.39 -2.143 1.163 -3.7 3.103 -3.89l13.4 -0.78z"
-        fill="#000"
-      />
-    </svg>
-  );
-}
-
-function SlackLogo() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 128 128" fill="none">
-      <path
-        d="M27.255 80.719c0 7.33-5.978 13.317-13.309 13.317C6.616 94.036.63 88.049.63 80.719s5.987-13.317 13.317-13.317h13.309zm6.709 0c0-7.33 5.987-13.317 13.317-13.317s13.317 5.986 13.317 13.317v33.335c0 7.33-5.986 13.317-13.317 13.317-7.33 0-13.317-5.987-13.317-13.317z"
-        fill="#DE1C59"
-      />
-      <path
-        d="M47.281 27.255c-7.33 0-13.317-5.978-13.317-13.309C33.964 6.616 39.951.63 47.281.63s13.317 5.987 13.317 13.317v13.309zm0 6.709c7.33 0 13.317 5.987 13.317 13.317s-5.986 13.317-13.317 13.317H13.946C6.616 60.598.63 54.612.63 47.281c0-7.33 5.987-13.317 13.317-13.317z"
-        fill="#35C5F0"
-      />
-      <path
-        d="M100.745 47.281c0-7.33 5.978-13.317 13.309-13.317 7.33 0 13.317 5.987 13.317 13.317s-5.987 13.317-13.317 13.317h-13.309zm-6.709 0c0 7.33-5.987 13.317-13.317 13.317s-13.317-5.986-13.317-13.317V13.946C67.402 6.616 73.388.63 80.719.63c7.33 0 13.317 5.987 13.317 13.317z"
-        fill="#2EB67D"
-      />
-      <path
-        d="M80.719 100.745c7.33 0 13.317 5.978 13.317 13.309 0 7.33-5.987 13.317-13.317 13.317s-13.317-5.987-13.317-13.317v-13.309zm0-6.709c-7.33 0-13.317-5.987-13.317-13.317s5.986-13.317 13.317-13.317h33.335c7.33 0 13.317 5.986 13.317 13.317 0 7.33-5.987 13.317-13.317 13.317z"
-        fill="#ECB22D"
-      />
-    </svg>
-  );
-}
-
-function GmailLogo() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"
-        fill="#EA4335"
-      />
-    </svg>
-  );
-}
-
-function GoogleSheetsLogo() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M19.5 24h-15A2.5 2.5 0 0 1 2 21.5v-19A2.5 2.5 0 0 1 4.5 0h10l7.5 7.5v14a2.5 2.5 0 0 1-2.5 2.5z"
-        fill="#0F9D58"
-      />
-      <path d="M14.5 0v5a2.5 2.5 0 0 0 2.5 2.5h5" fill="#87CEAC" />
-      <path d="M6 12h12v9H6z" fill="#fff" />
-      <path d="M6 15h12M6 18h12M10 12v9M14 12v9" stroke="#0F9D58" strokeWidth="0.5" />
-    </svg>
-  );
-}
-
-// Google Calendar Logo for toast
-function GoogleCalendarLogo() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M18 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"
-        fill="#4285F4"
-      />
-      <path d="M4 8h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8z" fill="#fff" />
-      <path d="M8 2v4M16 2v4" stroke="#4285F4" strokeWidth="2" strokeLinecap="round" />
-      <rect x="7" y="11" width="3" height="3" rx="0.5" fill="#EA4335" />
-      <rect x="11" y="11" width="3" height="3" rx="0.5" fill="#FBBC04" />
-      <rect x="7" y="15" width="3" height="3" rx="0.5" fill="#34A853" />
-      <rect x="11" y="15" width="3" height="3" rx="0.5" fill="#4285F4" />
-    </svg>
-  );
-}
 
 // Keyword with underline glow effect
 function HighlightedKeyword({
@@ -212,236 +111,6 @@ function HighlightedKeyword({
         />
       )}
     </motion.span>
-  );
-}
-
-// Chronos Calendar Component - Procedural SVG Calendar
-function ChronosCalendar({
-  phase,
-  targetDay,
-  targetMonth,
-  onComplete,
-}: {
-  phase: AppPhase;
-  targetDay: number;
-  targetMonth: string;
-  onComplete?: () => void;
-}) {
-  const isVisible = phase === "calendar";
-  const [currentStep, setCurrentStep] = useState<"skeleton" | "infill" | "scan" | "confirm">(
-    "skeleton"
-  );
-  const [scanProgress, setScanProgress] = useState(0);
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const hasRunRef = useRef(false);
-
-  const days = Array.from({ length: 31 }, (_, i) => i + 1);
-  const weekDays = ["S", "M", "T", "W", "T", "F", "S"];
-
-  useEffect(() => {
-    if (!isVisible) {
-      hasRunRef.current = false;
-      return;
-    }
-
-    if (hasRunRef.current) return;
-    hasRunRef.current = true;
-
-    let cancelled = false;
-
-    const runSequence = async () => {
-      // Skeleton phase
-      if (cancelled) return;
-      setCurrentStep("skeleton");
-      await delay(400);
-
-      // Infill phase - days populate
-      if (cancelled) return;
-      setCurrentStep("infill");
-      await delay(800);
-
-      // Scan phase - conflict check
-      if (cancelled) return;
-      setCurrentStep("scan");
-      for (let i = 0; i <= 100; i += 5) {
-        if (cancelled) return;
-        setScanProgress(i);
-        await delay(30);
-      }
-      await delay(200);
-
-      // Confirm phase - select the target day
-      if (cancelled) return;
-      setCurrentStep("confirm");
-      setSelectedDay(targetDay);
-      await delay(800);
-
-      if (!cancelled) onComplete?.();
-    };
-
-    runSequence();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isVisible, targetDay, onComplete]);
-
-  return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9, filter: "blur(8px)" }}
-          transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="absolute inset-0 flex items-center justify-center z-30"
-        >
-          <div className="relative w-64 h-72 bg-black/90 backdrop-blur-2xl border border-white/20 rounded-2xl p-4 overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <motion.span
-                className="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/70"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
-              >
-                {targetMonth} 2024
-              </motion.span>
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", delay: 0.2 }}
-              >
-                <Calendar size={16} className="text-[#B34B71]" />
-              </motion.div>
-            </div>
-
-            {/* Week day headers */}
-            <div className="grid grid-cols-7 gap-1 mb-2">
-              {weekDays.map((day, idx) => (
-                <motion.div
-                  key={day + idx}
-                  className="text-[9px] text-white/40 text-center font-medium"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: currentStep !== "skeleton" ? 1 : 0.3 }}
-                  transition={{ delay: idx * 0.03 }}
-                >
-                  {day}
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Days Grid */}
-            <div className="grid grid-cols-7 gap-1 relative">
-              {/* Skeleton dots */}
-              {currentStep === "skeleton" &&
-                days.slice(0, 28).map((_, idx) => (
-                  <motion.div
-                    key={`skeleton-${idx}`}
-                    className="aspect-square flex items-center justify-center"
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 0.3, scale: 1 }}
-                    transition={{ delay: idx * 0.02, type: "spring", damping: 15 }}
-                  >
-                    <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                  </motion.div>
-                ))}
-
-              {/* Actual days */}
-              {currentStep !== "skeleton" &&
-                days.slice(0, 28).map((day, idx) => {
-                  const isSelected = selectedDay === day;
-                  const isScanned = scanProgress >= (idx / 28) * 100;
-
-                  return (
-                    <motion.div
-                      key={day}
-                      className={`aspect-square flex items-center justify-center rounded-lg text-[11px] font-medium relative ${
-                        isSelected ? "bg-[#B34B71] text-white" : "text-white/60 hover:bg-white/5"
-                      }`}
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{
-                        opacity: 1,
-                        scale: isSelected ? 1.1 : 1,
-                      }}
-                      transition={{
-                        delay: idx * 0.02,
-                        type: "spring",
-                        damping: 15,
-                        stiffness: 200,
-                      }}
-                    >
-                      {day}
-
-                      {/* Scan glow effect */}
-                      {currentStep === "scan" && isScanned && !isSelected && (
-                        <motion.div
-                          className="absolute inset-0 rounded-lg"
-                          style={{
-                            background:
-                              "linear-gradient(90deg, transparent, rgba(179,75,113,0.3), transparent)",
-                          }}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: [0, 1, 0] }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      )}
-
-                      {/* Selection checkmark */}
-                      {isSelected && currentStep === "confirm" && (
-                        <motion.div
-                          className="absolute -top-1 -right-1"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", delay: 0.2 }}
-                        >
-                          <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center">
-                            <Check size={10} className="text-[#B34B71]" />
-                          </div>
-                        </motion.div>
-                      )}
-                    </motion.div>
-                  );
-                })}
-
-              {/* Scan beam */}
-              {currentStep === "scan" && (
-                <motion.div
-                  className="absolute left-0 top-0 bottom-0 w-full pointer-events-none"
-                  style={{
-                    background: `linear-gradient(90deg, transparent ${scanProgress - 10}%, rgba(179,75,113,0.4) ${scanProgress}%, transparent ${scanProgress + 10}%)`,
-                  }}
-                />
-              )}
-            </div>
-
-            {/* Time Ribbon */}
-            <AnimatePresence>
-              {currentStep === "confirm" && selectedDay && (
-                <motion.div
-                  className="absolute bottom-4 left-4 right-4"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ type: "spring", delay: 0.3 }}
-                >
-                  <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-3 py-2">
-                    <span className="text-[10px] text-white/50 uppercase tracking-wider">Time</span>
-                    <motion.span
-                      className="text-[12px] font-medium text-[#B34B71]"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.5 }}
-                    >
-                      10:00 AM
-                    </motion.span>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
   );
 }
 

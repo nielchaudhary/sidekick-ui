@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { delay } from "@/lib/utils";
 
@@ -477,7 +477,7 @@ function BusActivity({ phase }: { phase: InferencePhase }) {
 }
 
 // Main Silicon Inference Component
-export default function SiliconInference() {
+const SiliconInference = memo(function SiliconInference() {
   const [phase, setPhase] = useState<InferencePhase>("idle");
   const [attentionPattern, setAttentionPattern] = useState<boolean[][]>(
     Array(ATTENTION_GRID_SIZE)
@@ -732,4 +732,6 @@ export default function SiliconInference() {
       </svg>
     </div>
   );
-}
+});
+
+export default SiliconInference;

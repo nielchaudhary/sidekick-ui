@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { delay } from "@/lib/utils";
 import type { MemoryAnimationPhase } from "@/types/animations";
@@ -329,7 +329,7 @@ const AI_RESPONSE = "Sure, Sidekick will set a reminder for 6PM";
  * MemoryAnimation Component
  * Displays an animated chat interface showing memory capture and storage
  */
-export default function MemoryAnimation() {
+const MemoryAnimation = memo(function MemoryAnimation() {
   const [phase, setPhase] = useState<MemoryAnimationPhase>("input");
   const [inputText, setInputText] = useState("");
   const [showUserMessage, setShowUserMessage] = useState(false);
@@ -616,4 +616,6 @@ export default function MemoryAnimation() {
       </motion.div>
     </div>
   );
-}
+});
+
+export default MemoryAnimation;

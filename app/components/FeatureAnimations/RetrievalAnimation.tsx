@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, memo } from "react";
 import { motion } from "framer-motion";
 import { delay } from "@/lib/utils";
 import type { DataPoint } from "@/types/animations";
@@ -20,7 +20,7 @@ const DATA_POINTS: DataPoint[] = [
  * RetrievalAnimation Component
  * Displays a quantum scan laser beam sweeping over data to find matches
  */
-export default function RetrievalAnimation() {
+const RetrievalAnimation = memo(function RetrievalAnimation() {
   const [scanComplete, setScanComplete] = useState(false);
   const [cycleKey, setCycleKey] = useState(0);
 
@@ -340,4 +340,6 @@ export default function RetrievalAnimation() {
       </svg>
     </div>
   );
-}
+});
+
+export default RetrievalAnimation;
