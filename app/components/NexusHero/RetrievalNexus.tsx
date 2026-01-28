@@ -1437,7 +1437,7 @@ export default function RetrievalNexus() {
   }, []);
 
   return (
-    <div className="relative w-full h-full overflow-hidden flex items-center justify-center mt-5">
+    <div className="relative w-full h-full overflow-hidden flex items-center justify-center">
       {/* Decorative Blur Blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div

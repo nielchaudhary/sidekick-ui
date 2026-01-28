@@ -107,7 +107,7 @@ function AttentionCell({
 
   return (
     <motion.div
-      className="w-2.5 h-2.5 rounded-[2px]"
+      className="w-2.5 h-2.5 rounded-[1px]"
       style={{
         background: isActive ? headColors[headIndex] : "rgba(255, 255, 255, 0.08)",
         boxShadow: isActive ? `0 0 6px ${headColors[headIndex]}` : "none",
@@ -141,7 +141,7 @@ function AttentionMatrix({
     <div className="relative">
       {/* Matrix label */}
       <motion.div
-        className="absolute -top-5 left-0 text-[9px] font-mono text-white/40 uppercase tracking-wider"
+        className="absolute -top-5 left-0 text-[10px] font-mono text-white/40 uppercase tracking-wider"
         style={{ fontFamily: "Geist Mono, monospace" }}
         animate={{ opacity: phase === "attention" ? 1 : 0.3 }}
       >
@@ -226,19 +226,21 @@ function ComputeCore({
   load: number;
 }) {
   const isActive = phase === "ffn" || phase === "complete";
+  // 2x2 grid positions - top-left, top-right, bottom-left, bottom-right
   const positions = [
-    { top: "25%", left: "25%" },
-    { top: "25%", left: "75%" },
-    { top: "75%", left: "25%" },
-    { top: "75%", left: "75%" },
+    { top: 0, left: 0 },
+    { top: 0, left: 1 },
+    { top: 1, left: 0 },
+    { top: 1, left: 1 },
   ];
+  const pos = positions[index];
 
   return (
     <motion.div
-      className="absolute w-12 h-12 -translate-x-1/2 -translate-y-1/2"
+      className="absolute w-10 h-10"
       style={{
-        top: positions[index].top,
-        left: positions[index].left,
+        top: pos.top * 40, // 40px per cell, no gap for joined look
+        left: pos.left * 40,
       }}
       animate={{
         scale: isActive ? [1, 1.05, 1] : 1,
@@ -279,7 +281,7 @@ function ComputeCore({
 
         {/* Core label */}
         <div
-          className="absolute inset-0 flex items-center justify-center text-[9px] font-mono text-white/50"
+          className="absolute inset-0 flex items-center justify-center text-[10px] font-mono text-white/50"
           style={{ fontFamily: "Geist Mono, monospace" }}
         >
           {index}
@@ -651,7 +653,7 @@ export default function SiliconInference() {
           </div>
 
           {/* Main Processing Area */}
-          <div className="flex-1 flex items-center justify-center gap-4 relative">
+          <div className="flex-1 flex items-center justify-center gap-6 relative">
             {/* Bus Activity Lines */}
             <BusActivity phase={phase} />
 
@@ -663,15 +665,15 @@ export default function SiliconInference() {
               <AttentionMatrix phase={phase} activePattern={attentionPattern} />
             </div>
 
-            {/* Compute Cores Area */}
-            <div className="relative w-[72px] h-[72px] z-10 shrink-0">
+            {/* Compute Cores Area - 2x2 grid */}
+            <div className="relative w-20 h-20 z-10 shrink-0 border border-white/10 rounded-sm bg-[rgba(9,9,11,0.6)]">
               {[0, 1, 2, 3].map((i) => (
                 <ComputeCore key={i} index={i} phase={phase} load={coreLoads[i]} />
               ))}
 
               {/* Core area label */}
               <div
-                className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[8px] font-mono text-white/40 uppercase tracking-wider whitespace-nowrap"
+                className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-white/40 uppercase tracking-wider whitespace-nowrap"
                 style={{ fontFamily: "Geist Mono, monospace" }}
               >
                 FFN
@@ -688,7 +690,7 @@ export default function SiliconInference() {
         </div>
 
         {/* Right Column: Token Log */}
-        <div className="w-20 h-full py-5 shrink-0">
+        <div className="w-20 h-full py-5 shrink-0 ml-6">
           <TokenLog phase={phase} tokens={tokenLog} />
         </div>
       </div>
