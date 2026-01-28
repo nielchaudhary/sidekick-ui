@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ReactElement } from "react";
 import {
@@ -21,29 +21,28 @@ export function WaitlistExperience(): ReactElement {
   const [role, setRole] = useState<string>("");
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Target date: March 1st, 2026 at 12:00 PM (noon)
-  const targetDate = new Date("2026-03-01T12:00:00");
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const calculateTime = useCallback(() => {
+    // Target date: March 1st, 2026 at 12:00 PM (noon)
+    const targetDate = new Date("2026-03-01T12:00:00");
+    const now = new Date();
+    const difference = targetDate.getTime() - now.getTime();
+
+    if (difference <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+
+    return {
+      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((difference / 1000 / 60) % 60),
+      seconds: Math.floor((difference / 1000) % 60),
+    };
+  }, []);
+
+  const [timeLeft, setTimeLeft] = useState(calculateTime);
 
   useEffect(() => {
-    const calculateTime = () => {
-      const now = new Date();
-      const difference = targetDate.getTime() - now.getTime();
-
-      if (difference <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-
-      return {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    };
-
-    setTimeLeft(calculateTime());
     const timer = setInterval(() => setTimeLeft(calculateTime()), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [calculateTime]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
