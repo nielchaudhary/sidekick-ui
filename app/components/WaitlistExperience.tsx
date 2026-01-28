@@ -117,8 +117,8 @@ export function WaitlistExperience(): ReactElement {
                     Join the waitlist
                   </h1>
                   <p className="text-white/60 text-base font-medium">
-                    Early access to Sidekick. <br />
-                    Your second brain in action.
+                    Get Early access to Sidekick, <br />
+                    <span className="font-semibold">your second brain in action</span>
                   </p>
                 </header>
 
