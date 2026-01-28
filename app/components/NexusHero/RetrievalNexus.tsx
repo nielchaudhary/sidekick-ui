@@ -77,7 +77,7 @@ const DEMO_CONVERSATION = {
     month: "March",
     year: 2024,
     time: "10:00 AM",
-    title: "Follow-up Review",
+    title: "Follow-up with OpenAI",
   },
   sourcesToActivate: ["sidekick-db", "notion", "slack", "gmail", "sheets"],
 };
