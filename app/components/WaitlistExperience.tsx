@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ReactElement } from "react";
-import { Spotlight } from "./Spotlight";
 import {
   Select,
   SelectContent,
@@ -14,7 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { GRADIENTS } from "@/lib/theme";
 
 // --- Main Experience ---
 
@@ -83,24 +81,17 @@ export function WaitlistExperience(): ReactElement {
   };
 
   return (
-    <section className="relative w-full overflow-hidden py-20 lg:py-40 bg-black flex items-center justify-center">
-      {/* Cinematic Spotlight Background */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <Spotlight
-          gradientFirst={GRADIENTS.spotlightWarm.first}
-          gradientSecond={GRADIENTS.spotlightWarm.second}
-          translateY={-200}
-          width={600}
-          height={1400}
-        />
-      </div>
-
+    <section className="relative w-full overflow-hidden pt-12 pb-8 lg:pt-20 lg:pb-12 bg-black flex items-center justify-center">
       <div className="relative z-20 w-full max-w-[440px] px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
+          className="relative backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(255, 51, 26, 0.08) 0%, rgba(204, 26, 153, 0.06) 50%, rgba(102, 13, 204, 0.04) 100%)",
+          }}
         >
           {/* Subtle Glass Reflection */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none" />

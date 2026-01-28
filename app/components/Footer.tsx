@@ -4,9 +4,9 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer id="contact" className="relative py-24 md:py-32">
+    <footer id="contact" className="relative pt-12 pb-24 md:pt-16 md:pb-32">
       {/* Top Border - Subtle gradient fade */}
-      <div className="border-t border-white/[0.05]"></div>
+      <div className="border-t border-white/[0.1]"></div>
 
       {/* Footer Content */}
       <div className="max-w-7xl mx-auto px-6 pt-16">
