@@ -9,7 +9,6 @@ type AppPhase =
   | "idle"
   | "sending"
   | "intentExtraction"
-  | "bifurcation"
   | "retrieving"
   | "ingestion"
   | "crossReferencing"
@@ -803,7 +802,7 @@ function DataPulse({
 
 // Memory Lattice Component with iOS icons and dashed connectors
 function MemoryLattice({ phase, activeSources }: { phase: AppPhase; activeSources: string[] }) {
-  const isVisible = ["retrieving", "ingestion", "crossReferencing", "judgment", "bifurcation"].includes(phase);
+  const isVisible = ["retrieving", "ingestion", "crossReferencing", "judgment"].includes(phase);
   const showShatter = phase === "judgment";
 
   const renderIcon = (source: MemorySource, isActive: boolean) => {
@@ -964,94 +963,12 @@ function MemoryLattice({ phase, activeSources }: { phase: AppPhase; activeSource
   );
 }
 
-// Single Orb Element - reusable for both main and action orbs
-function SingleOrb({
-  variant,
-  isIngestion,
-  isJudgment,
-  isCrossRef,
-  scale,
-}: {
-  variant: "retrieval" | "action";
-  isIngestion: boolean;
-  isJudgment: boolean;
-  isCrossRef: boolean;
-  scale: number;
-}) {
-  const isAction = variant === "action";
-  const primaryColor = isAction ? "#4285F4" : "#B34B71";
-  const darkColor = isAction ? "#1a365d" : "#2b0707";
-
-  return (
-    <motion.div
-      className="relative z-10"
-      animate={{ scale }}
-      transition={{ type: "spring", damping: 15, stiffness: 200 }}
-    >
-      <motion.div
-        className="w-12 h-12 rounded-full overflow-hidden relative shadow-2xl"
-        style={{
-          background: `linear-gradient(135deg, ${darkColor} 0%, #0a0a0a 100%)`,
-          border: `1px solid ${primaryColor}40`,
-        }}
-        animate={{
-          boxShadow: isJudgment
-            ? `0 0 40px ${primaryColor}80, 0 0 60px ${primaryColor}40`
-            : `0 0 20px ${primaryColor}30`,
-        }}
-        transition={{ duration: 0.15 }}
-      >
-        {/* Inner Plasma */}
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            background: isJudgment
-              ? `radial-gradient(circle at 50% 50%, ${primaryColor} 0%, ${primaryColor}80 40%, ${darkColor} 100%)`
-              : `radial-gradient(circle at 30% 30%, ${primaryColor} 0%, ${primaryColor}60 50%, ${darkColor} 100%)`,
-          }}
-          animate={
-            isIngestion
-              ? { rotate: [0, isAction ? -360 : 360], scale: [1, 1.1, 1] }
-              : { scale: 1 }
-          }
-          transition={
-            isIngestion
-              ? {
-                  rotate: { duration: 1.2, repeat: Infinity, ease: "linear" },
-                  scale: { duration: 0.6, repeat: Infinity },
-                }
-              : { duration: 0.1 }
-          }
-        />
-        {/* Liquid highlight */}
-        <div className="absolute top-1 left-1.5 w-4 h-2 bg-white/30 rounded-full blur-[2px] rotate-[-20deg]" />
-      </motion.div>
-
-      {/* Label */}
-      <motion.div
-        className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap"
-        initial={{ opacity: 0, y: -5 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <span
-          className="text-[8px] font-semibold tracking-[0.15em] uppercase"
-          style={{ color: `${primaryColor}80` }}
-        >
-          {isAction ? "Action" : "Retrieval"}
-        </span>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// Ruby Orb Core with 3-Step Context Formation + Bifurcation
+// Ruby Orb Core with 3-Step Context Formation
 function OrbCore({ phase }: { phase: AppPhase }) {
   const isIngestion = phase === "ingestion";
   const isCrossRef = phase === "crossReferencing";
   const isJudgment = phase === "judgment";
-  const isBifurcation = phase === "bifurcation";
-  const isVisible = ["retrieving", "ingestion", "crossReferencing", "judgment", "bifurcation"].includes(phase);
+  const isVisible = ["retrieving", "ingestion", "crossReferencing", "judgment"].includes(phase);
 
   // Scale: 15% larger during ingestion
   const orbScale = isIngestion ? 1.15 : isCrossRef ? 1.1 : isJudgment ? 1.2 : 1;
@@ -1217,61 +1134,6 @@ function OrbCore({ phase }: { phase: AppPhase }) {
         )}
       </AnimatePresence>
 
-      {/* Bifurcation: Split Orbs */}
-      <AnimatePresence>
-        {isBifurcation && (
-          <motion.div
-            className="flex items-center gap-16"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Retrieval Orb - Left */}
-            <motion.div
-              initial={{ x: 0, scale: 0.5, opacity: 0 }}
-              animate={{ x: -40, scale: 1, opacity: 1 }}
-              exit={{ x: 0, scale: 0.5, opacity: 0 }}
-              transition={{ type: "spring", damping: 20, stiffness: 150 }}
-            >
-              <SingleOrb
-                variant="retrieval"
-                isIngestion={false}
-                isJudgment={false}
-                isCrossRef={false}
-                scale={1}
-              />
-            </motion.div>
-
-            {/* Connection line between orbs */}
-            <motion.div
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-0.5"
-              style={{
-                background: "linear-gradient(90deg, #B34B71 0%, #4285F4 100%)",
-              }}
-              initial={{ scaleX: 0, opacity: 0 }}
-              animate={{ scaleX: 1, opacity: 0.5 }}
-              transition={{ delay: 0.3, duration: 0.4 }}
-            />
-
-            {/* Action Orb - Right */}
-            <motion.div
-              initial={{ x: 0, scale: 0.5, opacity: 0 }}
-              animate={{ x: 40, scale: 1, opacity: 1 }}
-              exit={{ x: 0, scale: 0.5, opacity: 0 }}
-              transition={{ type: "spring", damping: 20, stiffness: 150, delay: 0.1 }}
-            >
-              <SingleOrb
-                variant="action"
-                isIngestion={false}
-                isJudgment={false}
-                isCrossRef={false}
-                scale={1}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
@@ -1525,13 +1387,9 @@ export default function RetrievalNexus() {
 
       // Phase I: Intent Extraction - Keywords glow
       setPhase("intentExtraction");
-            await delay(1200);
+      await delay(1200);
 
-      // Phase II: Bifurcation - Orb splits into two
-      setPhase("bifurcation");
-      await delay(1800);
-
-      // Phase III: Activate sources for retrieval
+      // Phase II: Activate sources for retrieval
       setPhase("retrieving");
       await delay(100);
       setActiveSources(["sidekick-db", "notion", "slack", "gmail", "sheets"]);
@@ -1690,13 +1548,11 @@ export default function RetrievalNexus() {
                 ? "cross-referencing"
                 : phase === "intentExtraction"
                   ? "intent extraction"
-                  : phase === "bifurcation"
-                    ? "dual processing"
-                    : phase === "calendar"
-                      ? "scheduling"
-                      : phase === "execution"
-                        ? "executing"
-                        : phase}
+                  : phase === "calendar"
+                    ? "scheduling"
+                    : phase === "execution"
+                      ? "executing"
+                      : phase}
             </motion.span>
           </AnimatePresence>
         </div>
