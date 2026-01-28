@@ -52,7 +52,7 @@ const features = [
   {
     id: "reasoning",
     label: "REASONING",
-    title: "A second brain",
+    title: "YOUR Virtual Second Brain",
     icon: ReasoningAnimation,
     points: [
       "Flags when your current plan contradicts previous data.",
@@ -179,7 +179,7 @@ export default function FeatureSwitcher() {
                       transition={{ duration: 0.25, ease: "easeOut" }}
                     >
                       <h3
-                        className="font-headline text-3xl md:text-4xl text-white mb-4"
+                        className="font-headline text-2xl md:text-2xl text-white mb-4"
                         style={{
                           letterSpacing: "-0.04em",
                           WebkitFontSmoothing: "antialiased",
@@ -702,39 +702,8 @@ function MemoryAnimation() {
 
       {/* Background card with 10% vertical padding */}
       <div className="absolute inset-x-0 top-[5%] bottom-[5%] rounded-2xl overflow-hidden">
-        {/* Dithered Burgundy Gradient Background */}
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            background: `radial-gradient(ellipse at 30% 20%, #B34B71 0%, #6B2D4A 35%, #3D1A2E 60%, #1A0912 100%)`,
-          }}
-          animate={{
-            filter: isBackgroundActive ? "brightness(1.1)" : "brightness(1)",
-          }}
-          transition={{ duration: 0.5 }}
-        />
-
         {/* Neural Pathways Background - Activates during thinking */}
         <NeuralPathwaysBackground isActive={isBackgroundActive} />
-
-        {/* Grain Overlay */}
-        <div
-          className="absolute inset-0 opacity-40 pointer-events-none mix-blend-overlay"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "repeat",
-          }}
-        />
-
-        {/* Secondary Grain Layer */}
-        <div
-          className="absolute inset-0 opacity-20 pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise2'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise2)'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "repeat",
-            mixBlendMode: "soft-light",
-          }}
-        />
       </div>
 
       {/* Content Container with backdrop blur during thinking */}
@@ -1239,22 +1208,6 @@ function ContextAnimation() {
 
   return (
     <div className="relative w-[340px] h-[280px] overflow-hidden rounded-2xl">
-      {/* Burgundy Gradient Background */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `radial-gradient(ellipse at 50% 30%, #B34B71 0%, #6B2D4A 35%, #3D1A2E 60%, #1A0912 100%)`,
-        }}
-      />
-
-      {/* Grain Overlay */}
-      <div
-        className="absolute inset-0 opacity-30 pointer-events-none mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 340 280">
         <defs>
           {/* Glow filter for the traveling synapse */}
@@ -1484,22 +1437,6 @@ function RetentionAnimation() {
 
   return (
     <div className="relative w-[340px] h-[280px] overflow-hidden rounded-2xl">
-      {/* Burgundy Gradient Background */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `radial-gradient(ellipse at 50% 80%, #B34B71 0%, #6B2D4A 30%, #3D1A2E 55%, #1A0912 100%)`,
-        }}
-      />
-
-      {/* Grain Overlay */}
-      <div
-        className="absolute inset-0 opacity-30 pointer-events-none mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
       {/* SVG Filters */}
       <svg className="absolute w-0 h-0">
         <defs>
@@ -1564,9 +1501,7 @@ function RetentionAnimation() {
                     top: slab.y - 220 + 30,
                   }}
                   initial={
-                    isNewest
-                      ? { opacity: 0, y: -50, scaleY: 1.2 }
-                      : { opacity: 1, y: 0, scaleY: 1 }
+                    isNewest ? { opacity: 0, y: -50, scaleY: 1.2 } : { opacity: 1, y: 0, scaleY: 1 }
                   }
                   animate={{
                     opacity: 1,
@@ -1751,22 +1686,6 @@ function RetrievalAnimation() {
 
   return (
     <div className="relative w-[340px] h-[280px] overflow-hidden rounded-2xl">
-      {/* Burgundy Gradient Background */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `radial-gradient(ellipse at 50% 50%, #6B2D4A 0%, #3D1A2E 40%, #1A0912 100%)`,
-        }}
-      />
-
-      {/* Grain Overlay */}
-      <div
-        className="absolute inset-0 opacity-30 pointer-events-none mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
       <svg
         className="absolute inset-0 w-full h-full"
         viewBox="0 0 340 280"
@@ -2099,30 +2018,11 @@ function ReasoningAnimation() {
 
   return (
     <div className="relative w-[340px] h-[280px] overflow-hidden rounded-2xl">
-      {/* Burgundy Gradient Background */}
-      <motion.div
-        className="absolute inset-0"
-        style={{
-          background: `radial-gradient(ellipse at 50% 50%, #6B2D4A 0%, #3D1A2E 40%, #1A0912 100%)`,
-        }}
-        animate={{
-          background:
-            phase === "conclusion"
-              ? `radial-gradient(ellipse at 50% 50%, #B34B71 0%, #6B2D4A 30%, #1A0912 100%)`
-              : `radial-gradient(ellipse at 50% 50%, #6B2D4A 0%, #3D1A2E 40%, #1A0912 100%)`,
-        }}
-        transition={{ duration: 0.5 }}
-      />
-
-      {/* Grain Overlay */}
-      <div
-        className="absolute inset-0 opacity-30 pointer-events-none mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
-      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 340 280" key={`reason-${cycleKey}`}>
+      <svg
+        className="absolute inset-0 w-full h-full"
+        viewBox="0 0 340 280"
+        key={`reason-${cycleKey}`}
+      >
         <defs>
           {/* Spark glow */}
           <filter id="sparkGlow" x="-100%" y="-100%" width="300%" height="300%">
@@ -2340,7 +2240,11 @@ function ReasoningAnimation() {
 
         {/* CONCLUSION - Central Burst */}
         {phase === "conclusion" && (
-          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
             {/* Radial expansion rings */}
             {[0, 1, 2].map((i) => (
               <motion.circle
