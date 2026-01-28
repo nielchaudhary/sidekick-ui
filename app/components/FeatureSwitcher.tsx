@@ -1483,9 +1483,9 @@ function ContextAnimation() {
   }, [cycleKey]);
 
   return (
-    <div className="relative w-[340px] h-[420px] overflow-hidden rounded-2xl">
+    <div className="relative w-[340px] h-[420px] overflow-hidden rounded-2xl p-4">
       <svg
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-4 w-[calc(100%-32px)] h-[calc(100%-32px)]"
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         key={`semantic-${cycleKey}`}
       >
