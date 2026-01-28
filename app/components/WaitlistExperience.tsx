@@ -130,7 +130,7 @@ export function WaitlistExperience(): ReactElement {
                 <form onSubmit={handleSubmit} className="space-y-4 mb-8 flex flex-col items-center">
                   {/* Role Dropdown - Cinematic Smooth Feel with No Persistent Focus */}
                   <Select onValueChange={setRole}>
-                    <SelectTrigger className="w-[75%] bg-white/[0.05] border-white/10 text-white h-12 rounded-xl">
+                    <SelectTrigger className="w-[75%] bg-black/40 border border-white/20 text-white h-12 rounded-xl backdrop-blur-sm hover:border-white/30 hover:bg-black/50 transition-all duration-500 ease-out">
                       <SelectValue placeholder="What is your role?" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#0A0A0A] border-white/10 text-white rounded-xl shadow-2xl">
@@ -155,7 +155,7 @@ export function WaitlistExperience(): ReactElement {
                   <div className="flex flex-col gap-3 w-[75%] items-center">
                     <Input
                       type="text"
-                      placeholder="tech@sidekick.ai"
+                      placeholder="Email Address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       autoComplete="off"
