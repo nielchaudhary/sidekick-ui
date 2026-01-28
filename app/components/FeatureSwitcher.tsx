@@ -142,75 +142,58 @@ export default function FeatureSwitcher() {
           })}
         </div>
 
-        {/* Feature Card with Nested Canvas Design */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeFeature.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="relative"
-          >
-            {/* Card container */}
-            <div className="relative rounded-xl p-3 md:p-8">
-              {/* Internal Card with visible border matching dotted grid */}
-              <div className="relative rounded-3xl overflow-hidden border border-white/20">
-                <div className="flex flex-col md:flex-row min-h-[380px]">
-                  {/* Left: Content (40%) */}
-                  <div className="w-full md:w-[40%] p-8 md:p-12 flex flex-col justify-center">
-                    {/* Top dotted line - subtle white */}
-                    <div
-                      className="w-full h-px mb-6"
-                      style={{
-                        backgroundImage:
-                          "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
-                        backgroundSize: "8px 1px",
-                        backgroundRepeat: "repeat-x",
-                      }}
-                    />
+        {/* Feature Card - Static container, only content changes */}
+        <div className="relative">
+          {/* Card container */}
+          <div className="relative rounded-xl p-3 md:p-8">
+            {/* Internal Card with visible border matching dotted grid */}
+            <div className="relative rounded-3xl overflow-hidden border border-white/20">
+              <div className="flex flex-col md:flex-row h-[500px] md:h-[420px]">
+                {/* Left: Content (40%) */}
+                <div className="w-full md:w-[40%] p-8 md:p-12 flex flex-col justify-center overflow-hidden">
+                  {/* Top dotted line - subtle white */}
+                  <div
+                    className="w-full h-px mb-6"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
+                      backgroundSize: "8px 1px",
+                      backgroundRepeat: "repeat-x",
+                    }}
+                  />
 
-                    <motion.h3
+                  {/* Animated content area */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeFeature.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 }}
-                      className="font-headline text-3xl md:text-4xl text-white mb-4"
-                      style={{
-                        letterSpacing: "-0.04em",
-                        WebkitFontSmoothing: "antialiased",
-                      }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
                     >
-                      {activeFeature.title.toUpperCase()}
-                    </motion.h3>
-                    {activeFeature.description && (
-                      <motion.p
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-lg leading-relaxed mb-6"
-                        style={{ color: "#A1A1AA" }}
+                      <h3
+                        className="font-headline text-3xl md:text-4xl text-white mb-4"
+                        style={{
+                          letterSpacing: "-0.04em",
+                          WebkitFontSmoothing: "antialiased",
+                        }}
                       >
-                        {activeFeature.description}
-                      </motion.p>
-                    )}
-
-                    {/* Feature Points */}
-                    {activeFeature.points && (
-                      <>
-                        <motion.ul
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.3 }}
-                          className="space-y-4"
+                        {activeFeature.title.toUpperCase()}
+                      </h3>
+                      {activeFeature.description && (
+                        <p
+                          className="text-lg leading-relaxed mb-6"
+                          style={{ color: "#A1A1AA" }}
                         >
+                          {activeFeature.description}
+                        </p>
+                      )}
+
+                      {/* Feature Points */}
+                      {activeFeature.points && (
+                        <ul className="space-y-4">
                           {activeFeature.points.map((point: string, idx: number) => (
-                            <motion.li
-                              key={idx}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.3 + idx * 0.1 }}
-                              className="flex items-start gap-2"
-                            >
+                            <li key={idx} className="flex items-start gap-2">
                               <span className="text-[#6A2424] font-bold text-lg leading-none mt-px">
                                 |
                               </span>
@@ -220,46 +203,56 @@ export default function FeatureSwitcher() {
                               >
                                 {point}
                               </span>
-                            </motion.li>
+                            </li>
                           ))}
-                        </motion.ul>
+                        </ul>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
 
-                        {/* Bottom dotted line - subtle white */}
-                        <div
-                          className="w-full h-px mt-6"
-                          style={{
-                            backgroundImage:
-                              "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
-                            backgroundSize: "8px 1px",
-                            backgroundRepeat: "repeat-x",
-                          }}
-                        />
-                      </>
-                    )}
-                  </div>
+                  {/* Bottom dotted line - subtle white */}
+                  <div
+                    className="w-full h-px mt-6"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)",
+                      backgroundSize: "8px 1px",
+                      backgroundRepeat: "repeat-x",
+                    }}
+                  />
+                </div>
 
-                  {/* Dashed Divider - subtle white for dark theme */}
-                  <div className="hidden md:block w-px relative">
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        backgroundImage:
-                          "linear-gradient(to bottom, rgba(255,255,255,0.15) 50%, transparent 50%)",
-                        backgroundSize: "1px 8px",
-                        backgroundRepeat: "repeat-y",
-                      }}
-                    />
-                  </div>
+                {/* Dashed Divider - subtle white for dark theme */}
+                <div className="hidden md:block w-px relative">
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(to bottom, rgba(255,255,255,0.15) 50%, transparent 50%)",
+                      backgroundSize: "1px 8px",
+                      backgroundRepeat: "repeat-y",
+                    }}
+                  />
+                </div>
 
-                  {/* Right: Animation Area (60%) */}
-                  <div className="w-full md:w-[60%] flex items-center justify-center p-6 md:p-8">
-                    <activeFeature.icon />
-                  </div>
+                {/* Right: Animation Area (60%) */}
+                <div className="w-full md:w-[60%] flex items-center justify-center p-6 md:p-8">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeFeature.id}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
+                    >
+                      <activeFeature.icon />
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        </div>
 
         {/* Feature indicators - Burgundy accent on black */}
         <div className="flex justify-center gap-2 mt-8">
