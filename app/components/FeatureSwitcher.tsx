@@ -1396,256 +1396,434 @@ function ContextAnimation() {
   );
 }
 
-// Chronos Vault - Retention Animation
-// Vertical stack of translucent glass slabs with compression effect
+// Chronos Vault v2 - Retention Animation (2D)
+// Storage Cell type for the 2D grid
+interface StorageCell {
+  id: number;
+  row: number;
+  col: number;
+  status: "empty" | "writing" | "encrypted";
+  bitstream: string;
+}
+
+// Generate random hex string
+const generateHex = (length: number): string => {
+  const chars = "0123456789ABCDEF";
+  return Array.from({ length }, () => chars[Math.floor(Math.random() * 16)]).join("");
+};
+
+// Generate WAL log entries
+const generateLogEntry = (): string => {
+  return `0x${generateHex(2)} 0x${generateHex(2)} 0x${generateHex(2)}`;
+};
+
 function RetentionAnimation() {
-  const [isCompressing, setIsCompressing] = useState(false);
-  const [newSlabKey, setNewSlabKey] = useState(0);
+  const [phase, setPhase] = useState<"idle" | "log" | "allocate" | "flush" | "done">("idle");
+  const [cycleKey, setCycleKey] = useState(0);
+  const [logEntries, setLogEntries] = useState<string[]>([]);
+  const [encryptionProgress, setEncryptionProgress] = useState(0);
+  const [pageRef, setPageRef] = useState("0x00000000");
+  const [integrityHash, setIntegrityHash] = useState("________________");
+  const [iopsValue, setIopsValue] = useState(0);
+  const [persistenceFlash, setPersistenceFlash] = useState(false);
 
-  // Animation cycle: add new slab, compress, repeat
+  // Grid dimensions: 8 columns x 6 rows
+  const GRID_COLS = 8;
+  const GRID_ROWS = 6;
+
+  // Initialize grid cells with fragmentation fill order
+  const gridCells = useMemo<StorageCell[]>(() => {
+    const cells: StorageCell[] = [];
+    for (let row = 0; row < GRID_ROWS; row++) {
+      for (let col = 0; col < GRID_COLS; col++) {
+        cells.push({
+          id: row * GRID_COLS + col,
+          row,
+          col,
+          status: "empty",
+          bitstream: generateHex(4),
+        });
+      }
+    }
+    return cells;
+  }, []);
+
+  // Fragmentation fill order - non-sequential to mimic memory allocation
+  const fillOrder = useMemo(() => {
+    const order = [
+      3, 17, 8, 24, 12, 1, 29, 5, 21, 14, 33, 7, 19, 2, 26, 11, 35, 4, 22, 15, 30, 9, 27, 0, 18, 13,
+      31, 6, 23, 10, 34, 16, 20, 28, 32, 25, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+    ];
+    return order.filter((i) => i < GRID_COLS * GRID_ROWS);
+  }, []);
+
+  // Track which cells are filled
+  const [filledCells, setFilledCells] = useState<Set<number>>(new Set());
+  const [encryptedCells, setEncryptedCells] = useState<Set<number>>(new Set());
+
+  // Main animation cycle
   useEffect(() => {
-    const cycle = async () => {
-      // Wait, then add new slab
-      await delay(2000);
-      setIsCompressing(true);
-      setNewSlabKey((prev) => prev + 1);
+    const runCycle = async () => {
+      // Reset state
+      setPhase("idle");
+      setLogEntries([]);
+      setEncryptionProgress(0);
+      setFilledCells(new Set());
+      setEncryptedCells(new Set());
+      setPageRef("0x00000000");
+      setIntegrityHash("________________");
+      setIopsValue(0);
+      setPersistenceFlash(false);
 
-      // Compression animation duration
-      await delay(800);
-      setIsCompressing(false);
+      await delay(400);
 
-      // Reset after showing full stack
+      // Phase I: WAL Log (0-1s)
+      setPhase("log");
+      for (let i = 0; i < 8; i++) {
+        setLogEntries((prev) => [generateLogEntry(), ...prev].slice(0, 12));
+        setPageRef(`0x${generateHex(8)}`);
+        setIopsValue(Math.floor(Math.random() * 4000 + 2000));
+        await delay(100);
+      }
+
+      await delay(200);
+
+      // Phase II: Block Allocation (1-3s)
+      setPhase("allocate");
+      const cellsToFill = fillOrder.slice(0, 32);
+      const localFilledCells = new Set<number>();
+      for (let i = 0; i < cellsToFill.length; i++) {
+        localFilledCells.add(cellsToFill[i]);
+        setFilledCells(new Set(localFilledCells));
+        setIopsValue(Math.floor(Math.random() * 6000 + 4000));
+        await delay(50);
+      }
+
+      await delay(300);
+
+      // Phase III: Encryption Sweep / Flush (3-5s)
+      setPhase("flush");
+      const totalRows = GRID_ROWS;
+      for (let row = 0; row <= totalRows; row++) {
+        setEncryptionProgress((row / totalRows) * 100);
+        // Mark cells in current row as encrypted
+        for (let col = 0; col < GRID_COLS; col++) {
+          const cellId = (row - 1) * GRID_COLS + col;
+          if (row > 0 && localFilledCells.has(cellId)) {
+            setEncryptedCells((prev) => new Set([...prev, cellId]));
+          }
+        }
+        await delay(250);
+      }
+
+      // Generate final hash
+      setIntegrityHash(generateHex(16));
+
+      // Persistence flash effect
+      setPersistenceFlash(true);
+      await delay(200);
+      setPersistenceFlash(false);
+
+      setPhase("done");
       await delay(2500);
-      cycle();
+
+      // Restart cycle
+      setCycleKey((prev) => prev + 1);
     };
 
-    cycle();
-  }, []);
-
-  // Glass slab configuration
-  const slabs = useMemo(() => {
-    const baseY = 220;
-    const slabHeight = 35;
-    const gap = 8;
-    return Array.from({ length: 5 }, (_, i) => ({
-      id: i,
-      y: baseY - i * (slabHeight + gap),
-      depth: i, // 0 = newest (top), 4 = oldest (bottom)
-      burgundyIntensity: Math.min(0.3 + i * 0.15, 0.9), // Older = more burgundy
-    }));
-  }, []);
+    runCycle();
+  }, [cycleKey, fillOrder]);
 
   return (
-    <div className="relative w-[340px] h-[280px] overflow-hidden rounded-2xl">
-      {/* SVG Filters */}
-      <svg className="absolute w-0 h-0">
-        <defs>
-          <filter id="glassBlur" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
-          </filter>
-          <filter id="slabGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="8" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          <linearGradient id="slabGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.15)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0.05)" />
-          </linearGradient>
-          <linearGradient id="burgundyGlow" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#B34B71" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="#4A0404" stopOpacity="0.3" />
-          </linearGradient>
-        </defs>
+    <div
+      className="relative w-[340px] h-[280px] overflow-hidden rounded-2xl"
+      style={{
+        filter: persistenceFlash ? "contrast(1.15) brightness(1.1)" : "none",
+        transition: "filter 200ms ease-out",
+      }}
+    >
+      {/* Blueprint Background */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(10,10,15,0.98) 100%)",
+        }}
+      />
+
+      {/* Subtle Grid Lines */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none opacity-30"
+        viewBox="0 0 340 280"
+      >
+        {/* Vertical lines */}
+        {Array.from({ length: 18 }, (_, i) => (
+          <line
+            key={`v-${i}`}
+            x1={i * 20}
+            y1={0}
+            x2={i * 20}
+            y2={280}
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth="0.5"
+          />
+        ))}
+        {/* Horizontal lines */}
+        {Array.from({ length: 15 }, (_, i) => (
+          <line
+            key={`h-${i}`}
+            x1={0}
+            y1={i * 20}
+            x2={340}
+            y2={i * 20}
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth="0.5"
+          />
+        ))}
       </svg>
 
-      {/* Main content */}
-      <div className="relative w-full h-full flex items-center justify-center">
-        {/* Vertical guide lines */}
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 340 280">
-          <line
-            x1="70"
-            y1="30"
-            x2="70"
-            y2="250"
-            stroke="rgba(255,255,255,0.1)"
-            strokeWidth="1"
-            strokeDasharray="4 4"
-          />
-          <line
-            x1="270"
-            y1="30"
-            x2="270"
-            y2="250"
-            stroke="rgba(255,255,255,0.1)"
-            strokeWidth="1"
-            strokeDasharray="4 4"
-          />
-        </svg>
-
-        {/* Glass Slabs Stack */}
-        <div className="relative" style={{ width: 200, height: 220 }}>
-          <AnimatePresence>
-            {slabs.map((slab, index) => {
-              const isNewest = index === 0;
-              const compressionOffset = isCompressing && !isNewest ? 8 : 0;
-
-              return (
-                <motion.div
-                  key={`slab-${slab.id}-${isNewest ? newSlabKey : "static"}`}
-                  className="absolute left-0 right-0"
-                  style={{
-                    height: 35,
-                    top: slab.y - 220 + 30,
-                  }}
-                  initial={
-                    isNewest ? { opacity: 0, y: -50, scaleY: 1.2 } : { opacity: 1, y: 0, scaleY: 1 }
-                  }
-                  animate={{
-                    opacity: 1,
-                    y: compressionOffset,
-                    scaleY: isCompressing && !isNewest ? 0.92 : 1,
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 25,
-                    duration: 0.6,
-                  }}
-                >
-                  {/* Glass slab with backdrop blur effect */}
-                  <div
-                    className="relative w-full h-full rounded-lg overflow-hidden"
-                    style={{
-                      background: `linear-gradient(180deg,
-                        rgba(255,255,255,${0.12 - slab.depth * 0.015}) 0%,
-                        rgba(255,255,255,${0.04 - slab.depth * 0.005}) 100%)`,
-                      backdropFilter: "blur(12px)",
-                      WebkitBackdropFilter: "blur(12px)",
-                      border: "1px solid rgba(255,255,255,0.15)",
-                      boxShadow: `
-                        0 4px 16px rgba(0,0,0,0.2),
-                        inset 0 1px 0 rgba(255,255,255,0.1),
-                        inset 0 -1px 0 rgba(0,0,0,0.1)
-                      `,
-                    }}
-                  >
-                    {/* Burgundy long-term glow for older slabs */}
-                    <motion.div
-                      className="absolute inset-0 rounded-lg"
-                      style={{
-                        background: `linear-gradient(180deg,
-                          rgba(179, 75, 113, ${slab.burgundyIntensity * 0.3}) 0%,
-                          rgba(74, 4, 4, ${slab.burgundyIntensity * 0.2}) 100%)`,
-                      }}
-                      animate={{
-                        opacity: [0.5, 0.8, 0.5],
-                      }}
-                      transition={{
-                        duration: 3,
-                        delay: slab.depth * 0.2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    />
-
-                    {/* Data fragments inside slab */}
-                    <div className="absolute inset-0 flex items-center justify-center gap-3 px-4">
-                      {[...Array(3)].map((_, i) => (
-                        <motion.div
-                          key={`data-${i}`}
-                          className="h-1.5 rounded-full"
-                          style={{
-                            width: 20 + Math.random() * 30,
-                            background: `rgba(255,255,255,${0.4 - slab.depth * 0.05})`,
-                          }}
-                          animate={{
-                            opacity: [0.3, 0.6, 0.3],
-                          }}
-                          transition={{
-                            duration: 2,
-                            delay: i * 0.3,
-                            repeat: Infinity,
-                          }}
-                        />
-                      ))}
-                    </div>
-
-                    {/* Timestamp label */}
-                    <div
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-mono tracking-wider"
-                      style={{ color: `rgba(255,255,255,${0.5 - slab.depth * 0.08})` }}
-                    >
-                      {slab.depth === 0
-                        ? "NOW"
-                        : slab.depth === 1
-                          ? "1D AGO"
-                          : slab.depth === 2
-                            ? "1W AGO"
-                            : slab.depth === 3
-                              ? "1M AGO"
-                              : "1Y AGO"}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-
-          {/* Incoming data particle */}
-          <motion.div
-            className="absolute left-1/2 -translate-x-1/2"
-            style={{ top: -20 }}
-            animate={{
-              y: [0, 30],
-              opacity: [1, 0],
-              scale: [1, 0.5],
-            }}
-            transition={{
-              duration: 0.8,
-              repeat: Infinity,
-              repeatDelay: 4.5,
-              ease: "easeIn",
-            }}
+      {/* Main Layout: WAL (left) | Memory Heap (center) */}
+      <div className="relative w-full h-full flex">
+        {/* WAL - Write-Ahead Log (Left Column) */}
+        <div className="w-[70px] h-full border-r border-white/10 flex flex-col pt-8 pb-12 px-2 overflow-hidden">
+          <div
+            className="text-[6px] font-mono tracking-[0.2em] mb-2"
+            style={{ color: "rgba(255,255,255,0.3)" }}
           >
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{
-                background: "radial-gradient(circle, #FFFFFF 0%, rgba(255,255,255,0.6) 100%)",
-                boxShadow: "0 0 12px rgba(255,255,255,0.8)",
-              }}
-            />
-          </motion.div>
+            WAL
+          </div>
+          <div className="flex-1 overflow-hidden relative">
+            {/* Log entries scrolling up */}
+            <AnimatePresence mode="popLayout">
+              {logEntries.map((entry, i) => (
+                <motion.div
+                  key={`${cycleKey}-${entry}-${i}`}
+                  className="font-mono text-[7px] leading-relaxed"
+                  style={{
+                    color: i === 0 ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.25)",
+                  }}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.1, ease: "linear" }}
+                >
+                  {entry}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {/* Cursor line */}
+            {phase === "log" && (
+              <motion.div
+                className="absolute left-0 right-0 h-[1px]"
+                style={{ background: "#B34B71", top: 0 }}
+                animate={{ opacity: [1, 0.3, 1] }}
+                transition={{ duration: 0.3, repeat: Infinity }}
+              />
+            )}
+          </div>
         </div>
 
-        {/* Encryption indicator */}
-        <motion.div
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2"
-          animate={{ opacity: [0.5, 0.8, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-            <rect
-              x="3"
-              y="11"
-              width="18"
-              height="11"
-              rx="2"
-              stroke="rgba(255,255,255,0.6)"
-              strokeWidth="2"
-            />
-            <path
-              d="M7 11V7a5 5 0 0 1 10 0v4"
-              stroke="rgba(255,255,255,0.6)"
-              strokeWidth="2"
-              fill="none"
-            />
-          </svg>
-          <span className="text-[9px] font-mono tracking-[0.2em] text-white/60 uppercase">
-            Encrypted Vault
+        {/* Memory Heap - Central Grid */}
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-6">
+          {/* Grid Container */}
+          <div className="relative">
+            {/* Grid Cells */}
+            <div
+              className="grid gap-[3px]"
+              style={{
+                gridTemplateColumns: `repeat(${GRID_COLS}, 24px)`,
+                gridTemplateRows: `repeat(${GRID_ROWS}, 24px)`,
+              }}
+            >
+              {gridCells.map((cell) => {
+                const isFilled = filledCells.has(cell.id);
+                const isEncrypted = encryptedCells.has(cell.id);
+
+                return (
+                  <motion.div
+                    key={cell.id}
+                    className="relative rounded-[2px]"
+                    style={{
+                      border: isEncrypted
+                        ? "1px solid rgba(179,75,113,0.6)"
+                        : isFilled
+                          ? "1px solid rgba(179,75,113,0.3)"
+                          : "1px solid rgba(255,255,255,0.1)",
+                      background: isEncrypted
+                        ? "rgba(179,75,113,0.25)"
+                        : isFilled
+                          ? "rgba(179,75,113,0.12)"
+                          : "transparent",
+                    }}
+                    initial={false}
+                    animate={isFilled && !isEncrypted ? { opacity: [0.6, 1, 0.6] } : { opacity: 1 }}
+                    transition={{ duration: PULSE_DURATION, repeat: Infinity }}
+                  >
+                    {/* Bayer Dither flash on fill */}
+                    {isFilled && !isEncrypted && (
+                      <motion.div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                          backgroundImage: `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAACpJREFUGFdjZEADJgY0QCSTBaYByicmJmByyAImBl0AXQCmAsYA0wByAAsvBg8f889VAAAAAElFTkSuQmCC")`,
+                          backgroundRepeat: "repeat",
+                          opacity: 0.3,
+                          mixBlendMode: "overlay",
+                        }}
+                        initial={{ opacity: 0.6 }}
+                        animate={{ opacity: 0.15 }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    )}
+
+                    {/* Lock icon for encrypted cells */}
+                    {isEncrypted && (
+                      <motion.div
+                        className="absolute inset-0 flex items-center justify-center"
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        <svg width="8" height="8" viewBox="0 0 10 10" fill="none">
+                          <rect
+                            x="2"
+                            y="4"
+                            width="6"
+                            height="5"
+                            rx="1"
+                            fill="rgba(179,75,113,0.6)"
+                          />
+                          <path
+                            d="M3 4V3C3 1.89543 3.89543 1 5 1C6.10457 1 7 1.89543 7 3V4"
+                            stroke="rgba(179,75,113,0.6)"
+                            strokeWidth="1"
+                            fill="none"
+                          />
+                        </svg>
+                      </motion.div>
+                    )}
+
+                    {/* Hex data for filled cells */}
+                    {isFilled && !isEncrypted && (
+                      <div
+                        className="absolute inset-0 flex items-center justify-center font-mono text-[5px]"
+                        style={{ color: "rgba(179,75,113,0.5)" }}
+                      >
+                        {cell.bitstream.slice(0, 2)}
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Encryption Sweep Line */}
+            {phase === "flush" && (
+              <motion.div
+                className="absolute left-0 right-0 h-[2px] pointer-events-none"
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent 0%, #B34B71 50%, transparent 100%)",
+                  top: `${encryptionProgress}%`,
+                }}
+              />
+            )}
+          </div>
+
+          {/* Cold Storage Footer */}
+          <div
+            className="mt-4 w-full border-t border-white/10 pt-2"
+            style={{ maxWidth: GRID_COLS * 27 }}
+          >
+            <div className="flex items-center justify-between">
+              <span
+                className="font-mono text-[6px] tracking-[0.15em]"
+                style={{ color: "rgba(255,255,255,0.3)" }}
+              >
+                STABLE
+              </span>
+              <motion.span
+                className="font-mono text-[7px]"
+                style={{ color: phase === "done" ? "#B34B71" : "rgba(255,255,255,0.4)" }}
+              >
+                {phase === "flush"
+                  ? "FLUSHING TO DISK..."
+                  : phase === "done"
+                    ? "COMMITTED"
+                    : "STANDBY"}
+              </motion.span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* HUD Overlay */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* IOPS Meter (top-right) */}
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
+          <span
+            className="font-mono text-[6px] tracking-[0.15em]"
+            style={{ color: "rgba(255,255,255,0.3)" }}
+          >
+            IOPS
           </span>
+          <div className="flex gap-[2px]">
+            {Array.from({ length: 8 }, (_, i) => {
+              const threshold = (i + 1) * 1000;
+              const isActive = iopsValue >= threshold;
+              return (
+                <motion.div
+                  key={i}
+                  className="w-[3px] rounded-sm"
+                  style={{
+                    height: 4 + i * 2,
+                    background: isActive ? "#B34B71" : "rgba(255,255,255,0.1)",
+                  }}
+                  animate={isActive ? { opacity: [0.6, 1, 0.6] } : {}}
+                  transition={{ duration: 0.2 }}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Page ID (top-left below WAL label) */}
+        <div className="absolute top-3 left-[78px]">
+          <span
+            className="font-mono text-[6px] tracking-[0.1em]"
+            style={{ color: "rgba(255,255,255,0.25)" }}
+          >
+            PAGE_REF:{" "}
+            <span style={{ color: "rgba(255,255,255,0.5)" }}>{pageRef.slice(0, 10)}...</span>
+          </span>
+        </div>
+
+        {/* Integrity Hash (bottom) */}
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
+          <span
+            className="font-mono text-[7px] tracking-[0.08em]"
+            style={{ color: "rgba(255,255,255,0.3)" }}
+          >
+            SHA256:{" "}
+            <motion.span
+              style={{ color: phase === "done" ? "rgba(179,75,113,0.8)" : "rgba(255,255,255,0.5)" }}
+              animate={phase === "flush" ? { opacity: [0.3, 0.7, 0.3] } : {}}
+              transition={{ duration: 0.15, repeat: Infinity }}
+            >
+              {integrityHash}
+            </motion.span>
+          </span>
+        </div>
+
+        {/* Status Label (top center) */}
+        <motion.div
+          className="absolute top-3 left-1/2 -translate-x-1/2 font-mono text-[7px] tracking-[0.15em] uppercase"
+          style={{ color: "rgba(255,255,255,0.35)" }}
+        >
+          {phase === "idle" && "CHRONOS VAULT"}
+          {phase === "log" && "WRITING TO WAL..."}
+          {phase === "allocate" && "ALLOCATING BLOCKS..."}
+          {phase === "flush" && "ENCRYPTING..."}
+          {phase === "done" && <span style={{ color: "#B34B71" }}>IMMUTABLE COMMIT</span>}
         </motion.div>
       </div>
     </div>
