@@ -30,7 +30,7 @@ const offerings: Offering[] = [
 
 export default function NexusHero() {
   return (
-    <section className="relative h-screen w-full overflow-hidden">
+    <section className="relative min-h-screen md:h-screen w-full overflow-hidden">
       {/* SVG Filter for Grain Effect */}
       <svg className="hidden">
         <filter id="grain">
@@ -45,18 +45,18 @@ export default function NexusHero() {
 
       {/* Ghost Border - Vertical Separator */}
       <div
-        className="absolute left-1/2 top-0 bottom-0 w-px hidden md:block z-10 pointer-events-none"
+        className="absolute left-1/2 top-0 bottom-0 w-px hidden lg:block z-10 pointer-events-none"
         style={{
           background: GRADIENTS.glassReflection,
         }}
       />
 
-      <div className="relative h-full flex flex-col md:flex-row">
+      <div className="relative h-full flex flex-col lg:flex-row">
         {/* Left Side: The Narrative */}
-        <div className="z-20 w-full md:w-1/2 flex flex-col justify-center px-6 md:px-12 lg:px-20 pt-24 md:pt-0">
+        <div className="z-20 w-full lg:w-1/2 flex flex-col justify-center px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 pt-20 sm:pt-24 md:pt-28 lg:pt-0 pb-8 lg:pb-0">
           {/* Typography */}
           <h1
-            className="text-5xl md:text-7xl lg:text-8xl tracking-[-0.02em] leading-[0.9] text-white mb-6 mt-5"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-[-0.02em] leading-[0.9] text-white mb-4 sm:mb-5 md:mb-6 mt-3 sm:mt-4 md:mt-5"
             style={{
               fontFamily:
                 '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
@@ -77,7 +77,7 @@ export default function NexusHero() {
             <span className="text-zinc-700 transition-colors duration-700 ">the MOAT.</span>
           </h1>
 
-          <p className="max-w-xl text-zinc-300 text-lg leading-relaxed mb-10 font-semibold">
+          <p className="max-w-xl text-zinc-300 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8 md:mb-10 font-semibold">
             What if you had instant answers from every decision you&apos;ve made? Sidekick remembers
             your context and surfaces it exactly when it matters,
             <Highlighter action="underline" color={COLORS.burgundy.primary} strokeWidth={2} isView>
@@ -87,13 +87,13 @@ export default function NexusHero() {
           </p>
 
           {/* Interactive Offerings / Pillars */}
-          <div className="grid grid-cols-1 gap-6 border-l border-white/10 pl-6 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4 sm:gap-3 md:gap-6 border-l sm:border-l-0 lg:border-l border-white/10 pl-4 sm:pl-0 lg:pl-6 mb-8 sm:mb-10 md:mb-12">
             {offerings.map((offering, i) => (
-              <div key={offering.id} className="group cursor-pointer">
-                <h3 className="text-white font-semibold flex items-center gap-2">
+              <div key={offering.id} className="group cursor-pointer sm:border-l lg:border-l-0 sm:border-white/10 sm:pl-3 lg:pl-0">
+                <h3 className="text-white font-semibold flex items-center gap-2 text-sm sm:text-base">
                   <span className="text-[10px] text-zinc-600">0{i + 1}</span> {offering.title}
                 </h3>
-                <p className="text-sm text-zinc-500 group-hover:text-zinc-300 transition-colors">
+                <p className="text-xs sm:text-sm text-zinc-500 group-hover:text-zinc-300 transition-colors">
                   {offering.body}
                 </p>
               </div>
@@ -101,8 +101,8 @@ export default function NexusHero() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex items-center gap-6">
-            <button className="group bg-black text-white px-8 py-3 text-sm font-medium border rounded-2xl border-gray-800 cursor-pointer flex items-center gap-2 transition-all duration-300 hover:border-gray-600">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+            <button className="group w-full sm:w-auto bg-black text-white px-6 sm:px-8 py-3 text-sm font-medium border rounded-2xl border-gray-800 cursor-pointer flex items-center justify-center sm:justify-start gap-2 transition-all duration-300 hover:border-gray-600 active:scale-[0.98]">
               Join the waitlist
               <svg
                 width="16"
@@ -124,10 +124,10 @@ export default function NexusHero() {
         </div>
 
         {/* Right Side: The Retrieval Nexus */}
-        <div className="absolute inset-0 md:relative md:w-1/2 h-full">
+        <div className="relative w-[90%] sm:w-full lg:w-1/2 h-[65vh] sm:h-[60vh] md:h-[70vh] lg:h-full mx-auto sm:mx-0">
           <div className="relative w-full h-full">
             {/* Retrieval Nexus Animation */}
-            <div className="w-full h-full opacity-60 md:opacity-100">
+            <div className="w-full h-full">
               <RetrievalNexus />
             </div>
 
