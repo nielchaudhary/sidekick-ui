@@ -1,7 +1,11 @@
 "use client";
 
 import RetrievalNexus from "./RetrievalNexus";
+import SiliconInference from "./SiliconInference";
 import { Highlighter } from "@/components/ui/highlighter";
+
+// Export both animation components for flexible use
+export { RetrievalNexus, SiliconInference };
 import { GRADIENTS, COLORS } from "@/lib/theme";
 
 interface Offering {
