@@ -2,16 +2,20 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Database } from "lucide-react";
+import { Database, Calendar, Check } from "lucide-react";
 import { delay } from "@/lib/utils";
 
 type AppPhase =
   | "idle"
   | "sending"
+  | "intentExtraction"
+  | "bifurcation"
   | "retrieving"
   | "ingestion"
   | "crossReferencing"
   | "judgment"
+  | "calendar"
+  | "execution"
   | "responding"
   | "storing";
 
@@ -29,10 +33,21 @@ interface BulletPoint {
   suffix: string;
 }
 
+interface CalendarEvent {
+  date: string;
+  day: number;
+  month: string;
+  year: number;
+  time: string;
+  title: string;
+}
+
 interface Message {
   role: "user" | "assistant";
   content?: string;
   bullets?: BulletPoint[];
+  calendarEvent?: CalendarEvent;
+  hasLiveCard?: boolean;
 }
 
 // Five data sources positioned around the orb (pentagon arrangement, 20% longer connectors)
@@ -45,12 +60,25 @@ const MEMORY_SOURCES: MemorySource[] = [
 ];
 
 const DEMO_CONVERSATION = {
-  userMessage: "What were the last month's key decisions from my Sidekick meetings?",
+  userMessage: "What were the last month's key decisions? Also, schedule a follow-up for March 15th.",
+  keywords: [
+    { text: "last month's", type: "retrieval" as const },
+    { text: "key decisions", type: "retrieval" as const },
+    { text: "schedule", type: "action" as const },
+    { text: "March 15th", type: "action" as const },
+  ],
   assistantBullets: [
     { text: "Budget approved at ", keyword: "$2.4M", suffix: " for Q2 expansion" },
     { text: "API blocker resolved by switching to ", keyword: "new SDK", suffix: "" },
-    { text: "Next review scheduled for ", keyword: "March 15th", suffix: "" },
   ],
+  calendarEvent: {
+    date: "2024-03-15",
+    day: 15,
+    month: "March",
+    year: 2024,
+    time: "10:00 AM",
+    title: "Follow-up Review",
+  },
   sourcesToActivate: ["sidekick-db", "notion", "slack", "gmail", "sheets"],
 };
 
@@ -117,6 +145,480 @@ function GoogleSheetsLogo() {
       <path d="M6 12h12v9H6z" fill="#fff" />
       <path d="M6 15h12M6 18h12M10 12v9M14 12v9" stroke="#0F9D58" strokeWidth="0.5" />
     </svg>
+  );
+}
+
+// Google Calendar Logo for toast
+function GoogleCalendarLogo() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <path d="M18 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" fill="#4285F4" />
+      <path d="M4 8h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8z" fill="#fff" />
+      <path d="M8 2v4M16 2v4" stroke="#4285F4" strokeWidth="2" strokeLinecap="round" />
+      <rect x="7" y="11" width="3" height="3" rx="0.5" fill="#EA4335" />
+      <rect x="11" y="11" width="3" height="3" rx="0.5" fill="#FBBC04" />
+      <rect x="7" y="15" width="3" height="3" rx="0.5" fill="#34A853" />
+      <rect x="11" y="15" width="3" height="3" rx="0.5" fill="#4285F4" />
+    </svg>
+  );
+}
+
+// Photon Particle - flies from keyword to orb
+function PhotonParticle({
+  startX,
+  startY,
+  targetX,
+  targetY,
+  delay: particleDelay,
+  color,
+}: {
+  startX: number;
+  startY: number;
+  targetX: number;
+  targetY: number;
+  delay: number;
+  color: string;
+}) {
+  return (
+    <motion.div
+      className="absolute w-2 h-2 rounded-full pointer-events-none"
+      style={{
+        left: startX,
+        top: startY,
+        background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
+        boxShadow: `0 0 8px ${color}, 0 0 16px ${color}40`,
+      }}
+      initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+      animate={{
+        opacity: [0, 1, 1, 0],
+        scale: [0.5, 1.5, 1, 0.5],
+        x: targetX - startX,
+        y: targetY - startY,
+      }}
+      transition={{
+        duration: 0.6,
+        delay: particleDelay,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+    />
+  );
+}
+
+// Keyword with underline glow effect
+function HighlightedKeyword({
+  children,
+  type,
+  isActive,
+  onEmitPhoton,
+}: {
+  children: React.ReactNode;
+  type: "retrieval" | "action";
+  isActive: boolean;
+  onEmitPhoton?: (rect: DOMRect) => void;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const color = type === "retrieval" ? "#B34B71" : "#4285F4";
+
+  useEffect(() => {
+    if (isActive && ref.current && onEmitPhoton) {
+      const rect = ref.current.getBoundingClientRect();
+      onEmitPhoton(rect);
+    }
+  }, [isActive, onEmitPhoton]);
+
+  return (
+    <motion.span
+      ref={ref}
+      className="relative inline-block"
+      animate={isActive ? { color: "#fff" } : {}}
+    >
+      {children}
+      <motion.span
+        className="absolute bottom-0 left-0 right-0 h-0.5"
+        style={{ background: color }}
+        initial={{ scaleX: 0, opacity: 0 }}
+        animate={isActive ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      />
+      {isActive && (
+        <motion.span
+          className="absolute bottom-0 left-0 right-0 h-0.5 blur-sm"
+          style={{ background: color }}
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 0.8, repeat: Infinity }}
+        />
+      )}
+    </motion.span>
+  );
+}
+
+// Chronos Calendar Component - Procedural SVG Calendar
+function ChronosCalendar({
+  phase,
+  targetDay,
+  targetMonth,
+  onComplete,
+}: {
+  phase: AppPhase;
+  targetDay: number;
+  targetMonth: string;
+  onComplete?: () => void;
+}) {
+  const isVisible = phase === "calendar";
+  const [currentStep, setCurrentStep] = useState<"skeleton" | "infill" | "scan" | "confirm">(
+    "skeleton"
+  );
+  const [scanProgress, setScanProgress] = useState(0);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const hasRunRef = useRef(false);
+
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  const weekDays = ["S", "M", "T", "W", "T", "F", "S"];
+
+  useEffect(() => {
+    if (!isVisible) {
+      hasRunRef.current = false;
+      return;
+    }
+
+    if (hasRunRef.current) return;
+    hasRunRef.current = true;
+
+    let cancelled = false;
+
+    const runSequence = async () => {
+      // Skeleton phase
+      if (cancelled) return;
+      setCurrentStep("skeleton");
+      await delay(400);
+
+      // Infill phase - days populate
+      if (cancelled) return;
+      setCurrentStep("infill");
+      await delay(800);
+
+      // Scan phase - conflict check
+      if (cancelled) return;
+      setCurrentStep("scan");
+      for (let i = 0; i <= 100; i += 5) {
+        if (cancelled) return;
+        setScanProgress(i);
+        await delay(30);
+      }
+      await delay(200);
+
+      // Confirm phase - select the target day
+      if (cancelled) return;
+      setCurrentStep("confirm");
+      setSelectedDay(targetDay);
+      await delay(800);
+
+      if (!cancelled) onComplete?.();
+    };
+
+    runSequence();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isVisible, targetDay, onComplete]);
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9, filter: "blur(8px)" }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          className="absolute inset-0 flex items-center justify-center z-30"
+        >
+          <div className="relative w-64 h-72 bg-black/90 backdrop-blur-2xl border border-white/20 rounded-2xl p-4 overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <motion.span
+                className="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/70"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.1 }}
+              >
+                {targetMonth} 2024
+              </motion.span>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", delay: 0.2 }}
+              >
+                <Calendar size={16} className="text-[#B34B71]" />
+              </motion.div>
+            </div>
+
+            {/* Week day headers */}
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {weekDays.map((day, idx) => (
+                <motion.div
+                  key={day + idx}
+                  className="text-[9px] text-white/40 text-center font-medium"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: currentStep !== "skeleton" ? 1 : 0.3 }}
+                  transition={{ delay: idx * 0.03 }}
+                >
+                  {day}
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Days Grid */}
+            <div className="grid grid-cols-7 gap-1 relative">
+              {/* Skeleton dots */}
+              {currentStep === "skeleton" &&
+                days.slice(0, 28).map((_, idx) => (
+                  <motion.div
+                    key={`skeleton-${idx}`}
+                    className="aspect-square flex items-center justify-center"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 0.3, scale: 1 }}
+                    transition={{ delay: idx * 0.02, type: "spring", damping: 15 }}
+                  >
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                  </motion.div>
+                ))}
+
+              {/* Actual days */}
+              {currentStep !== "skeleton" &&
+                days.slice(0, 28).map((day, idx) => {
+                  const isSelected = selectedDay === day;
+                  const isScanned = scanProgress >= (idx / 28) * 100;
+
+                  return (
+                    <motion.div
+                      key={day}
+                      className={`aspect-square flex items-center justify-center rounded-lg text-[11px] font-medium relative ${
+                        isSelected
+                          ? "bg-[#B34B71] text-white"
+                          : "text-white/60 hover:bg-white/5"
+                      }`}
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{
+                        opacity: 1,
+                        scale: isSelected ? 1.1 : 1,
+                      }}
+                      transition={{
+                        delay: idx * 0.02,
+                        type: "spring",
+                        damping: 15,
+                        stiffness: 200,
+                      }}
+                    >
+                      {day}
+
+                      {/* Scan glow effect */}
+                      {currentStep === "scan" && isScanned && !isSelected && (
+                        <motion.div
+                          className="absolute inset-0 rounded-lg"
+                          style={{
+                            background:
+                              "linear-gradient(90deg, transparent, rgba(179,75,113,0.3), transparent)",
+                          }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 1, 0] }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      )}
+
+                      {/* Selection checkmark */}
+                      {isSelected && currentStep === "confirm" && (
+                        <motion.div
+                          className="absolute -top-1 -right-1"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", delay: 0.2 }}
+                        >
+                          <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center">
+                            <Check size={10} className="text-[#B34B71]" />
+                          </div>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  );
+                })}
+
+              {/* Scan beam */}
+              {currentStep === "scan" && (
+                <motion.div
+                  className="absolute left-0 top-0 bottom-0 w-full pointer-events-none"
+                  style={{
+                    background: `linear-gradient(90deg, transparent ${scanProgress - 10}%, rgba(179,75,113,0.4) ${scanProgress}%, transparent ${scanProgress + 10}%)`,
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Time Ribbon */}
+            <AnimatePresence>
+              {currentStep === "confirm" && selectedDay && (
+                <motion.div
+                  className="absolute bottom-4 left-4 right-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ type: "spring", delay: 0.3 }}
+                >
+                  <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                    <span className="text-[10px] text-white/50 uppercase tracking-wider">
+                      Time
+                    </span>
+                    <motion.span
+                      className="text-[12px] font-medium text-[#B34B71]"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      10:00 AM
+                    </motion.span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// Glow Toast Component
+function GlowToast({
+  isVisible,
+  message,
+  transactionId,
+}: {
+  isVisible: boolean;
+  message: string;
+  transactionId: string;
+}) {
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50"
+        >
+          <div
+            className="flex items-center gap-3 px-4 py-3 rounded-xl border"
+            style={{
+              background: "rgba(0,0,0,0.8)",
+              backdropFilter: "blur(20px) saturate(180%)",
+              WebkitBackdropFilter: "blur(20px) saturate(180%)",
+              borderColor: "rgba(179,75,113,0.3)",
+              boxShadow:
+                "0 0 30px rgba(179,75,113,0.2), inset 0 1px 0 rgba(255,255,255,0.1)",
+            }}
+          >
+            {/* Calendar Icon */}
+            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+              <GoogleCalendarLogo />
+            </div>
+
+            {/* Content */}
+            <div className="flex flex-col">
+              <span className="text-[12px] font-medium text-white">{message}</span>
+              <span
+                className="text-[9px] font-mono text-white/40 tracking-wider"
+                style={{ fontFamily: "Geist Mono, monospace" }}
+              >
+                TX: {transactionId}
+              </span>
+            </div>
+
+            {/* Success indicator */}
+            <motion.div
+              className="w-5 h-5 rounded-full bg-[#34A853] flex items-center justify-center"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", delay: 0.2 }}
+            >
+              <Check size={12} className="text-white" />
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// Live Card Component - Embedded in assistant message
+function LiveCard({
+  bullets,
+  calendarEvent,
+  animate,
+}: {
+  bullets: BulletPoint[];
+  calendarEvent?: CalendarEvent;
+  animate: boolean;
+}) {
+  const [showCalendar, setShowCalendar] = useState(false);
+
+  useEffect(() => {
+    if (animate && calendarEvent) {
+      const timer = setTimeout(() => setShowCalendar(true), bullets.length * 800 + 500);
+      return () => clearTimeout(timer);
+    }
+  }, [animate, calendarEvent, bullets.length]);
+
+  return (
+    <div className="space-y-3">
+      {/* Retrieval Section */}
+      <BulletList bullets={bullets} animate={animate} />
+
+      {/* Calendar Section */}
+      {calendarEvent && (
+        <AnimatePresence>
+          {showCalendar && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{ type: "spring", damping: 20 }}
+              className="mt-3 pt-3 border-t border-white/10"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Calendar size={12} className="text-[#4285F4]" />
+                <span className="text-[10px] uppercase tracking-wider text-white/40">
+                  Scheduled
+                </span>
+              </div>
+              <motion.div
+                className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-3 py-2"
+                initial={{ x: -10 }}
+                animate={{ x: 0 }}
+                transition={{ type: "spring", delay: 0.1 }}
+              >
+                <div className="w-10 h-10 rounded-lg bg-[#B34B71]/20 flex flex-col items-center justify-center">
+                  <span className="text-[8px] uppercase text-[#B34B71]">
+                    {calendarEvent.month.slice(0, 3)}
+                  </span>
+                  <span className="text-[14px] font-bold text-white">{calendarEvent.day}</span>
+                </div>
+                <div className="flex-1">
+                  <div className="text-[11px] font-medium text-white">{calendarEvent.title}</div>
+                  <div className="text-[10px] text-white/40">{calendarEvent.time}</div>
+                </div>
+                <motion.div
+                  className="w-5 h-5 rounded-full bg-[#34A853] flex items-center justify-center"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", delay: 0.3 }}
+                >
+                  <Check size={10} className="text-white" />
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
+    </div>
   );
 }
 
@@ -301,7 +803,7 @@ function DataPulse({
 
 // Memory Lattice Component with iOS icons and dashed connectors
 function MemoryLattice({ phase, activeSources }: { phase: AppPhase; activeSources: string[] }) {
-  const isVisible = ["retrieving", "ingestion", "crossReferencing", "judgment"].includes(phase);
+  const isVisible = ["retrieving", "ingestion", "crossReferencing", "judgment", "bifurcation"].includes(phase);
   const showShatter = phase === "judgment";
 
   const renderIcon = (source: MemorySource, isActive: boolean) => {
@@ -462,12 +964,94 @@ function MemoryLattice({ phase, activeSources }: { phase: AppPhase; activeSource
   );
 }
 
-// Ruby Orb Core with 3-Step Context Formation
+// Single Orb Element - reusable for both main and action orbs
+function SingleOrb({
+  variant,
+  isIngestion,
+  isJudgment,
+  isCrossRef,
+  scale,
+}: {
+  variant: "retrieval" | "action";
+  isIngestion: boolean;
+  isJudgment: boolean;
+  isCrossRef: boolean;
+  scale: number;
+}) {
+  const isAction = variant === "action";
+  const primaryColor = isAction ? "#4285F4" : "#B34B71";
+  const darkColor = isAction ? "#1a365d" : "#2b0707";
+
+  return (
+    <motion.div
+      className="relative z-10"
+      animate={{ scale }}
+      transition={{ type: "spring", damping: 15, stiffness: 200 }}
+    >
+      <motion.div
+        className="w-12 h-12 rounded-full overflow-hidden relative shadow-2xl"
+        style={{
+          background: `linear-gradient(135deg, ${darkColor} 0%, #0a0a0a 100%)`,
+          border: `1px solid ${primaryColor}40`,
+        }}
+        animate={{
+          boxShadow: isJudgment
+            ? `0 0 40px ${primaryColor}80, 0 0 60px ${primaryColor}40`
+            : `0 0 20px ${primaryColor}30`,
+        }}
+        transition={{ duration: 0.15 }}
+      >
+        {/* Inner Plasma */}
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            background: isJudgment
+              ? `radial-gradient(circle at 50% 50%, ${primaryColor} 0%, ${primaryColor}80 40%, ${darkColor} 100%)`
+              : `radial-gradient(circle at 30% 30%, ${primaryColor} 0%, ${primaryColor}60 50%, ${darkColor} 100%)`,
+          }}
+          animate={
+            isIngestion
+              ? { rotate: [0, isAction ? -360 : 360], scale: [1, 1.1, 1] }
+              : { scale: 1 }
+          }
+          transition={
+            isIngestion
+              ? {
+                  rotate: { duration: 1.2, repeat: Infinity, ease: "linear" },
+                  scale: { duration: 0.6, repeat: Infinity },
+                }
+              : { duration: 0.1 }
+          }
+        />
+        {/* Liquid highlight */}
+        <div className="absolute top-1 left-1.5 w-4 h-2 bg-white/30 rounded-full blur-[2px] rotate-[-20deg]" />
+      </motion.div>
+
+      {/* Label */}
+      <motion.div
+        className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap"
+        initial={{ opacity: 0, y: -5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <span
+          className="text-[8px] font-semibold tracking-[0.15em] uppercase"
+          style={{ color: `${primaryColor}80` }}
+        >
+          {isAction ? "Action" : "Retrieval"}
+        </span>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// Ruby Orb Core with 3-Step Context Formation + Bifurcation
 function OrbCore({ phase }: { phase: AppPhase }) {
   const isIngestion = phase === "ingestion";
   const isCrossRef = phase === "crossReferencing";
   const isJudgment = phase === "judgment";
-  const isVisible = ["retrieving", "ingestion", "crossReferencing", "judgment"].includes(phase);
+  const isBifurcation = phase === "bifurcation";
+  const isVisible = ["retrieving", "ingestion", "crossReferencing", "judgment", "bifurcation"].includes(phase);
 
   // Scale: 15% larger during ingestion
   const orbScale = isIngestion ? 1.15 : isCrossRef ? 1.1 : isJudgment ? 1.2 : 1;
@@ -632,8 +1216,106 @@ function OrbCore({ phase }: { phase: AppPhase }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Bifurcation: Split Orbs */}
+      <AnimatePresence>
+        {isBifurcation && (
+          <motion.div
+            className="flex items-center gap-16"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Retrieval Orb - Left */}
+            <motion.div
+              initial={{ x: 0, scale: 0.5, opacity: 0 }}
+              animate={{ x: -40, scale: 1, opacity: 1 }}
+              exit={{ x: 0, scale: 0.5, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 150 }}
+            >
+              <SingleOrb
+                variant="retrieval"
+                isIngestion={false}
+                isJudgment={false}
+                isCrossRef={false}
+                scale={1}
+              />
+            </motion.div>
+
+            {/* Connection line between orbs */}
+            <motion.div
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-0.5"
+              style={{
+                background: "linear-gradient(90deg, #B34B71 0%, #4285F4 100%)",
+              }}
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 0.5 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+            />
+
+            {/* Action Orb - Right */}
+            <motion.div
+              initial={{ x: 0, scale: 0.5, opacity: 0 }}
+              animate={{ x: 40, scale: 1, opacity: 1 }}
+              exit={{ x: 0, scale: 0.5, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 150, delay: 0.1 }}
+            >
+              <SingleOrb
+                variant="action"
+                isIngestion={false}
+                isJudgment={false}
+                isCrossRef={false}
+                scale={1}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
+}
+
+// Highlighted User Message - shows keywords during intent extraction
+function HighlightedUserMessage({
+  content,
+  isExtracting,
+}: {
+  content: string;
+  isExtracting: boolean;
+}) {
+  if (!isExtracting) {
+    return <>{content}</>;
+  }
+
+  // Highlight keywords from DEMO_CONVERSATION
+  const keywords = DEMO_CONVERSATION.keywords;
+  const result: React.ReactNode[] = [];
+  let lastIndex = 0;
+
+  keywords.forEach((kw, idx) => {
+    const startIdx = content.toLowerCase().indexOf(kw.text.toLowerCase(), lastIndex);
+    if (startIdx !== -1) {
+      // Add text before keyword
+      if (startIdx > lastIndex) {
+        result.push(content.slice(lastIndex, startIdx));
+      }
+      // Add highlighted keyword
+      result.push(
+        <HighlightedKeyword key={idx} type={kw.type} isActive={true}>
+          {content.slice(startIdx, startIdx + kw.text.length)}
+        </HighlightedKeyword>
+      );
+      lastIndex = startIdx + kw.text.length;
+    }
+  });
+
+  // Add remaining text
+  if (lastIndex < content.length) {
+    result.push(content.slice(lastIndex));
+  }
+
+  return <>{result}</>;
 }
 
 // Chat Window Component
@@ -654,7 +1336,8 @@ function ChatWindow({
     }
   }, [messages]);
 
-  const isVisible = ["idle", "sending", "responding"].includes(phase);
+  const isVisible = ["idle", "sending", "intentExtraction", "responding"].includes(phase);
+  const isExtracting = phase === "intentExtraction";
 
   return (
     <AnimatePresence>
@@ -679,31 +1362,61 @@ function ChatWindow({
             </div>
 
             {/* Messages */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-4">
-              {messages.map((msg, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, x: msg.role === "user" ? 15 : -15, y: 8 }}
-                  animate={{ opacity: 1, x: 0, y: 0 }}
-                  transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-[13px] leading-relaxed
-                      ${
-                        msg.role === "user"
-                          ? "bg-black text-white border border-white/20 rounded-br-md"
-                          : "bg-black text-white border border-white/10 rounded-bl-md"
-                      }`}
+            <div
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto scrollbar-hide p-5 space-y-4"
+              style={{
+                maskImage: "linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%)",
+              }}
+            >
+              <AnimatePresence mode="popLayout">
+                {messages.map((msg, idx) => (
+                  <motion.div
+                    key={`message-${idx}`}
+                    layout
+                    layoutId={`message-${idx}`}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
+                    <div
+                      className={`w-fit max-w-[85%] px-4 py-2.5 rounded-2xl text-[13px] leading-[1.6]
+                        ${
+                          msg.role === "user"
+                            ? "bg-black text-white border border-white/20 rounded-br-md"
+                            : "bg-black text-white border border-white/10 rounded-bl-md"
+                        }`}
+                      style={{
+                        wordBreak: "break-word",
+                        overflowWrap: "anywhere",
+                        letterSpacing: "-0.01em",
+                      }}
+                    >
                     {msg.role === "assistant" && msg.bullets ? (
-                      <BulletList bullets={msg.bullets} animate={idx === messages.length - 1} />
+                      msg.hasLiveCard && msg.calendarEvent ? (
+                        <LiveCard
+                          bullets={msg.bullets}
+                          calendarEvent={msg.calendarEvent}
+                          animate={idx === messages.length - 1}
+                        />
+                      ) : (
+                        <BulletList bullets={msg.bullets} animate={idx === messages.length - 1} />
+                      )
+                    ) : msg.role === "user" && msg.content ? (
+                      <HighlightedUserMessage
+                        content={msg.content}
+                        isExtracting={isExtracting}
+                      />
                     ) : (
                       msg.content
                     )}
-                  </div>
-                </motion.div>
-              ))}
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
 
               {phase === "responding" && messages[messages.length - 1]?.role === "user" && (
                 <motion.div
@@ -731,8 +1444,14 @@ function ChatWindow({
 
             {/* Footer Input Area */}
             <div className="p-3.5 border-t border-white/20">
-              <div className="relative flex items-center bg-white/5 rounded-xl border border-white/15 px-4 py-3">
-                <div className="flex-1 text-[12px] text-white font-medium truncate">
+              <div className="relative flex items-start bg-white/5 rounded-xl border border-white/15 px-4 py-3">
+                <div
+                  className="flex-1 text-[12px] text-white font-medium"
+                  style={{
+                    wordBreak: "break-word",
+                    overflowWrap: "anywhere",
+                  }}
+                >
                   {inputValue || (
                     <span className="text-white/30 italic font-normal">
                       Ask Sidekick anything...
@@ -773,8 +1492,10 @@ export default function RetrievalNexus() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeSources, setActiveSources] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const txId = "SK-DEMO-0001";
 
-  // Auto-running demo animation with Context Formation sequence
+  // Auto-running demo animation with Context Formation sequence + Dual Intent
   useEffect(() => {
     const runDemo = async () => {
       // Reset
@@ -782,7 +1503,8 @@ export default function RetrievalNexus() {
       setMessages([]);
       setActiveSources([]);
       setInputValue("");
-
+      setShowToast(false);
+      
       await delay(1500);
 
       // Simulate typing
@@ -801,13 +1523,18 @@ export default function RetrievalNexus() {
 
       await delay(400);
 
-      // Phase III: Activate all sources simultaneously
-      setPhase("retrieving");
+      // Phase I: Intent Extraction - Keywords glow
+      setPhase("intentExtraction");
+            await delay(1200);
 
-      // Snap all connectors at once
+      // Phase II: Bifurcation - Orb splits into two
+      setPhase("bifurcation");
+      await delay(1800);
+
+      // Phase III: Activate sources for retrieval
+      setPhase("retrieving");
       await delay(100);
       setActiveSources(["sidekick-db", "notion", "slack", "gmail", "sheets"]);
-
       await delay(1500);
 
       // Phase IV Step 1: Ingestion (The Swirl)
@@ -822,28 +1549,51 @@ export default function RetrievalNexus() {
       setPhase("judgment");
       await delay(1200);
 
-      // Responding
+      // Phase V: Calendar Construction
+      setPhase("calendar");
+      await delay(3500);
+
+      // Phase VI: Execution - Show toast
+      setPhase("execution");
+      setShowToast(true);
+      await delay(2000);
+
+      // Responding with Live Card
       setPhase("responding");
+      setShowToast(false);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", bullets: DEMO_CONVERSATION.assistantBullets },
+        {
+          role: "assistant",
+          bullets: DEMO_CONVERSATION.assistantBullets,
+          calendarEvent: DEMO_CONVERSATION.calendarEvent,
+          hasLiveCard: true,
+        },
       ]);
 
-      await delay(5000);
+      await delay(6000);
 
       // Reset and loop
       setActiveSources([]);
-      runDemo();
+            runDemo();
     };
 
     runDemo();
   }, []);
 
+  const isCalendarPhase = phase === "calendar" || phase === "execution";
+
   return (
     <div className="relative w-full h-full overflow-hidden flex items-center justify-center mt-5">
-      {/* Background Neural Grid */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
-        <div
+      {/* Background Neural Grid with Dynamic Warp */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        animate={{
+          opacity: isCalendarPhase ? 0.08 : 0.05,
+        }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div
           className="w-full h-full"
           style={{
             backgroundImage: `radial-gradient(circle at center, rgba(179,75,113,0.1) 0%, transparent 70%),
@@ -851,8 +1601,40 @@ export default function RetrievalNexus() {
                               linear-gradient(to bottom, #444 1px, transparent 1px)`,
             backgroundSize: "100% 100%, 60px 60px, 60px 60px",
           }}
+          animate={{
+            scale: isCalendarPhase ? 1.02 : 1,
+            filter: isCalendarPhase ? "blur(0.5px)" : "blur(0px)",
+          }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         />
-      </div>
+        {/* Gravitational Pull Effect during Calendar */}
+        <AnimatePresence>
+          {isCalendarPhase && (
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <motion.div
+                className="w-64 h-72 rounded-2xl"
+                style={{
+                  background: "radial-gradient(ellipse at center, rgba(179,75,113,0.15) 0%, transparent 70%)",
+                }}
+                animate={{
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       {/* Decorative Blur Blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -879,6 +1661,16 @@ export default function RetrievalNexus() {
       <MemoryLattice phase={phase} activeSources={activeSources} />
       <OrbCore phase={phase} />
       <ChatWindow phase={phase} messages={messages} inputValue={inputValue} />
+      <ChronosCalendar
+        phase={phase}
+        targetDay={DEMO_CONVERSATION.calendarEvent.day}
+        targetMonth={DEMO_CONVERSATION.calendarEvent.month}
+      />
+      <GlowToast
+        isVisible={showToast}
+        message="Event scheduled successfully"
+        transactionId={txId}
+      />
 
       {/* Phase Label HUD */}
       <div className="absolute top-6 left-6 hidden md:block">
@@ -894,7 +1686,17 @@ export default function RetrievalNexus() {
               exit={{ opacity: 0, y: -4 }}
               className="text-[12px] font-medium tracking-[0.2em] text-[#B34B71] uppercase"
             >
-              {phase === "crossReferencing" ? "cross-referencing" : phase}
+              {phase === "crossReferencing"
+                ? "cross-referencing"
+                : phase === "intentExtraction"
+                  ? "intent extraction"
+                  : phase === "bifurcation"
+                    ? "dual processing"
+                    : phase === "calendar"
+                      ? "scheduling"
+                      : phase === "execution"
+                        ? "executing"
+                        : phase}
             </motion.span>
           </AnimatePresence>
         </div>
