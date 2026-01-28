@@ -60,7 +60,7 @@ const MEMORY_SOURCES: MemorySource[] = [
 
 const DEMO_CONVERSATION = {
   userMessage:
-    "What were the last month's key decisions with development team? Also, schedule a follow-up for March 15th with OpenAI.",
+    "What were the last month's key decisions with development team? Also, schedule a follow-up for March 15th with Product Team.",
   keywords: [
     { text: "last month's", type: "retrieval" as const },
     { text: "key decisions", type: "retrieval" as const },
@@ -77,7 +77,7 @@ const DEMO_CONVERSATION = {
     month: "March",
     year: 2024,
     time: "10:00 AM",
-    title: "Follow-up with OpenAI",
+    title: "Follow-up with Product Team",
   },
   sourcesToActivate: ["sidekick-db", "notion", "slack", "gmail", "sheets"],
 };
@@ -1436,62 +1436,8 @@ export default function RetrievalNexus() {
     runDemo();
   }, []);
 
-  const isCalendarPhase = phase === "calendar" || phase === "execution";
-
   return (
     <div className="relative w-full h-full overflow-hidden flex items-center justify-center mt-5">
-      {/* Background Neural Grid with Dynamic Warp */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        animate={{
-          opacity: isCalendarPhase ? 0.08 : 0.05,
-        }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.div
-          className="w-full h-full"
-          style={{
-            backgroundImage: `radial-gradient(circle at center, rgba(179,75,113,0.1) 0%, transparent 70%),
-                              linear-gradient(to right, #444 1px, transparent 1px),
-                              linear-gradient(to bottom, #444 1px, transparent 1px)`,
-            backgroundSize: "100% 100%, 60px 60px, 60px 60px",
-          }}
-          animate={{
-            scale: isCalendarPhase ? 1.02 : 1,
-            filter: isCalendarPhase ? "blur(0.5px)" : "blur(0px)",
-          }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        />
-        {/* Gravitational Pull Effect during Calendar */}
-        <AnimatePresence>
-          {isCalendarPhase && (
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <motion.div
-                className="w-64 h-72 rounded-2xl"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at center, rgba(179,75,113,0.15) 0%, transparent 70%)",
-                }}
-                animate={{
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
       {/* Decorative Blur Blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
