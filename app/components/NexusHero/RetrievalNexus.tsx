@@ -20,7 +20,7 @@ import type {
 } from "@/types";
 import { ChronosCalendar } from "./components/ChronosCalendar";
 
-// Five data sources positioned around the orb (pentagon arrangement, 20% longer connectors)
+// Five data sources positioned around the orb
 const MEMORY_SOURCES: MemorySource[] = [
   { id: "sidekick-db", label: "Sidekick DB", x: 50, y: 24, color: "#B34B71" },
   { id: "notion", label: "Notion", x: 74, y: 38, color: "#FFFFFF" },
