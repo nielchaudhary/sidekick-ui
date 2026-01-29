@@ -2,19 +2,14 @@
 
 import { cn } from "@/lib/utils";
 import { GRADIENTS } from "@/lib/theme";
+import { ReactNode } from "react";
 
 /**
  * Slack Logo SVG Components
  */
-function SlackLogoWhite({ className }: { className?: string }) {
+function SlackLogoWhite() {
   return (
-    <svg
-      width="28"
-      height="28"
-      viewBox="0 0 130 130"
-      className={className}
-      fill="white"
-    >
+    <svg width="28" height="28" viewBox="0 0 130 130" fill="white">
       <path d="M27.3,81.8c0,7.5-6.1,13.6-13.6,13.6S0.1,89.3,0.1,81.8c0-7.5,6.1-13.6,13.6-13.6h13.6V81.8z M34.1,81.8c0-7.5,6.1-13.6,13.6-13.6s13.6,6.1,13.6,13.6v34c0,7.5-6.1,13.6-13.6,13.6s-13.6-6.1-13.6-13.6V81.8z" />
       <path d="M47.7,27.2c-7.5,0-13.6-6.1-13.6-13.6S40.2,0,47.7,0s13.6,6.1,13.6,13.6v13.6H47.7z M47.7,34.1c7.5,0,13.6,6.1,13.6,13.6s-6.1,13.6-13.6,13.6H13.6C6.1,61.3,0,55.2,0,47.7s6.1-13.6,13.6-13.6H47.7z" />
       <path d="M102.2,47.7c0-7.5,6.1-13.6,13.6-13.6s13.6,6.1,13.6,13.6s-6.1,13.6-13.6,13.6h-13.6V47.7z M95.4,47.7c0,7.5-6.1,13.6-13.6,13.6s-13.6-6.1-13.6-13.6V13.6C68.2,6.1,74.3,0,81.8,0s13.6,6.1,13.6,13.6V47.7z" />
@@ -23,14 +18,9 @@ function SlackLogoWhite({ className }: { className?: string }) {
   );
 }
 
-function SlackLogoColor({ className }: { className?: string }) {
+function SlackLogoColor() {
   return (
-    <svg
-      width="28"
-      height="28"
-      viewBox="0 0 130 130"
-      className={className}
-    >
+    <svg width="28" height="28" viewBox="0 0 130 130">
       <path
         d="M27.3,81.8c0,7.5-6.1,13.6-13.6,13.6S0.1,89.3,0.1,81.8c0-7.5,6.1-13.6,13.6-13.6h13.6V81.8z M34.1,81.8c0-7.5,6.1-13.6,13.6-13.6s13.6,6.1,13.6,13.6v34c0,7.5-6.1,13.6-13.6,13.6s-13.6-6.1-13.6-13.6V81.8z"
         fill="#E01E5A"
@@ -51,10 +41,24 @@ function SlackLogoColor({ className }: { className?: string }) {
   );
 }
 
+type Integration = {
+  name: string;
+  color: string;
+  desc: string;
+} & (
+  | { logoWhite: string; logoColor: string; LogoWhiteComponent?: never; LogoColorComponent?: never }
+  | {
+      LogoWhiteComponent: () => ReactNode;
+      LogoColorComponent: () => ReactNode;
+      logoWhite?: never;
+      logoColor?: never;
+    }
+);
+
 /**
  * Integration data - curated list with brand colors for hover glow effect
  */
-const integrations = [
+const integrations: Integration[] = [
   {
     name: "Notion",
     logoWhite: "https://cdn.simpleicons.org/notion/white",
@@ -64,8 +68,8 @@ const integrations = [
   },
   {
     name: "Slack",
-    logoWhite: "https://cdn.simpleicons.org/slack/white",
-    logoColor: "https://cdn.simpleicons.org/slack",
+    LogoWhiteComponent: SlackLogoWhite,
+    LogoColorComponent: SlackLogoColor,
     color: "rgba(74, 21, 75, 0.6)",
     desc: "Communication",
   },
@@ -79,8 +83,8 @@ const integrations = [
   {
     name: "GitHub",
     logoWhite: "https://cdn.simpleicons.org/github/white",
-    logoColor: "https://cdn.simpleicons.org/github",
-    color: "rgba(36, 41, 47, 0.8)",
+    logoColor: "https://cdn.simpleicons.org/github/white",
+    color: "rgba(255, 255, 255, 0.3)",
     desc: "Source Control",
   },
   {
@@ -102,19 +106,10 @@ const integrations = [
 /**
  * IntegrationCard - Individual card with ghosted state and hover excitation
  */
-function IntegrationCard({
-  name,
-  logoWhite,
-  logoColor,
-  color,
-  desc,
-}: {
-  name: string;
-  logoWhite: string;
-  logoColor: string;
-  color: string;
-  desc: string;
-}) {
+function IntegrationCard({ integration }: { integration: Integration }) {
+  const { name, color, desc } = integration;
+  const hasComponent = "LogoWhiteComponent" in integration && integration.LogoWhiteComponent;
+
   return (
     <figure
       className={cn(
@@ -131,22 +126,37 @@ function IntegrationCard({
     >
       <div className="flex flex-row items-center gap-3">
         <div className="relative w-7 h-7">
-          {/* White logo - visible by default, hidden on hover */}
-          <img
-            className="absolute inset-0 z-10 transition-opacity duration-500 opacity-100 group-hover:opacity-0"
-            width="28"
-            height="28"
-            alt={name}
-            src={logoWhite}
-          />
-          {/* Colored logo - hidden by default, visible on hover */}
-          <img
-            className="absolute inset-0 z-10 transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
-            width="28"
-            height="28"
-            alt={name}
-            src={logoColor}
-          />
+          {hasComponent ? (
+            <>
+              {/* White SVG logo - visible by default, hidden on hover */}
+              <div className="absolute inset-0 z-10 transition-opacity duration-500 opacity-100 group-hover:opacity-0">
+                <integration.LogoWhiteComponent />
+              </div>
+              {/* Colored SVG logo - hidden by default, visible on hover */}
+              <div className="absolute inset-0 z-10 transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110">
+                <integration.LogoColorComponent />
+              </div>
+            </>
+          ) : (
+            <>
+              {/* White logo - visible by default, hidden on hover */}
+              <img
+                className="absolute inset-0 z-10 transition-opacity duration-500 opacity-100 group-hover:opacity-0"
+                width="28"
+                height="28"
+                alt={name}
+                src={integration.logoWhite}
+              />
+              {/* Colored logo - hidden by default, visible on hover */}
+              <img
+                className="absolute inset-0 z-10 transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
+                width="28"
+                height="28"
+                alt={name}
+                src={integration.logoColor}
+              />
+            </>
+          )}
           {/* Photonic Bloom - Glow layer on hover */}
           <div
             className="absolute inset-0 blur-xl opacity-0 transition-opacity duration-500 group-hover:opacity-70 scale-150"
@@ -156,7 +166,7 @@ function IntegrationCard({
         <div className="flex flex-col">
           {/* Name with gradient on hover */}
           <figcaption
-            className="text-[13px] font-medium tracking-tight transition-all duration-500"
+            className="text-[13px] font-semibold tracking-tight transition-all duration-500"
             style={{ fontFamily: "Geist Mono, monospace" }}
           >
             <span
@@ -207,7 +217,7 @@ export function IntegrationMarquee() {
       <div className="flex w-full overflow-hidden">
         <div className="flex shrink-0 items-center gap-(--gap) animate-marquee group-hover/marquee:[animation-play-state:paused]">
           {integrations.map((item) => (
-            <IntegrationCard key={item.name} {...item} />
+            <IntegrationCard key={item.name} integration={item} />
           ))}
         </div>
         <div
@@ -215,7 +225,7 @@ export function IntegrationMarquee() {
           aria-hidden="true"
         >
           {integrations.map((item) => (
-            <IntegrationCard key={`${item.name}-clone`} {...item} />
+            <IntegrationCard key={`${item.name}-clone`} integration={item} />
           ))}
         </div>
       </div>

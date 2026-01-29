@@ -83,21 +83,28 @@ export function WaitlistExperience(): ReactElement {
 
   return (
     <section className="relative w-full overflow-hidden pt-12 pb-8 lg:pt-20 lg:pb-12 bg-black flex flex-col items-center justify-center">
+      {/* Integration Marquee Header */}
+      <div className="flex flex-col items-center mb-12 space-y-3">
+        <h2 className="text-3xl font-medium tracking-tighter text-white">Unified Context</h2>
+        <p className="max-w-5xl text-center text-sm font-mono uppercase tracking-[0.2em] text-zinc-500 leading-relaxed">
+          Sidekick bridges the gap between your isolated data silos, creating a singular, <br />
+          intelligence layer across your entire stack.{" "}
+        </p>
+      </div>
+
       {/* Integration Marquee - The Nexus Flux */}
       <IntegrationMarquee />
 
       {/* Section Header */}
-      <h2
-        className="text-center text-zinc-600 text-2xl sm:text-3xl md:text-3xl lg:text-5xl tracking-[-0.02em] leading-[0.9] mb-12 px-6"
-        style={{
-          fontFamily:
-            '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
-          fontWeight: 300,
-          backgroundClip: "text",
-        }}
-      >
-        Memory is leverage, build yours first{" "}
-      </h2>
+      <div className="flex flex-col items-center mb-12 space-y-4 px-6 mt-30">
+        <h2 className="text-3xl font-medium tracking-tighter text-white">
+          Memory is leverage. Build yours first.
+        </h2>
+        <p className="max-w-4xl text-center text-sm font-mono uppercase tracking-[0.2em] text-zinc-500 leading-relaxed">
+          The world is moving from &quot;Search&quot; to &quot;Recall&quot;. Stop losing ideas to
+          the noise of the feed and start compounding your digital capital today.
+        </p>
+      </div>
 
       <div className="relative z-20 w-full max-w-[600px] px-6">
         <motion.div

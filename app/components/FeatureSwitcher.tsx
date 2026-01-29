@@ -99,17 +99,14 @@ export default function FeatureSwitcher() {
 
       <div className="relative max-w-5xl mx-auto">
         {/* Section Header */}
-        <h2
-          className="text-center text-zinc-600 transition-colors duration-700 text-3xl sm:text-3xl md:text-4xl lg:text-5xl tracking-[-0.02em] leading-[0.9] mb-12 mt-10"
-          style={{
-            fontFamily:
-              '"Editorial New", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
-            fontWeight: 300,
-            backgroundClip: "text",
-          }}
-        >
-          What makes Sidekick intelligent{" "}
-        </h2>
+        <div className="flex flex-col items-center mb-12 mt-10 space-y-3">
+          <h2 className="text-3xl font-medium tracking-tighter text-white">
+            What makes Sidekick intelligent
+          </h2>
+          <p className="max-w-2xl text-center text-sm font-mono uppercase tracking-[0.2em] text-zinc-500 leading-relaxed">
+            A singular memory layer that weaves your apps into a unified digital nervous system.
+          </p>
+        </div>
 
         {/* Tab Navigation */}
         <div
