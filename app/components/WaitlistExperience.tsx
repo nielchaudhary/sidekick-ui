@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { IntegrationMarquee } from "./IntegrationMarquee";
 
 // --- Main Experience ---
 
@@ -82,6 +83,9 @@ export function WaitlistExperience(): ReactElement {
 
   return (
     <section className="relative w-full overflow-hidden pt-12 pb-8 lg:pt-20 lg:pb-12 bg-black flex flex-col items-center justify-center">
+      {/* Integration Marquee - The Nexus Flux */}
+      <IntegrationMarquee />
+
       {/* Section Header */}
       <h2
         className="text-center text-zinc-600 text-2xl sm:text-3xl md:text-3xl lg:text-5xl tracking-[-0.02em] leading-[0.9] mb-12 px-6"
