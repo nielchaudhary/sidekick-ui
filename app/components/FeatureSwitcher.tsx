@@ -87,7 +87,7 @@ export default function FeatureSwitcher() {
   const activeFeature = features[activeIndex];
 
   return (
-    <section id="features" className="relative py-24 px-6 lg:px-8 overflow-hidden">
+    <section id="features" className="relative py-24 px-6 lg:px-8 overflow-hidden mt-5">
       {/* Global Noise Overlay */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.015]"

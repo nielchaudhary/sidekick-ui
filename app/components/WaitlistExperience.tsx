@@ -82,7 +82,7 @@ export function WaitlistExperience(): ReactElement {
   };
 
   return (
-    <section className="relative w-full overflow-hidden pt-12 pb-8 lg:pt-20 lg:pb-12 bg-black flex flex-col items-center justify-center">
+    <section className="relative w-full overflow-hidden pt-12 pb-8 lg:pt-20 lg:pb-12 bg-black flex flex-col items-center justify-center mt-20">
       {/* Integration Marquee Header */}
       <div className="flex flex-col items-center mb-12 space-y-3">
         <h2 className="text-3xl font-medium tracking-tighter text-white">Unified Context</h2>
