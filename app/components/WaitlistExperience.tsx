@@ -84,11 +84,12 @@ export function WaitlistExperience(): ReactElement {
   return (
     <section className="relative w-full overflow-hidden pt-12 pb-8 lg:pt-20 lg:pb-12 bg-black flex flex-col items-center justify-center mt-20">
       {/* Integration Marquee Header */}
-      <div className="flex flex-col items-center mb-12 space-y-3">
-        <h2 className="text-3xl font-medium tracking-tighter text-white">Unified Context</h2>
-        <p className="max-w-5xl text-center text-sm font-mono uppercase tracking-[0.2em] text-zinc-500 leading-relaxed">
-          Sidekick bridges the gap between your isolated data silos, creating a singular, <br />
-          intelligence layer across your entire stack.{" "}
+      <div className="flex flex-col items-center mb-12 space-y-3 px-6">
+        <h2 className="text-2xl md:text-3xl font-medium tracking-tighter text-white text-center">Unified Context</h2>
+        <p className="max-w-5xl text-center text-xs md:text-sm font-mono uppercase tracking-[0.2em] text-zinc-500 leading-relaxed">
+          Sidekick bridges the gap between your isolated data silos, creating a singular{" "}
+          <span className="hidden md:inline"><br /></span>
+          intelligence layer across your entire stack.
         </p>
       </div>
 
@@ -97,10 +98,10 @@ export function WaitlistExperience(): ReactElement {
 
       {/* Section Header */}
       <div className="flex flex-col items-center mb-12 space-y-4 px-6 mt-30">
-        <h2 className="text-3xl font-medium tracking-tighter text-white">
+        <h2 className="text-2xl md:text-3xl font-medium tracking-tighter text-white text-center">
           Memory is leverage. Build yours first.
         </h2>
-        <p className="max-w-4xl text-center text-sm font-mono uppercase tracking-[0.2em] text-zinc-500 leading-relaxed">
+        <p className="max-w-4xl text-center text-xs md:text-sm font-mono uppercase tracking-[0.2em] text-zinc-500 leading-relaxed">
           The world is moving from &quot;Search&quot; to &quot;Recall&quot;. Stop losing ideas to
           the noise of the feed and start compounding your digital capital today.
         </p>
@@ -128,10 +129,10 @@ export function WaitlistExperience(): ReactElement {
                 transition={{ duration: 0.4 }}
               >
                 <header className="mb-10 text-center">
-                  <h1 className="text-4xl font-light text-white mb-4 tracking-tight font-serif">
+                  <h1 className="text-3xl md:text-4xl font-light text-white mb-4 tracking-tight font-serif">
                     Join the waitlist
                   </h1>
-                  <p className="text-white/60 text-base font-medium">
+                  <p className="text-white/60 text-sm md:text-base font-medium">
                     Get Early access to Sidekick, <br />
                     <span className="font-semibold">your second brain in action</span>
                   </p>
@@ -140,7 +141,7 @@ export function WaitlistExperience(): ReactElement {
                 <form onSubmit={handleSubmit} className="space-y-4 mb-8 flex flex-col items-center">
                   {/* Role Dropdown - Cinematic Smooth Feel with No Persistent Focus */}
                   <Select onValueChange={setRole}>
-                    <SelectTrigger className="w-[75%] bg-black/40 border border-white/20 text-white h-12 rounded-xl backdrop-blur-sm hover:border-white/30 hover:bg-black/50 transition-all duration-500 ease-out">
+                    <SelectTrigger className="w-full md:w-[75%] bg-black/40 border border-white/20 text-white h-12 rounded-xl backdrop-blur-sm hover:border-white/30 hover:bg-black/50 transition-all duration-500 ease-out">
                       <SelectValue placeholder="What is your role?" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#0A0A0A] border-white/10 text-white rounded-xl shadow-2xl">
@@ -162,7 +163,7 @@ export function WaitlistExperience(): ReactElement {
                     </SelectContent>
                   </Select>
 
-                  <div className="flex flex-col gap-3 w-[75%] items-center">
+                  <div className="flex flex-col gap-3 w-full md:w-[75%] items-center">
                     <Input
                       type="text"
                       placeholder="Email Address"
@@ -173,7 +174,7 @@ export function WaitlistExperience(): ReactElement {
                     />
                     <Button
                       type="submit"
-                      className="w-[75%] bg-black border border-white/20 hover:bg-black/80"
+                      className="w-full md:w-[75%] bg-black border border-white/20 hover:bg-black/80"
                     >
                       Get Notified
                     </Button>

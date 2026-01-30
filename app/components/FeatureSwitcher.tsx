@@ -1,7 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+
+/** Hook to detect mobile viewport */
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < breakpoint);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, [breakpoint]);
+
+  return isMobile;
+}
 import { SiliconInference } from "@/app/components/NexusHero";
 import {
   MemoryAnimation,
@@ -85,6 +99,7 @@ const features = [
 export default function FeatureSwitcher() {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeFeature = features[activeIndex];
+  const isMobile = useIsMobile();
 
   return (
     <section id="features" className="relative py-24 px-6 lg:px-8 overflow-hidden mt-5">
@@ -99,11 +114,11 @@ export default function FeatureSwitcher() {
 
       <div className="relative max-w-5xl mx-auto">
         {/* Section Header */}
-        <div className="flex flex-col items-center mb-12 mt-10 space-y-3">
-          <h2 className="text-3xl font-medium tracking-tighter text-white">
+        <div className="flex flex-col items-center mb-12 mt-10 space-y-3 px-4">
+          <h2 className="text-2xl md:text-3xl font-medium tracking-tighter text-white text-center">
             What makes Sidekick intelligent
           </h2>
-          <p className="max-w-2xl text-center text-sm font-mono uppercase tracking-[0.2em] text-zinc-500 leading-relaxed">
+          <p className="max-w-2xl text-center text-xs md:text-sm font-mono uppercase tracking-[0.2em] text-zinc-500 leading-relaxed">
             A singular memory layer that weaves your apps into a unified digital nervous system.
           </p>
         </div>
@@ -141,17 +156,21 @@ export default function FeatureSwitcher() {
                 {/* Active Tab Background */}
                 {isActive && (
                   <motion.span
-                    layoutId="activeTabBackground"
+                    layoutId={isMobile ? undefined : "activeTabBackground"}
                     className="absolute inset-0 rounded-xl"
                     style={{
                       background: "linear-gradient(90deg, #B34B71 0%, #8B2D5A 50%, #4A0404 100%)",
                       borderTop: "1px solid rgba(255, 255, 255, 0.2)",
                     }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 400,
-                      damping: 30,
-                    }}
+                    transition={
+                      isMobile
+                        ? { duration: 0 }
+                        : {
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 30,
+                          }
+                    }
                   />
                 )}
                 {/* Dither Layer */}
@@ -162,9 +181,9 @@ export default function FeatureSwitcher() {
                       backgroundImage: `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAACpJREFUGFdjZEADJgY0QCSTBaYByicmJmByyAImBl0AXQCmAsYA0wByAAsvBg8f889VAAAAAElFTkSuQmCC")`,
                       backgroundRepeat: "repeat",
                     }}
-                    initial={{ scale: 0.98 }}
-                    animate={{ scale: [0.98, 1, 0.98] }}
-                    transition={{ duration: 0.15 }}
+                    initial={isMobile ? false : { scale: 0.98 }}
+                    animate={isMobile ? {} : { scale: [0.98, 1, 0.98] }}
+                    transition={isMobile ? { duration: 0 } : { duration: 0.15 }}
                   />
                 )}
                 <span
@@ -184,9 +203,9 @@ export default function FeatureSwitcher() {
         <div className="relative">
           <div className="relative rounded-xl p-3 md:p-8">
             <div className="relative rounded-3xl overflow-hidden border border-white/20">
-              <div className="flex flex-col md:flex-row h-[500px] md:h-[420px]">
+              <div className="flex flex-col md:flex-row h-auto md:h-[420px]">
                 {/* Left: Content */}
-                <div className="w-full md:w-[40%] p-8 md:p-12 flex flex-col justify-center overflow-hidden">
+                <div className="w-full md:w-[40%] p-6 md:p-12 flex flex-col justify-center overflow-hidden text-center md:text-left">
                   {/* Top dotted line */}
                   <div
                     className="w-full h-px mb-6"
@@ -202,10 +221,10 @@ export default function FeatureSwitcher() {
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeFeature.id}
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={isMobile ? false : { opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.25, ease: "easeOut" }}
+                      exit={isMobile ? {} : { opacity: 0, y: -10 }}
+                      transition={isMobile ? { duration: 0 } : { duration: 0.25, ease: "easeOut" }}
                     >
                       <h3
                         className="font-headline text-2xl md:text-2xl text-white mb-4"
@@ -220,8 +239,11 @@ export default function FeatureSwitcher() {
                       {activeFeature.points && (
                         <ul className="space-y-4">
                           {activeFeature.points.map((point: string, idx: number) => (
-                            <li key={idx} className="flex items-start gap-2">
-                              <span className="text-[#6A2424] font-bold text-lg leading-none mt-px">
+                            <li
+                              key={idx}
+                              className="flex items-start gap-2 justify-center md:justify-start"
+                            >
+                              <span className="text-[#6A2424] font-bold text-lg leading-none mt-px hidden md:inline">
                                 |
                               </span>
                               <span
@@ -262,8 +284,8 @@ export default function FeatureSwitcher() {
                   />
                 </div>
 
-                {/* Right: Animation Area */}
-                <div className="w-full md:w-[60%] flex items-center justify-center p-6 md:p-8">
+                {/* Right: Animation Area - Hidden on mobile */}
+                <div className="hidden md:flex w-full md:w-[60%] items-center justify-center p-6 md:p-8">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeFeature.id}
