@@ -93,7 +93,10 @@ export default function NexusHero() {
           {/* Interactive Offerings / Pillars */}
           <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4 sm:gap-3 md:gap-6 border-l sm:border-l-0 lg:border-l border-white/10 pl-4 sm:pl-0 lg:pl-6 mb-8 sm:mb-10 md:mb-12">
             {offerings.map((offering, i) => (
-              <div key={offering.id} className="group cursor-pointer sm:border-l lg:border-l-0 sm:border-white/10 sm:pl-3 lg:pl-0">
+              <div
+                key={offering.id}
+                className="group cursor-pointer sm:border-l lg:border-l-0 sm:border-white/10 sm:pl-3 lg:pl-0"
+              >
                 <h3 className="text-white font-semibold flex items-center gap-2 text-sm sm:text-base">
                   <span className="text-[10px] text-zinc-600">0{i + 1}</span> {offering.title}
                 </h3>
