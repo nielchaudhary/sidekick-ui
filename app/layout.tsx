@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "Sidekick - Your Intelligent Virtual Sidekick",
   description:
     "The thinking partner that remembers. For operators who make decisions under pressure.",
+  icons: {
+    icon: "/favion.png",
+  },
 };
 
 export default function RootLayout({

@@ -28,10 +28,11 @@ export default function Navbar() {
           : `1px solid ${BORDERS.transparent}`,
       }}
     >
-      <nav className="flex items-center justify-between h-16 px-6 lg:px-8 mx-auto max-w-7xl">
+      <nav className="flex items-center justify-between h-16 px-6 lg:px-8 mx-auto max-w-8xl">
         {/* Logo */}
-        <a href="https://sidekick.runtimelabs.space">
-          <Image src="/sidekick-logo.png" alt="Sidekick" width={180} height={24} priority />
+        <a href="https://sidekick.runtimelabs.space" className="flex items-center">
+          <Image src="/favion.png" alt="Sidekick" width={75} height={30} priority />
+          <span className="text-white font-semibold text-xl tracking-tight -ml-6">sidekick</span>
         </a>
 
         {/* Navigation Links - hidden on scroll - unhide this later on after deploying the entire app */}
