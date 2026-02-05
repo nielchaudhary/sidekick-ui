@@ -124,7 +124,7 @@ export function WaitlistExperience(): ReactElement {
       {/* Section Header */}
       <div className="flex flex-col items-center mb-12 space-y-4 px-6 mt-30">
         <h2 className="text-2xl md:text-3xl font-medium tracking-tighter text-white text-center">
-          Memory is leverage. Build yours first.
+          Memory is leverage.<span className="ml-1">Build yours first.</span>
         </h2>
         <p className="max-w-4xl text-center text-xs md:text-sm font-mono uppercase tracking-[0.2em] text-zinc-500 leading-relaxed">
           The world is moving from &quot;Search&quot; to &quot;Recall&quot;. Stop losing ideas to
