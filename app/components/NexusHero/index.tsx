@@ -81,7 +81,7 @@ export default function NexusHero() {
             <span className="text-zinc-700 transition-colors duration-700 ">the MOAT.</span>
           </h1>
 
-          <p className="max-w-xl text-zinc-300 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8 md:mb-10 font-semibold">
+          <p className="max-w-7xl text-zinc-300 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8 md:mb-10 font-semibold">
             What if you had instant answers from every decision you&apos;ve made? Sidekick remembers
             your context and surfaces it exactly when it matters,
             <Highlighter action="underline" color={COLORS.burgundy.primary} strokeWidth={2} isView>

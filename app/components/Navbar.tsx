@@ -28,7 +28,7 @@ export default function Navbar() {
           : `1px solid ${BORDERS.transparent}`,
       }}
     >
-      <nav className="flex items-center justify-between h-16 px-6 lg:px-8 mx-auto max-w-8xl">
+      <nav className="flex items-center justify-between h-16 px-6 lg:px-8 mx-auto max-w-7xl">
         {/* Logo */}
         <a href="https://sidekick.runtimelabs.space" className="flex items-center">
           <Image src="/favion.png" alt="Sidekick" width={75} height={30} priority />
