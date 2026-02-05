@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { GRADIENTS, COLORS, BORDERS } from "@/lib/theme";
 
 const NavbarItems = ["Features", "Integrations"];
@@ -28,8 +29,10 @@ export default function Navbar() {
       }}
     >
       <nav className="flex items-center justify-between h-16 px-6 lg:px-8 mx-auto max-w-7xl">
-        {/* Logo - Ghost White */}
-        <div className="font-sans text-xl tracking-tight font-semibold">Sidekick</div>
+        {/* Logo */}
+        <a href="https://sidekick.runtimelabs.space">
+          <Image src="/sidekick-logo.png" alt="Sidekick" width={180} height={24} priority />
+        </a>
 
         {/* Navigation Links - hidden on scroll - unhide this later on after deploying the entire app */}
         {/* <div
