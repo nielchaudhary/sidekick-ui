@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { GRADIENTS, COLORS, BORDERS } from "@/lib/theme";
 
+const NavbarItems = ["Features", "Integrations"];
+
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -29,13 +31,13 @@ export default function Navbar() {
         {/* Logo - Ghost White */}
         <div className="font-sans text-xl tracking-tight font-semibold">Sidekick</div>
 
-        {/* Navigation Links - hidden on scroll */}
-        <div
+        {/* Navigation Links - hidden on scroll - unhide this later on after deploying the entire app */}
+        {/* <div
           className={`hidden md:flex items-center gap-8 transition-all duration-350 ease-[cubic-bezier(0.33,1,0.68,1)] ${
             isScrolled ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
         >
-          {["Agents", "Features", "Pricing"].map((label) => (
+          {NavbarItems.map((label) => (
             <a
               key={label}
               href="#"
@@ -50,7 +52,7 @@ export default function Navbar() {
               />
             </a>
           ))}
-        </div>
+        </div> */}
 
         {/* CTA Button - Black with white border */}
         <button
