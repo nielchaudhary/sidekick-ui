@@ -66,7 +66,8 @@ export default function Navbar() {
         </div> */}
 
         {/* CTA Button - Black with white border */}
-        <button
+        <a
+          href="#waitlist"
           className="text-white text-sm font-medium px-6 py-2.5 rounded-full transition-all duration-200"
           style={{
             background: COLORS.black.full,
@@ -74,7 +75,7 @@ export default function Navbar() {
           }}
         >
           Join the Waitlist
-        </button>
+        </a>
       </nav>
     </header>
   );

@@ -122,7 +122,7 @@ export function WaitlistExperience(): ReactElement {
       <IntegrationMarquee />
 
       {/* Section Header */}
-      <div className="flex flex-col items-center mb-12 space-y-4 px-6 mt-30">
+      <div id="waitlist" className="flex flex-col items-center mb-12 space-y-4 px-6 mt-30">
         <h2 className="text-2xl md:text-3xl font-medium tracking-tighter text-white text-center">
           Memory is leverage.<span className="ml-1">Build yours first.</span>
         </h2>
