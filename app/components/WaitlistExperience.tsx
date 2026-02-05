@@ -15,6 +15,17 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { IntegrationMarquee } from "./IntegrationMarquee";
 
+enum Occupation {
+  FOUNDER_CEO = "Founder/CEO",
+  PRODUCT = "Product (PM/APM)",
+  ENGINEERING = "Engineering",
+  DESIGN = "Design",
+  OPS_STRATEGY = "Ops/Strategy",
+  GTM_GROWTH = "GTM/Growth",
+  INVESTING = "Investing (VC/PE)",
+  OTHER = "Other",
+}
+
 // --- Main Experience ---
 
 export function WaitlistExperience(): ReactElement {
@@ -85,10 +96,14 @@ export function WaitlistExperience(): ReactElement {
     <section className="relative w-full overflow-hidden pt-12 pb-8 lg:pt-20 lg:pb-12 bg-black flex flex-col items-center justify-center mt-20">
       {/* Integration Marquee Header */}
       <div className="flex flex-col items-center mb-12 space-y-3 px-6">
-        <h2 className="text-2xl md:text-3xl font-medium tracking-tighter text-white text-center">Unified Context</h2>
+        <h2 className="text-2xl md:text-3xl font-medium tracking-tighter text-white text-center">
+          Unified Context
+        </h2>
         <p className="max-w-5xl text-center text-xs md:text-sm font-mono uppercase tracking-[0.2em] text-zinc-500 leading-relaxed">
           Sidekick bridges the gap between your isolated data silos, creating a singular{" "}
-          <span className="hidden md:inline"><br /></span>
+          <span className="hidden md:inline">
+            <br />
+          </span>
           intelligence layer across your entire stack.
         </p>
       </div>
@@ -145,21 +160,15 @@ export function WaitlistExperience(): ReactElement {
                       <SelectValue placeholder="What is your role?" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#0A0A0A] border-white/10 text-white rounded-xl shadow-2xl">
-                      <SelectItem value="engineer" className="hover:bg-white/5 focus:bg-white/10">
-                        Software Engineer
-                      </SelectItem>
-                      <SelectItem value="pm" className="hover:bg-white/5 focus:bg-white/10">
-                        Product Manager
-                      </SelectItem>
-                      <SelectItem value="executive" className="hover:bg-white/5 focus:bg-white/10">
-                        Executive
-                      </SelectItem>
-                      <SelectItem value="founder" className="hover:bg-white/5 focus:bg-white/10">
-                        Founder
-                      </SelectItem>
-                      <SelectItem value="student" className="hover:bg-white/5 focus:bg-white/10">
-                        Student
-                      </SelectItem>
+                      {Object.values(Occupation).map((occupation) => (
+                        <SelectItem
+                          key={occupation}
+                          value={occupation}
+                          className="hover:bg-white/5 focus:bg-white/10 cursor-pointer"
+                        >
+                          {occupation}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
 
