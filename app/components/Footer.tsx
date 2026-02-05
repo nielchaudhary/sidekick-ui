@@ -16,7 +16,7 @@ export default function Footer() {
           <div className="col-span-full lg:col-span-5 flex flex-col justify-between">
             <div>
               <div className="flex items-center">
-                <Image src="/favicon.png" alt="Sidekick" width={75} height={30} className="-ml-5" />
+                <Image src="/favicon.png" alt="Sidekick" width={70} height={30} className="-ml-5" />
                 <span className="text-white font-semibold text-xl tracking-tight -ml-4">
                   sidekick
                 </span>
