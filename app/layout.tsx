@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Sidekick - Your Intelligent Virtual Sidekick",
+  title: "Sidekick",
   description:
     "The thinking partner that remembers. For operators who make decisions under pressure.",
   icons: {
