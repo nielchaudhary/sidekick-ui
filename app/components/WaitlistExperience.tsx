@@ -13,7 +13,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import axios from "axios";
 import { IntegrationMarquee } from "./IntegrationMarquee";
+import { WAITLIST_URL } from "@/lib/api-constants";
 
 enum Occupation {
   FOUNDER_CEO = "Founder/CEO",
@@ -56,7 +58,7 @@ export function WaitlistExperience(): ReactElement {
     return () => clearInterval(timer);
   }, [calculateTime]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validation: Check if role is selected
@@ -83,13 +85,21 @@ export function WaitlistExperience(): ReactElement {
       return;
     }
 
-    // Success: Submit the form
-    setIsSubmitted(true);
-    toast.success("Welcome to the future", {
-      description: "You've been added to the waitlist. We'll reach out soon.",
-    });
-
-    // Logic for backend submission goes here
+    // Submit to backend
+    try {
+      await axios.post(WAITLIST_URL, {
+        email,
+        occupation: role,
+      });
+      setIsSubmitted(true);
+      toast.success("Welcome to the future", {
+        description: "You've been added to the waitlist. We'll reach out soon.",
+      });
+    } catch {
+      toast.error("Something went wrong", {
+        description: "Please try again later.",
+      });
+    }
   };
 
   return (
@@ -160,13 +170,13 @@ export function WaitlistExperience(): ReactElement {
                       <SelectValue placeholder="What is your role?" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#0A0A0A] border-white/10 text-white rounded-xl shadow-2xl">
-                      {Object.values(Occupation).map((occupation) => (
+                      {Object.entries(Occupation).map(([key, label]) => (
                         <SelectItem
-                          key={occupation}
-                          value={occupation}
+                          key={key}
+                          value={key}
                           className="hover:bg-white/5 focus:bg-white/10 cursor-pointer font-semibold"
                         >
-                          {occupation}
+                          {label}
                         </SelectItem>
                       ))}
                     </SelectContent>
