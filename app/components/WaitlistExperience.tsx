@@ -164,7 +164,7 @@ export function WaitlistExperience(): ReactElement {
                         <SelectItem
                           key={occupation}
                           value={occupation}
-                          className="hover:bg-white/5 focus:bg-white/10 cursor-pointer"
+                          className="hover:bg-white/5 focus:bg-white/10 cursor-pointer font-semibold"
                         >
                           {occupation}
                         </SelectItem>
