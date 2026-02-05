@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { GRADIENTS } from "@/lib/theme";
 
 export default function Footer() {
@@ -14,7 +15,12 @@ export default function Footer() {
           {/* Left: Brand Identity (Spans 5 columns on desktop) */}
           <div className="col-span-full lg:col-span-5 flex flex-col justify-between">
             <div>
-              <h2 className="text-xl font-semibold tracking-tight">Sidekick</h2>
+              <div className="flex items-center">
+                <Image src="/favicon.png" alt="Sidekick" width={75} height={30} className="-ml-5" />
+                <span className="text-white font-semibold text-xl tracking-tight -ml-4">
+                  sidekick
+                </span>
+              </div>
               <p className="mt-4 text-sm text-white/60 max-w-[280px] leading-relaxed">
                 Intelligent memory for people who can&apos;t afford to forget.
               </p>

@@ -31,8 +31,8 @@ export default function Navbar() {
       <nav className="flex items-center justify-between h-16 px-6 lg:px-8 mx-auto max-w-7xl">
         {/* Logo */}
         <a href="https://sidekick.runtimelabs.space" className="flex items-center">
-          <Image src="/favion.png" alt="Sidekick" width={75} height={30} priority />
-          <span className="text-white font-semibold text-xl tracking-tight -ml-6">sidekick</span>
+          <Image src="/favicon.png" alt="Sidekick" width={75} height={30} priority />
+          <span className="text-white font-semibold text-xl tracking-tight -ml-4">sidekick</span>
         </a>
 
         {/* Navigation Links - hidden on scroll - unhide this later on after deploying the entire app */}

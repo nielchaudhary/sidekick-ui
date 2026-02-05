@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description:
     "The thinking partner that remembers. For operators who make decisions under pressure.",
   icons: {
-    icon: "/favion.png",
+    icon: "/favicon.png",
   },
 };
 
