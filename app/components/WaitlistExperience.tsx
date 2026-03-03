@@ -37,7 +37,7 @@ export function WaitlistExperience(): ReactElement {
 
   const calculateTime = useCallback(() => {
     // Target date: March 1st, 2026 at 12:00 PM (noon)
-    const targetDate = new Date("2026-03-01T12:00:00");
+    const targetDate = new Date("2026-03-31T12:00:00");
     const now = new Date();
     const difference = targetDate.getTime() - now.getTime();
 
