@@ -9,36 +9,18 @@
 // 5. Go to Supabase Dashboard → Authentication → Providers → Google
 // 6. Enable it and paste the Client ID and Client Secret
 
-// APPLE OAUTH SETUP:
-// Requires an Apple Developer account ($99/year).
-// Follow the Supabase guide for the full setup process:
-// https://supabase.com/docs/guides/auth/social-login/auth-apple
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const supabase = createClient();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -67,12 +49,12 @@ export function LoginForm({
     router.push("/dashboard");
   };
 
-  // OAuth handler for Google and Apple sign-in.
-  // signInWithOAuth redirects the user to the provider's consent screen,
+  // OAuth handler for Google sign-in.
+  // signInWithOAuth redirects the user to Google's consent screen,
   // then back to our /auth/callback route which exchanges the code for a session.
-  const handleOAuthLogin = async (provider: "google" | "apple") => {
+  const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider,
+      provider: "google",
       options: {
         redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
       },
@@ -85,12 +67,14 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Link href="/" className="flex items-center justify-center gap-1">
+        <Image src="/favicon.png" alt="Sidekick" width={32} height={32} />
+        <span className="text-white font-semibold text-xl tracking-tight">sidekick</span>
+      </Link>
       <Card>
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
+          <CardDescription>Enter your email below to login to your account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleEmailLogin}>
@@ -100,18 +84,18 @@ export function LoginForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="neel@sidekick.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </Field>
               <Field>
-                <div className="flex items-center">
+                <div className="flex items-center justify-between">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                   <a
                     href="#"
-                    className="ml-auto inline-block text-sm text-white/50 underline-offset-4 hover:underline"
+                    className="text-sm text-white/50 underline-offset-4 hover:underline"
                   >
                     Forgot your password?
                   </a>
@@ -125,35 +109,31 @@ export function LoginForm({
                 />
               </Field>
 
-              {error && (
-                <p className="text-sm text-red-400">{error}</p>
-              )}
+              {error && <p className="text-sm text-red-400">{error}</p>}
 
-              <Field>
+              <div className="flex flex-col gap-3 pt-1">
                 <Button type="submit" disabled={loading}>
                   {loading ? "Signing in..." : "Login"}
                 </Button>
+                <div className="relative flex items-center py-1">
+                  <div className="grow border-t border-white/10" />
+                  <span className="px-3 text-xs text-white/40">or</span>
+                  <div className="grow border-t border-white/10" />
+                </div>
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={() => handleOAuthLogin("google")}
+                  onClick={handleGoogleLogin}
                 >
                   Login with Google
                 </Button>
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={() => handleOAuthLogin("apple")}
-                >
-                  Login with Apple
-                </Button>
-                <FieldDescription className="text-center">
+                <FieldDescription className="text-center pt-1">
                   Don&apos;t have an account?{" "}
                   <Link href="/signup" className="text-white underline-offset-4 hover:underline">
                     Sign up
                   </Link>
                 </FieldDescription>
-              </Field>
+              </div>
             </FieldGroup>
           </form>
         </CardContent>

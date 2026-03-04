@@ -7,7 +7,7 @@ const FieldGroup = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col gap-4", className)}
+    className={cn("flex flex-col gap-5", className)}
     {...props}
   />
 ));
@@ -19,7 +19,7 @@ const Field = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col gap-2", className)}
+    className={cn("flex flex-col gap-1.5", className)}
     {...props}
   />
 ));

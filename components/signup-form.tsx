@@ -2,28 +2,15 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
-export function SignupForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
   const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -59,11 +46,11 @@ export function SignupForm({
     setConfirmationSent(true);
   };
 
-  const handleOAuthSignup = async (provider: "google" | "apple") => {
-    // OAuth signup and login are the same flow — Supabase auto-creates the
-    // account on first OAuth login, so we use signInWithOAuth for both.
+  // OAuth signup and login are the same flow — Supabase auto-creates the
+  // account on first OAuth login, so we use signInWithOAuth for both.
+  const handleGoogleSignup = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider,
+      provider: "google",
       options: {
         redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
       },
@@ -78,12 +65,16 @@ export function SignupForm({
   if (confirmationSent) {
     return (
       <div className={cn("flex flex-col gap-6", className)} {...props}>
+        <Link href="/" className="flex items-center justify-center gap-1">
+          <Image src="/favicon.png" alt="Sidekick" width={32} height={32} />
+          <span className="text-white font-semibold text-xl tracking-tight">sidekick</span>
+        </Link>
         <Card>
           <CardHeader>
             <CardTitle>Check your email</CardTitle>
             <CardDescription>
-              We sent a confirmation link to <strong className="text-white">{email}</strong>.
-              Click the link to activate your account.
+              We sent a confirmation link to <strong className="text-white">{email}</strong>. Click
+              the link to activate your account.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -101,12 +92,14 @@ export function SignupForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Link href="/" className="flex items-center justify-center gap-1">
+        <Image src="/favicon.png" alt="Sidekick" width={32} height={32} />
+        <span className="text-white font-semibold text-xl tracking-tight">sidekick</span>
+      </Link>
       <Card>
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
-          <CardDescription>
-            Enter your email below to create your account
-          </CardDescription>
+          <CardDescription>Enter your email below to create your account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleEmailSignup}>
@@ -116,7 +109,7 @@ export function SignupForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="neel@sidekick.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -134,35 +127,27 @@ export function SignupForm({
                 />
               </Field>
 
-              {error && (
-                <p className="text-sm text-red-400">{error}</p>
-              )}
+              {error && <p className="text-sm text-red-400">{error}</p>}
 
-              <Field>
+              <div className="flex flex-col gap-3 pt-1">
                 <Button type="submit" disabled={loading}>
                   {loading ? "Creating account..." : "Sign up"}
                 </Button>
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={() => handleOAuthSignup("google")}
-                >
+                <div className="relative flex items-center py-1">
+                  <div className="grow border-t border-white/10" />
+                  <span className="px-3 text-xs text-white/40">or</span>
+                  <div className="grow border-t border-white/10" />
+                </div>
+                <Button variant="outline" type="button" onClick={handleGoogleSignup}>
                   Sign up with Google
                 </Button>
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={() => handleOAuthSignup("apple")}
-                >
-                  Sign up with Apple
-                </Button>
-                <FieldDescription className="text-center">
+                <FieldDescription className="text-center pt-1">
                   Already have an account?{" "}
                   <Link href="/login" className="text-white underline-offset-4 hover:underline">
                     Log in
                   </Link>
                 </FieldDescription>
-              </Field>
+              </div>
             </FieldGroup>
           </form>
         </CardContent>
