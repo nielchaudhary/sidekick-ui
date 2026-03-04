@@ -93,10 +93,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               <Field>
                 <div className="flex items-center justify-between">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a
-                    href="#"
-                    className="text-sm text-white/50 underline-offset-4 hover:underline"
-                  >
+                  <a href="#" className="text-sm text-white/50 underline-offset-4 hover:underline">
                     Forgot your password?
                   </a>
                 </div>
@@ -120,11 +117,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                   <span className="px-3 text-xs text-white/40">or</span>
                   <div className="grow border-t border-white/10" />
                 </div>
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={handleGoogleLogin}
-                >
+                <Button variant="outline" type="button" onClick={handleGoogleLogin}>
                   Login with Google
                 </Button>
                 <FieldDescription className="text-center pt-1">
