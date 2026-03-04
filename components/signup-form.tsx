@@ -159,7 +159,14 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                           </svg>
                         ) : (
                           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                            <circle cx="7" cy="7" r="2.5" stroke="white" strokeOpacity="0.25" strokeWidth="1" />
+                            <circle
+                              cx="7"
+                              cy="7"
+                              r="2.5"
+                              stroke="white"
+                              strokeOpacity="0.25"
+                              strokeWidth="1"
+                            />
                           </svg>
                         )}
                         <span className={check.met ? "text-white/70" : "text-white/30"}>
