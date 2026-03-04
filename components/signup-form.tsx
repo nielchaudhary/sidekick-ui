@@ -78,8 +78,8 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
     return (
       <div className={cn("flex flex-col gap-6", className)} {...props}>
         <Link href="/" className="flex items-center justify-center gap-1">
-          <Image src="/favicon.png" alt="Sidekick" width={32} height={32} />
-          <span className="text-white font-semibold text-xl tracking-tight">sidekick</span>
+          <Image src="/favicon.png" alt="Sidekick" width={44} height={44} />
+          <span className="text-white font-semibold text-xl tracking-tight -ml-2">sidekick</span>
         </Link>
         <Card>
           <CardHeader>
@@ -105,8 +105,8 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Link href="/" className="flex items-center justify-center gap-1">
-        <Image src="/favicon.png" alt="Sidekick" width={32} height={32} />
-        <span className="text-white font-semibold text-xl tracking-tight">sidekick</span>
+        <Image src="/favicon.png" alt="Sidekick" width={44} height={44} />
+        <span className="text-white font-semibold text-xl tracking-tight -ml-2">sidekick</span>
       </Link>
       <Card>
         <CardHeader>
