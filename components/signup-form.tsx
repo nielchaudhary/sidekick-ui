@@ -20,8 +20,20 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
   // We show a "check your email" message instead of redirecting.
   const [confirmationSent, setConfirmationSent] = useState(false);
 
+  const passwordChecks = [
+    { label: "8+ characters", met: password.length >= 8 },
+    { label: "1 uppercase letter", met: /[A-Z]/.test(password) },
+    { label: "1 number", met: /\d/.test(password) },
+    { label: "1 special character", met: /[^A-Za-z0-9]/.test(password) },
+  ];
+  const allChecksMet = passwordChecks.every((c) => c.met);
+
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!allChecksMet) {
+      setError("Password does not meet all requirements.");
+      return;
+    }
     setError(null);
     setLoading(true);
 
@@ -121,16 +133,48 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                   id="password"
                   type="password"
                   required
-                  minLength={6}
+                  minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                {password.length > 0 && (
+                  <ul className="flex flex-col gap-1 text-xs">
+                    {passwordChecks.map((check) => (
+                      <li key={check.label} className="flex items-center gap-1.5">
+                        {check.met ? (
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path
+                              d="M3 7.5L5.5 10L11 4"
+                              stroke="url(#check-gradient)"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <defs>
+                              <linearGradient id="check-gradient" x1="3" y1="7" x2="11" y2="7">
+                                <stop stopColor="#ef4444" />
+                                <stop offset="1" stopColor="#7f1d1d" />
+                              </linearGradient>
+                            </defs>
+                          </svg>
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <circle cx="7" cy="7" r="2.5" stroke="white" strokeOpacity="0.25" strokeWidth="1" />
+                          </svg>
+                        )}
+                        <span className={check.met ? "text-white/70" : "text-white/30"}>
+                          {check.label}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </Field>
 
               {error && <p className="text-sm text-red-400">{error}</p>}
 
               <div className="flex flex-col gap-3 pt-1">
-                <Button type="submit" disabled={loading}>
+                <Button type="submit" disabled={loading || !allChecksMet}>
                   {loading ? "Creating account..." : "Sign up"}
                 </Button>
                 <div className="relative flex items-center py-1">
