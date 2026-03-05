@@ -51,10 +51,12 @@ export function WaitlistExperience(): ReactElement {
     };
   }, []);
 
-  const [timeLeft, setTimeLeft] = useState(calculateTime);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const timer = setInterval(() => setTimeLeft(calculateTime()), 1000);
+    const update = () => setTimeLeft(calculateTime());
+    update();
+    const timer = setInterval(update, 1000);
     return () => clearInterval(timer);
   }, [calculateTime]);
 
@@ -193,7 +195,7 @@ export function WaitlistExperience(): ReactElement {
                     />
                     <Button
                       type="submit"
-                      className="w-full md:w-[75%] bg-black border border-white/20 hover:bg-black/80"
+                      className="w-full md:w-[75%] bg-black border border-white/20 hover:bg-black/80 text-white"
                     >
                       Get Sidekick
                     </Button>
