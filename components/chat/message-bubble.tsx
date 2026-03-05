@@ -27,7 +27,7 @@ export function MessageBubble({ message, isLoading }: MessageBubbleProps) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className={cn("flex gap-3 max-w-3xl w-full", isUser ? "ml-auto justify-end" : "mr-auto justify-start")}
+      className={cn("flex gap-3 max-w-3xl w-full min-w-0", isUser ? "ml-auto justify-end" : "mr-auto justify-start")}
     >
       {!isUser && (
         <div className="shrink-0 w-7 h-7 rounded-full overflow-hidden mt-1">
@@ -36,7 +36,7 @@ export function MessageBubble({ message, isLoading }: MessageBubbleProps) {
       )}
       <div
         className={cn(
-          "rounded-2xl px-4 py-3 text-sm leading-relaxed max-w-[85%]",
+          "rounded-2xl px-4 py-3 text-sm leading-relaxed max-w-[85%] min-w-0 wrap-break-word overflow-hidden",
           isUser
             ? "bg-white/10 text-white"
             : "text-white/90"
@@ -49,7 +49,7 @@ export function MessageBubble({ message, isLoading }: MessageBubbleProps) {
         ) : isUser ? (
           <p className="whitespace-pre-wrap">{message.content}</p>
         ) : (
-          <div className="prose prose-invert prose-sm max-w-none [&_pre]:bg-white/5 [&_pre]:border [&_pre]:border-white/10 [&_pre]:rounded-lg [&_pre]:p-3 [&_code]:text-xs [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_a]:text-blue-400 [&_a]:no-underline hover:[&_a]:underline [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm">
+          <div className="prose prose-invert prose-sm max-w-none wrap-break-word [&_pre]:bg-white/5 [&_pre]:border [&_pre]:border-white/10 [&_pre]:rounded-lg [&_pre]:p-3 [&_pre]:overflow-x-auto [&_code]:text-xs [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_a]:text-blue-400 [&_a]:no-underline hover:[&_a]:underline [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_table]:overflow-x-auto [&_img]:max-w-full [&_img]:h-auto">
             <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
               {message.content}
             </ReactMarkdown>

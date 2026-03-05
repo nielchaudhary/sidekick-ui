@@ -45,13 +45,13 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
           placeholder="Message Sidekick..."
           disabled={disabled}
           rows={1}
-          className="w-full resize-none bg-transparent px-4 py-3 pr-12 text-sm text-white placeholder:text-white/30 focus:outline-none scrollbar-hide"
+          className="w-full resize-none bg-transparent px-6 py-3 pr-12 text-sm text-white placeholder:text-white/30 focus:outline-none scrollbar-hide"
         />
         <button
           onClick={onSend}
           disabled={!canSend}
           className={cn(
-            "absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-all duration-200 ease-out",
+            "absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-all duration-200 ease-out",
             canSend
               ? "bg-white/20 text-white/60 hover:bg-white hover:text-black cursor-pointer"
               : "bg-white/10 text-white/20 cursor-pointer"

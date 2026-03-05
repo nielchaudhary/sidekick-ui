@@ -40,7 +40,7 @@ export function ChatArea({
   }, [messages, isLoading]);
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 h-full">
+    <div className="flex-1 flex flex-col min-w-0 h-full overflow-x-hidden">
       {isEmpty ? (
         /* Empty state: input centered with suggestions below */
         <div className="flex-1 flex flex-col items-center justify-center px-4">
@@ -84,7 +84,7 @@ export function ChatArea({
       ) : (
         <>
           {/* Messages area */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-hide">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide">
             <div className="max-w-3xl mx-auto w-full px-4 py-6 space-y-5">
               {messages.map((msg) => (
                 <MessageBubble key={msg.id} message={msg} />
