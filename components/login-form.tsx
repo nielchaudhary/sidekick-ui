@@ -50,7 +50,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/chat");
   };
 
   // OAuth handler for Google sign-in.

@@ -1,0 +1,61 @@
+"use client";
+
+import { cn } from "@/lib/utils";
+import { BarsSpinner } from "@/components/ui/bars-spinner";
+import Image from "next/image";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import { motion } from "framer-motion";
+
+export interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+}
+
+interface MessageBubbleProps {
+  message: Message;
+  isLoading?: boolean;
+}
+
+export function MessageBubble({ message, isLoading }: MessageBubbleProps) {
+  const isUser = message.role === "user";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className={cn("flex gap-3 max-w-3xl w-full", isUser ? "ml-auto justify-end" : "mr-auto justify-start")}
+    >
+      {!isUser && (
+        <div className="shrink-0 w-7 h-7 rounded-full overflow-hidden mt-1">
+          <Image src="/favicon.png" alt="Sidekick" width={28} height={28} />
+        </div>
+      )}
+      <div
+        className={cn(
+          "rounded-2xl px-4 py-3 text-sm leading-relaxed max-w-[85%]",
+          isUser
+            ? "bg-white/10 text-white"
+            : "text-white/90"
+        )}
+      >
+        {isLoading ? (
+          <div className="flex items-center gap-2 py-1">
+            <BarsSpinner size={20} color="rgba(255,255,255,0.5)" />
+          </div>
+        ) : isUser ? (
+          <p className="whitespace-pre-wrap">{message.content}</p>
+        ) : (
+          <div className="prose prose-invert prose-sm max-w-none [&_pre]:bg-white/5 [&_pre]:border [&_pre]:border-white/10 [&_pre]:rounded-lg [&_pre]:p-3 [&_code]:text-xs [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_a]:text-blue-400 [&_a]:no-underline hover:[&_a]:underline [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm">
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+              {message.content}
+            </ReactMarkdown>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
