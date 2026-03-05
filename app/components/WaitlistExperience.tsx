@@ -51,10 +51,12 @@ export function WaitlistExperience(): ReactElement {
     };
   }, []);
 
-  const [timeLeft, setTimeLeft] = useState(calculateTime);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const timer = setInterval(() => setTimeLeft(calculateTime()), 1000);
+    const update = () => setTimeLeft(calculateTime());
+    update();
+    const timer = setInterval(update, 1000);
     return () => clearInterval(timer);
   }, [calculateTime]);
 
