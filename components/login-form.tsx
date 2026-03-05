@@ -45,7 +45,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
     if (error) {
       // Generic message prevents user enumeration (attacker learning which emails are registered)
-      setError("Invalid email or password.");
+      setError("Invalid email or password");
       setLoading(false);
       return;
     }
