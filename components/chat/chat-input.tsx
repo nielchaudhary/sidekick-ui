@@ -36,16 +36,19 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
 
   return (
     <div className="bg-black/40 backdrop-blur-sm px-4 py-3">
-      <div className="max-w-3xl mx-auto relative rounded-full border border-white/10 bg-white/5 overflow-hidden transition-colors focus-within:border-white/20">
+      <div
+        className="max-w-3xl mx-auto relative rounded-3xl border border-white/10 bg-white/5 overflow-hidden transition-colors focus-within:border-white/20"
+        style={{ width: "90%" }}
+      >
         <textarea
           ref={textareaRef}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Message Sidekick..."
+          placeholder="Ask Sidekick about anything"
           disabled={disabled}
           rows={1}
-          className="w-full resize-none bg-transparent px-6 py-3 pr-12 text-sm text-white placeholder:text-white/30 focus:outline-none scrollbar-hide"
+          className="w-full resize-none bg-transparent px-6 py-4 pr-12 text-sm text-white placeholder:text-white/30 focus:outline-none scrollbar-hide"
         />
         <button
           onClick={onSend}

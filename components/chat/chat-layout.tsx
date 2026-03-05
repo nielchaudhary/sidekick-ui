@@ -70,10 +70,6 @@ export function ChatLayout() {
     sendText(input.trim());
   }, [input, sendText]);
 
-  const handleSendMessage = useCallback((text: string) => {
-    sendText(text.trim());
-  }, [sendText]);
-
   const handleNewThread = useCallback(() => {
     setActiveThreadId(null);
     setInput("");
@@ -99,7 +95,6 @@ export function ChatLayout() {
         input={input}
         onInputChange={setInput}
         onSend={handleSend}
-        onSendMessage={handleSendMessage}
         isLoading={isLoading}
       />
     </div>

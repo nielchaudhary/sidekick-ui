@@ -11,23 +11,14 @@ interface ChatAreaProps {
   input: string;
   onInputChange: (value: string) => void;
   onSend: () => void;
-  onSendMessage: (text: string) => void;
   isLoading: boolean;
 }
-
-const suggestions = [
-  "Summarize a document",
-  "Help me brainstorm",
-  "Write an email",
-  "Explain a concept",
-];
 
 export function ChatArea({
   messages,
   input,
   onInputChange,
   onSend,
-  onSendMessage,
   isLoading,
 }: ChatAreaProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -67,18 +58,6 @@ export function ChatArea({
               <ChatInput value={input} onChange={onInputChange} onSend={onSend} disabled={isLoading} />
             </div>
 
-            <div className="flex flex-wrap justify-center gap-2 max-w-md">
-              {suggestions.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => onSendMessage(s)}
-                  className="px-3.5 py-1.5 rounded-full border border-white/10 text-sm hover:border-white/20 hover:bg-white/4 transition-all duration-200 ease-out cursor-pointer bg-clip-text text-transparent"
-                  style={{ backgroundImage: "linear-gradient(90deg, #D4739A 0%, #7A1A1A 100%)" }}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
           </motion.div>
         </div>
       ) : (
