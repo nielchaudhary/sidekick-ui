@@ -7,7 +7,7 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
-import Image from "next/image";
+import { AuthLogo } from "@/components/auth-logo";
 import Link from "next/link";
 
 export function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
@@ -77,10 +77,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
   if (confirmationSent) {
     return (
       <div className={cn("flex flex-col gap-6", className)} {...props}>
-        <Link href="/" className="flex items-center justify-center gap-1">
-          <Image src="/favicon.png" alt="Sidekick" width={44} height={44} />
-          <span className="text-white font-semibold text-xl tracking-tight -ml-2">sidekick</span>
-        </Link>
+        <AuthLogo />
         <Card>
           <CardHeader>
             <CardTitle>Check your email</CardTitle>
@@ -104,10 +101,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Link href="/" className="flex items-center justify-center gap-1">
-        <Image src="/favicon.png" alt="Sidekick" width={44} height={44} />
-        <span className="text-white font-semibold text-xl tracking-tight -ml-2">sidekick</span>
-      </Link>
+      <AuthLogo />
       <Card>
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
@@ -121,7 +115,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                 <Input
                   id="email"
                   type="email"
-                  placeholder="neel@sidekick.com"
+                  placeholder="johndoe@sidekick.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -139,6 +133,14 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                 />
                 {password.length > 0 && (
                   <ul className="flex flex-col gap-1 text-xs">
+                    <svg width="0" height="0" className="absolute">
+                      <defs>
+                        <linearGradient id="check-gradient" x1="3" y1="7" x2="11" y2="7">
+                          <stop stopColor="#ef4444" />
+                          <stop offset="1" stopColor="#7f1d1d" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
                     {passwordChecks.map((check) => (
                       <li key={check.label} className="flex items-center gap-1.5">
                         {check.met ? (
@@ -150,12 +152,6 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                               strokeLinecap="round"
                               strokeLinejoin="round"
                             />
-                            <defs>
-                              <linearGradient id="check-gradient" x1="3" y1="7" x2="11" y2="7">
-                                <stop stopColor="#ef4444" />
-                                <stop offset="1" stopColor="#7f1d1d" />
-                              </linearGradient>
-                            </defs>
                           </svg>
                         ) : (
                           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">

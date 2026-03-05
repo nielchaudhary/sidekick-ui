@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Database, Calendar, Check } from "lucide-react";
-import { delay } from "@/lib/utils";
 import {
   NotionLogo,
   SlackLogo,
@@ -985,84 +984,113 @@ export default function RetrievalNexus() {
 
   // Auto-running demo animation with Context Formation sequence + Dual Intent
   useEffect(() => {
+    let cancelled = false;
+
+    const safeDelay = (ms: number) =>
+      new Promise<void>((resolve) => {
+        const id = setTimeout(resolve, ms);
+        if (cancelled) {
+          clearTimeout(id);
+          resolve();
+        }
+      });
+
     const runDemo = async () => {
-      // Reset
-      setPhase("idle");
-      setMessages([]);
-      setActiveSources([]);
-      setInputValue("");
-      setShowToast(false);
+      while (!cancelled) {
+        // Reset
+        setPhase("idle");
+        setMessages([]);
+        setActiveSources([]);
+        setInputValue("");
+        setShowToast(false);
 
-      await delay(1500);
+        await safeDelay(1500);
+        if (cancelled) return;
 
-      // Simulate typing
-      const userMsg = DEMO_CONVERSATION.userMessage;
-      for (let i = 0; i <= userMsg.length; i++) {
-        setInputValue(userMsg.slice(0, i));
-        await delay(35 + Math.random() * 20);
+        // Simulate typing
+        const userMsg = DEMO_CONVERSATION.userMessage;
+        for (let i = 0; i <= userMsg.length; i++) {
+          if (cancelled) return;
+          setInputValue(userMsg.slice(0, i));
+          await safeDelay(35 + Math.random() * 20);
+        }
+
+        await safeDelay(600);
+        if (cancelled) return;
+
+        // Send message
+        setPhase("sending");
+        setMessages([{ role: "user", content: userMsg }]);
+        setInputValue("");
+
+        await safeDelay(400);
+        if (cancelled) return;
+
+        // Phase I: Intent Extraction - Keywords glow
+        setPhase("intentExtraction");
+        await safeDelay(1200);
+        if (cancelled) return;
+
+        // Phase II: Activate sources for retrieval
+        setPhase("retrieving");
+        await safeDelay(100);
+        if (cancelled) return;
+        setActiveSources(["sidekick-db", "notion", "slack", "gmail", "sheets"]);
+        await safeDelay(1500);
+        if (cancelled) return;
+
+        // Phase IV Step 1: Ingestion (The Swirl)
+        setPhase("ingestion");
+        await safeDelay(1500);
+        if (cancelled) return;
+
+        // Phase IV Step 2: Cross-Referencing (Geometric Alignment)
+        setPhase("crossReferencing");
+        await safeDelay(2500);
+        if (cancelled) return;
+
+        // Phase IV Step 3: Judgment Formed (Stabilization + Shatter)
+        setPhase("judgment");
+        await safeDelay(1200);
+        if (cancelled) return;
+
+        // Phase V: Calendar Construction
+        setPhase("calendar");
+        await safeDelay(3500);
+        if (cancelled) return;
+
+        // Phase VI: Execution - Show toast
+        setPhase("execution");
+        setShowToast(true);
+        await safeDelay(2000);
+        if (cancelled) return;
+
+        // Responding with Live Card
+        setPhase("responding");
+        setShowToast(false);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            bullets: DEMO_CONVERSATION.assistantBullets,
+            calendarEvent: DEMO_CONVERSATION.calendarEvent,
+            hasLiveCard: true,
+          },
+        ]);
+
+        await safeDelay(6000);
+        if (cancelled) return;
+
+        // Reset and loop
+        setActiveSources([]);
       }
-
-      await delay(600);
-
-      // Send message
-      setPhase("sending");
-      setMessages([{ role: "user", content: userMsg }]);
-      setInputValue("");
-
-      await delay(400);
-
-      // Phase I: Intent Extraction - Keywords glow
-      setPhase("intentExtraction");
-      await delay(1200);
-
-      // Phase II: Activate sources for retrieval
-      setPhase("retrieving");
-      await delay(100);
-      setActiveSources(["sidekick-db", "notion", "slack", "gmail", "sheets"]);
-      await delay(1500);
-
-      // Phase IV Step 1: Ingestion (The Swirl)
-      setPhase("ingestion");
-      await delay(1500);
-
-      // Phase IV Step 2: Cross-Referencing (Geometric Alignment)
-      setPhase("crossReferencing");
-      await delay(2500);
-
-      // Phase IV Step 3: Judgment Formed (Stabilization + Shatter)
-      setPhase("judgment");
-      await delay(1200);
-
-      // Phase V: Calendar Construction
-      setPhase("calendar");
-      await delay(3500);
-
-      // Phase VI: Execution - Show toast
-      setPhase("execution");
-      setShowToast(true);
-      await delay(2000);
-
-      // Responding with Live Card
-      setPhase("responding");
-      setShowToast(false);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          bullets: DEMO_CONVERSATION.assistantBullets,
-          calendarEvent: DEMO_CONVERSATION.calendarEvent,
-          hasLiveCard: true,
-        },
-      ]);
-
-      await delay(6000);
-
-      // Reset and loop
-      setActiveSources([]);
-      runDemo();
     };
 
     runDemo();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (

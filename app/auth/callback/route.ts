@@ -9,8 +9,7 @@
 // In both cases, we exchange the temporary `code` for a real session (access + refresh tokens)
 // and set them as cookies. This is the PKCE auth flow that @supabase/ssr uses.
 
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -18,32 +17,7 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
 
   if (code) {
-    const cookieStore = await cookies();
-
-    // Create a server client that can set cookies on the response.
-    // This is necessary because exchangeCodeForSession needs to write
-    // the new session tokens (access_token, refresh_token) as cookies.
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch {
-              // In edge cases where cookies can't be set, the middleware
-              // will handle session refresh on the next request.
-            }
-          },
-        },
-      }
-    );
+    const supabase = await createClient();
 
     // Exchange the one-time code for a persistent session.
     // This is the critical step — without it, the user has no session.

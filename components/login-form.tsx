@@ -15,17 +15,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import Image from "next/image";
+import { AuthLogo } from "@/components/auth-logo";
 import Link from "next/link";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const supabase = createClient();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    searchParams.get("error") === "auth_error" ? "Authentication failed. Please try again." : null
+  );
   const [loading, setLoading] = useState(false);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
@@ -67,10 +70,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Link href="/" className="flex items-center justify-center gap-1">
-        <Image src="/favicon.png" alt="Sidekick" width={44} height={44} />
-        <span className="text-white font-semibold text-xl tracking-tight -ml-2">sidekick</span>
-      </Link>
+      <AuthLogo />
       <Card>
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
@@ -84,7 +84,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 <Input
                   id="email"
                   type="email"
-                  placeholder="neel@sidekick.com"
+                  placeholder="johndoe@sidekick.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
