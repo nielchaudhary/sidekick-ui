@@ -14,13 +14,7 @@ interface ChatAreaProps {
   isLoading: boolean;
 }
 
-export function ChatArea({
-  messages,
-  input,
-  onInputChange,
-  onSend,
-  isLoading,
-}: ChatAreaProps) {
+export function ChatArea({ messages, input, onInputChange, onSend, isLoading }: ChatAreaProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isEmpty = messages.length === 0;
 
@@ -45,19 +39,23 @@ export function ChatArea({
               <Image
                 src="/favicon.png"
                 alt="Sidekick"
-                width={60}
-                height={60}
+                width={65}
+                height={65}
                 className="opacity-80"
               />
-              <span className="text-white font-semibold text-xl tracking-tight -ml-3.5 z-1000">
+              <span className="text-white font-semibold text-3xl tracking-tight -ml-3.5 z-1000">
                 sidekick
               </span>
             </div>
 
             <div className="w-full">
-              <ChatInput value={input} onChange={onInputChange} onSend={onSend} disabled={isLoading} />
+              <ChatInput
+                value={input}
+                onChange={onInputChange}
+                onSend={onSend}
+                disabled={isLoading}
+              />
             </div>
-
           </motion.div>
         </div>
       ) : (

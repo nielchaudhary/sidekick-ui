@@ -85,7 +85,7 @@ export function Sidebar({
           {/* Logo + collapse toggle */}
           <div
             className={cn(
-              "flex items-center mb-2",
+              "flex items-center mb-4",
               isOpen ? "justify-between px-1" : "justify-center"
             )}
           >

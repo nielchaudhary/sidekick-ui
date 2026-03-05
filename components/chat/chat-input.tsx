@@ -49,6 +49,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
           disabled={disabled}
           rows={1}
           className="w-full resize-none bg-transparent px-6 py-4 pr-12 text-sm text-white placeholder:text-white/30 focus:outline-none scrollbar-hide"
+          style={{ fontFamily: 'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif', fontWeight: 400 }}
         />
         <button
           onClick={onSend}
