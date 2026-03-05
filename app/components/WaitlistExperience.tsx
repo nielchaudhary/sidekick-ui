@@ -193,7 +193,7 @@ export function WaitlistExperience(): ReactElement {
                     />
                     <Button
                       type="submit"
-                      className="w-full md:w-[75%] bg-black border border-white/20 hover:bg-black/80"
+                      className="w-full md:w-[75%] bg-black border border-white/20 hover:bg-black/80 text-white"
                     >
                       Get Sidekick
                     </Button>
