@@ -53,8 +53,8 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
           className={cn(
             "absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-all duration-200 ease-out",
             canSend
-              ? "bg-white text-black hover:bg-white/90 cursor-pointer"
-              : "bg-white/10 text-white/20 cursor-default"
+              ? "bg-white/20 text-white/60 hover:bg-white hover:text-black cursor-pointer"
+              : "bg-white/10 text-white/20 cursor-pointer"
           )}
         >
           <ArrowUp className="w-4 h-4" />
