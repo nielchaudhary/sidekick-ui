@@ -36,7 +36,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
 
   return (
     <div className="bg-black/40 backdrop-blur-sm px-4 py-3">
-      <div className="max-w-3xl mx-auto relative rounded-2xl border border-white/10 bg-white/5 overflow-hidden transition-colors focus-within:border-white/20">
+      <div className="max-w-3xl mx-auto relative rounded-full border border-white/10 bg-white/5 overflow-hidden transition-colors focus-within:border-white/20">
         <textarea
           ref={textareaRef}
           value={value}
@@ -51,7 +51,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
           onClick={onSend}
           disabled={!canSend}
           className={cn(
-            "absolute right-2 bottom-2 p-1.5 rounded-lg transition-all duration-200 ease-out",
+            "absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-all duration-200 ease-out",
             canSend
               ? "bg-white text-black hover:bg-white/90 cursor-pointer"
               : "bg-white/10 text-white/20 cursor-default"

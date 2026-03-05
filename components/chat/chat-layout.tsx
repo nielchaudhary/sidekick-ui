@@ -85,7 +85,7 @@ export function ChatLayout() {
   }, []);
 
   return (
-    <div className="flex h-svh overflow-hidden" style={{ background: "radial-gradient(125% 125% at 50% 10%, #000000 40%, #2b0707 100%)" }}>
+    <div className="flex h-svh overflow-hidden bg-black">
       <Sidebar
         threads={threads}
         activeThreadId={activeThreadId}
