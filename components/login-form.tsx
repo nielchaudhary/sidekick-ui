@@ -44,7 +44,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     });
 
     if (error) {
-      setError(error.message);
+      // Generic message prevents user enumeration (attacker learning which emails are registered)
+      setError("Invalid email or password.");
       setLoading(false);
       return;
     }
@@ -64,7 +65,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     });
 
     if (error) {
-      setError(error.message);
+      setError("Unable to sign in with Google. Please try again.");
     }
   };
 

@@ -51,7 +51,8 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
     setLoading(false);
 
     if (error) {
-      setError(error.message);
+      // Generic message prevents user enumeration (attacker learning which emails are registered)
+      setError("Unable to create account. Please try again or use a different email.");
       return;
     }
 
@@ -69,7 +70,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
     });
 
     if (error) {
-      setError(error.message);
+      setError("Unable to sign in with Google. Please try again.");
     }
   };
 
