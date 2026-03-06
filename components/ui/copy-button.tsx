@@ -22,16 +22,20 @@ export function CopyButton({ value, size = "default", className }: CopyButtonPro
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className={cn(
-        "inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors hover:bg-white/10",
-        "text-white/30 hover:text-white/60",
-        className
-      )}
-    >
-      {copied ? <Check className={iconSizes[size]} /> : <Copy className={iconSizes[size]} />}
-    </button>
+    <div className={cn("relative inline-flex flex-col items-center group", className)}>
+      <button
+        type="button"
+        onClick={handleCopy}
+        className={cn(
+          "inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors hover:bg-white/10",
+          "text-white/30 hover:text-white/60"
+        )}
+      >
+        {copied ? <Check className={iconSizes[size]} /> : <Copy className={iconSizes[size]} />}
+      </button>
+      <span className="absolute top-full mt-1 rounded-lg border border-white/20 bg-black px-2 py-1.5 text-[13px] font-medium leading-none text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+        {copied ? "copied" : "copy"}
+      </span>
+    </div>
   );
 }
