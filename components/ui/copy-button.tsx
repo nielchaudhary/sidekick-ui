@@ -56,7 +56,7 @@ export function CopyButton({ value, size = "default", className }: CopyButtonPro
           )}
         </AnimatePresence>
       </button>
-      <span className="absolute top-full mt-1 z-10 rounded-lg border border-white/20 bg-black px-2 py-1.5 text-[13px] font-medium leading-none text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+      <span className="absolute top-full mt-1 z-10 rounded-[6px] border border-white/20 bg-black px-2.5 py-1.5 text-[14px] font-medium leading-none text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
         copy
       </span>
     </div>
