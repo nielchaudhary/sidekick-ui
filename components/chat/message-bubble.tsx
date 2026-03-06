@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import { BarsSpinner } from "@/components/ui/bars-spinner";
-import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -27,24 +26,20 @@ export function MessageBubble({ message, isLoading }: MessageBubbleProps) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className={cn("flex gap-3 max-w-3xl w-full min-w-0", isUser ? "ml-auto justify-end" : "mr-auto justify-start")}
-    >
-      {!isUser && (
-        <div className="shrink-0 w-7 h-7 rounded-full overflow-hidden mt-1">
-          <Image src="/favicon.png" alt="Sidekick" width={28} height={28} />
-        </div>
+      className={cn(
+        "flex gap-3 max-w-3xl w-full min-w-0",
+        isUser ? "ml-auto justify-end" : "mr-auto justify-start"
       )}
+    >
       <div
         className={cn(
-          "rounded-2xl px-4 py-3 text-sm leading-relaxed max-w-[85%] min-w-0 wrap-break-word overflow-hidden",
-          isUser
-            ? "bg-white/10 text-white"
-            : "text-white/90"
+          "rounded-2xl px-3 py-2 text-md leading-relaxed max-w-[85%] min-w-0 wrap-break-word overflow-hidden",
+          isUser ? "bg-white/10 text-white" : "text-white/90"
         )}
       >
         {isLoading ? (
           <div className="flex items-center gap-2 py-1">
-            <BarsSpinner size={20} color="rgba(255,255,255,0.5)" />
+            <BarsSpinner size={22} color="rgba(255,255,255,0.5)" />
           </div>
         ) : isUser ? (
           <p className="whitespace-pre-wrap">{message.content}</p>
