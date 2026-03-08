@@ -12,9 +12,10 @@ interface ChatAreaProps {
   onInputChange: (value: string) => void;
   onSend: () => void;
   isLoading: boolean;
+  streamingMsgId: string | null;
 }
 
-export function ChatArea({ messages, input, onInputChange, onSend, isLoading }: ChatAreaProps) {
+export function ChatArea({ messages, input, onInputChange, onSend, isLoading, streamingMsgId }: ChatAreaProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isEmpty = messages.length === 0;
 
@@ -64,14 +65,13 @@ export function ChatArea({ messages, input, onInputChange, onSend, isLoading }: 
           <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide">
             <div className="max-w-3xl mx-auto w-full px-4 py-6 space-y-5">
               {messages.map((msg) => (
-                <MessageBubble key={msg.id} message={msg} />
-              ))}
-              {isLoading && (
                 <MessageBubble
-                  message={{ id: "loading", role: "assistant", content: "" }}
-                  isLoading
+                  key={msg.id}
+                  message={msg}
+                  isStreaming={msg.id === streamingMsgId}
+                  isLoading={msg.id === streamingMsgId && msg.content === ""}
                 />
-              )}
+              ))}
             </div>
           </div>
 
