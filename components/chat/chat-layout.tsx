@@ -10,6 +10,19 @@ function generateId() {
   return Math.random().toString(36).substring(2, 10);
 }
 
+const SYSTEM_PROMPT = `Format all responses using GitHub-Flavored Markdown.
+
+Rules:
+- Use fenced code blocks with language identifiers (e.g. \`\`\`python).
+- Use headings (##, ###) to structure sections.
+- Use bullet lists for explanations and numbered lists for steps.
+- Use inline code for variables, functions, and commands.
+- Use tables where comparison is helpful.
+- Use blockquotes for important notes or callouts.
+- Maintain proper blank lines between paragraphs and sections.
+- Use bold and italic for emphasis where appropriate.
+- Never output plain text blocks when Markdown formatting would improve readability.`;
+
 export function ChatLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -51,7 +64,7 @@ export function ChatLayout() {
       const response = await fetch(`${CHAT_URL}?llmProvider=claude`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: text }),
+        body: JSON.stringify({ prompt: text, systemPrompt: SYSTEM_PROMPT }),
       });
 
       if (!response.ok) {

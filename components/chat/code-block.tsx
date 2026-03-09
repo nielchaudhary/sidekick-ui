@@ -41,15 +41,17 @@ export const CodeBlock = memo(function CodeBlock({
   const displayLanguage = language?.replace(/^language-/, "") || "text";
 
   return (
-    <div className="group relative my-3 max-w-full overflow-hidden rounded-lg border border-white/10">
-      <div className="flex items-center justify-between bg-white/5 px-4 py-2 text-xs text-white/50">
-        <span>{displayLanguage}</span>
+    <div className="group relative my-5 max-w-full overflow-hidden rounded-lg border border-white/8 bg-white/3">
+      <div className="flex items-center justify-between border-b border-white/6 bg-white/4 px-4 py-2.5">
+        <span className="text-xs font-medium tracking-wide text-white/40 uppercase">
+          {displayLanguage}
+        </span>
         <button
           type="button"
           onClick={handleCopy}
           className={cn(
-            "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors",
-            "text-white/40 hover:bg-white/10 hover:text-white/70",
+            "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-all duration-150",
+            "text-white/40 hover:bg-white/8 hover:text-white/70",
             "cursor-pointer"
           )}
           aria-label="Copy code to clipboard"
@@ -68,8 +70,8 @@ export const CodeBlock = memo(function CodeBlock({
         </button>
       </div>
       <div className="overflow-x-auto">
-        <pre className="bg-white/3 p-5 text-sm leading-relaxed">
-          <code className={cn("font-mono text-white/90", language)}>
+        <pre className="px-5 py-4 text-[13px] leading-[1.7]">
+          <code className={cn("font-mono text-white/85", language)}>
             {children}
           </code>
         </pre>
