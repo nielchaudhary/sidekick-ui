@@ -22,6 +22,8 @@ interface MessageBubbleProps {
 
 const remarkPlugins = [remarkGfm];
 const rehypePlugins = [rehypeHighlight];
+const proseClasses =
+  "prose prose-invert prose-sm max-w-none wrap-break-word [&_pre]:bg-white/5 [&_pre]:border [&_pre]:border-white/10 [&_pre]:rounded-lg [&_pre]:p-3 [&_pre]:overflow-x-auto [&_code]:text-xs [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_a]:text-blue-400 [&_a]:no-underline hover:[&_a]:underline [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_table]:overflow-x-auto [&_img]:max-w-full [&_img]:h-auto";
 
 export const MessageBubble = memo(function MessageBubble({
   message,
@@ -46,14 +48,14 @@ export const MessageBubble = memo(function MessageBubble({
     // During streaming, render plain text for performance; parse markdown only when done
     if (isStreaming) {
       return (
-        <div className="prose prose-invert prose-sm max-w-none wrap-break-word [&_pre]:bg-white/5 [&_pre]:border [&_pre]:border-white/10 [&_pre]:rounded-lg [&_pre]:p-3 [&_pre]:overflow-x-auto [&_code]:text-xs [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_a]:text-blue-400 [&_a]:no-underline hover:[&_a]:underline [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_table]:overflow-x-auto [&_img]:max-w-full [&_img]:h-auto">
+        <div className={proseClasses}>
           <p className="whitespace-pre-wrap">{message.content}<span className="inline-block w-0.75 h-[1.1em] bg-white/70 align-middle ml-0.5 animate-pulse" /></p>
         </div>
       );
     }
 
     return (
-      <div className="prose prose-invert prose-sm max-w-none wrap-break-word [&_pre]:bg-white/5 [&_pre]:border [&_pre]:border-white/10 [&_pre]:rounded-lg [&_pre]:p-3 [&_pre]:overflow-x-auto [&_code]:text-xs [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_a]:text-blue-400 [&_a]:no-underline hover:[&_a]:underline [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_table]:overflow-x-auto [&_img]:max-w-full [&_img]:h-auto">
+      <div className={proseClasses}>
         <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins}>
           {message.content}
         </ReactMarkdown>

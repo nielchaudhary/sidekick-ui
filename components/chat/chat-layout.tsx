@@ -16,8 +16,8 @@ export function ChatLayout() {
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [messagesByThread, setMessagesByThread] = useState<Record<string, Message[]>>({});
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [streamingMsgId, setStreamingMsgId] = useState<string | null>(null);
+  const isLoading = streamingMsgId !== null;
 
   const activeMessages = activeThreadId ? messagesByThread[activeThreadId] ?? [] : [];
 
@@ -34,10 +34,7 @@ export function ChatLayout() {
   const sendText = useCallback(async (text: string) => {
     if (!text || isLoading) return;
 
-    let threadId = activeThreadId;
-    if (!threadId) {
-      threadId = createThread(text);
-    }
+    const threadId = activeThreadId ?? createThread(text);
 
     const userMsg: Message = { id: generateId(), role: "user", content: text };
     const assistantMsgId = generateId();
@@ -45,10 +42,9 @@ export function ChatLayout() {
 
     setMessagesByThread((prev) => ({
       ...prev,
-      [threadId!]: [...(prev[threadId!] ?? []), userMsg, assistantMsg],
+      [threadId]: [...(prev[threadId] ?? []), userMsg, assistantMsg],
     }));
     setInput("");
-    setIsLoading(true);
     setStreamingMsgId(assistantMsgId);
 
     try {
@@ -83,15 +79,20 @@ export function ChatLayout() {
           const data = trimmed.slice(6);
           if (data === "[DONE]") continue;
 
-          const parsed = JSON.parse(data);
+          let parsed: { text?: string; error?: string };
+          try {
+            parsed = JSON.parse(data);
+          } catch {
+            continue;
+          }
           if (parsed.error) throw new Error(parsed.error);
 
           if (parsed.text) {
             setMessagesByThread((prev) => {
-              const msgs = prev[threadId!] ?? [];
+              const msgs = prev[threadId] ?? [];
               return {
                 ...prev,
-                [threadId!]: msgs.map((m) =>
+                [threadId]: msgs.map((m) =>
                   m.id === assistantMsgId
                     ? { ...m, content: m.content + parsed.text }
                     : m
@@ -107,10 +108,10 @@ export function ChatLayout() {
       );
     } catch (error) {
       setMessagesByThread((prev) => {
-        const msgs = prev[threadId!] ?? [];
+        const msgs = prev[threadId] ?? [];
         return {
           ...prev,
-          [threadId!]: msgs.map((m) =>
+          [threadId]: msgs.map((m) =>
             m.id === assistantMsgId
               ? { ...m, content: "Sorry, something went wrong. Please try again." }
               : m
@@ -119,9 +120,8 @@ export function ChatLayout() {
       });
     } finally {
       setStreamingMsgId(null);
-      setIsLoading(false);
     }
-  }, [isLoading, activeThreadId, createThread]);
+  }, [streamingMsgId, activeThreadId, createThread]);
 
   const handleSend = useCallback(() => {
     sendText(input.trim());
