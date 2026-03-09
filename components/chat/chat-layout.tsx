@@ -32,7 +32,7 @@ export function ChatLayout() {
   const [streamingMsgId, setStreamingMsgId] = useState<string | null>(null);
   const isLoading = streamingMsgId !== null;
 
-  const activeMessages = activeThreadId ? messagesByThread[activeThreadId] ?? [] : [];
+  const activeMessages = activeThreadId ? (messagesByThread[activeThreadId] ?? []) : [];
 
   const createThread = useCallback((firstMessage: string) => {
     const id = generateId();
@@ -44,97 +44,98 @@ export function ChatLayout() {
     return id;
   }, []);
 
-  const sendText = useCallback(async (text: string) => {
-    if (!text || isLoading) return;
+  const sendText = useCallback(
+    async (text: string) => {
+      if (!text || isLoading) return;
 
-    const threadId = activeThreadId ?? createThread(text);
+      const threadId = activeThreadId ?? createThread(text);
 
-    const userMsg: Message = { id: generateId(), role: "user", content: text };
-    const assistantMsgId = generateId();
-    const assistantMsg: Message = { id: assistantMsgId, role: "assistant", content: "" };
+      const userMsg: Message = { id: generateId(), role: "user", content: text };
+      const assistantMsgId = generateId();
+      const assistantMsg: Message = { id: assistantMsgId, role: "assistant", content: "" };
 
-    setMessagesByThread((prev) => ({
-      ...prev,
-      [threadId]: [...(prev[threadId] ?? []), userMsg, assistantMsg],
-    }));
-    setInput("");
-    setStreamingMsgId(assistantMsgId);
+      setMessagesByThread((prev) => ({
+        ...prev,
+        [threadId]: [...(prev[threadId] ?? []), userMsg, assistantMsg],
+      }));
+      setInput("");
+      setStreamingMsgId(assistantMsgId);
 
-    try {
-      const response = await fetch(`${CHAT_URL}?llmProvider=claude`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: text, systemPrompt: SYSTEM_PROMPT }),
-      });
+      try {
+        const response = await fetch(`${CHAT_URL}?llmProvider=claude`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: text, systemPrompt: SYSTEM_PROMPT }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
 
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error("No response body");
+        const reader = response.body?.getReader();
+        if (!reader) throw new Error("No response body");
 
-      const decoder = new TextDecoder();
-      let buffer = "";
+        const decoder = new TextDecoder();
+        let buffer = "";
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
 
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed.startsWith("data: ")) continue;
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith("data: ")) continue;
 
-          const data = trimmed.slice(6);
-          if (data === "[DONE]") continue;
+            const data = trimmed.slice(6);
+            if (data === "[DONE]") continue;
 
-          let parsed: { text?: string; error?: string };
-          try {
-            parsed = JSON.parse(data);
-          } catch {
-            continue;
-          }
-          if (parsed.error) throw new Error(parsed.error);
+            let parsed: { text?: string; error?: string };
+            try {
+              parsed = JSON.parse(data);
+            } catch {
+              continue;
+            }
+            if (parsed.error) throw new Error(parsed.error);
 
-          if (parsed.text) {
-            setMessagesByThread((prev) => {
-              const msgs = prev[threadId] ?? [];
-              return {
-                ...prev,
-                [threadId]: msgs.map((m) =>
-                  m.id === assistantMsgId
-                    ? { ...m, content: m.content + parsed.text }
-                    : m
-                ),
-              };
-            });
+            if (parsed.text) {
+              setMessagesByThread((prev) => {
+                const msgs = prev[threadId] ?? [];
+                return {
+                  ...prev,
+                  [threadId]: msgs.map((m) =>
+                    m.id === assistantMsgId ? { ...m, content: m.content + parsed.text } : m
+                  ),
+                };
+              });
+            }
           }
         }
-      }
 
-      setThreads((prev) =>
-        prev.map((t) => (t.id === threadId ? { ...t, updatedAt: new Date() } : t))
-      );
-    } catch (error) {
-      setMessagesByThread((prev) => {
-        const msgs = prev[threadId] ?? [];
-        return {
-          ...prev,
-          [threadId]: msgs.map((m) =>
-            m.id === assistantMsgId
-              ? { ...m, content: "Sorry, something went wrong. Please try again." }
-              : m
-          ),
-        };
-      });
-    } finally {
-      setStreamingMsgId(null);
-    }
-  }, [streamingMsgId, activeThreadId, createThread]);
+        setThreads((prev) =>
+          prev.map((t) => (t.id === threadId ? { ...t, updatedAt: new Date() } : t))
+        );
+      } catch (error) {
+        setMessagesByThread((prev) => {
+          const msgs = prev[threadId] ?? [];
+          return {
+            ...prev,
+            [threadId]: msgs.map((m) =>
+              m.id === assistantMsgId
+                ? { ...m, content: "Sorry, something went wrong. Please try again." }
+                : m
+            ),
+          };
+        });
+      } finally {
+        setStreamingMsgId(null);
+      }
+    },
+    [streamingMsgId, activeThreadId, createThread]
+  );
 
   const handleSend = useCallback(() => {
     sendText(input.trim());
