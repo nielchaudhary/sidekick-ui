@@ -128,7 +128,7 @@ export function Sidebar({
           <button
             onClick={onNewThread}
             className={cn(
-              "flex items-center rounded-lg text-white hover:bg-white/5 transition-all duration-200 cursor-pointer",
+              "flex items-center rounded-lg text-white hover:bg-white/10 transition-all duration-200 cursor-pointer",
               isOpen ? "w-full gap-2 px-3 py-2 text-sm" : "w-10 h-10 mx-auto justify-center"
             )}
           >
