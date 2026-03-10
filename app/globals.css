@@ -11,6 +11,78 @@
   font-display: swap;
 }
 
+/* Matter font family */
+@font-face {
+  font-family: "Matter";
+  src: url("/fonts/matter-font-family/Matter-TRIAL-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Matter";
+  src: url("/fonts/matter-font-family/Matter-TRIAL-LightItalic.otf") format("opentype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Matter";
+  src: url("/fonts/matter-font-family/Matter-TRIAL-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Matter";
+  src: url("/fonts/matter-font-family/Matter-TRIAL-RegularItalic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Matter";
+  src: url("/fonts/matter-font-family/Matter-TRIAL-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Matter";
+  src: url("/fonts/matter-font-family/Matter-TRIAL-MediumItalic.otf") format("opentype");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Matter";
+  src: url("/fonts/matter-font-family/Matter-TRIAL-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Matter";
+  src: url("/fonts/matter-font-family/Matter-TRIAL-SemiBoldItalic.otf") format("opentype");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Matter";
+  src: url("/fonts/matter-font-family/Matter-TRIAL-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Matter";
+  src: url("/fonts/matter-font-family/Matter-TRIAL-BoldItalic.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   /* Noir Foundation - Absolute Black Canvas */
   --background: #000000;
@@ -31,6 +103,7 @@
 
   /* Fonts */
   --font-headline: "Bebas Neue", sans-serif;
+  --font-matter: "Matter", sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
 }
 
@@ -67,6 +140,11 @@ body {
 /* Headline font utility */
 .font-headline {
   font-family: var(--font-headline);
+}
+
+/* Matter font utility */
+.font-matter {
+  font-family: var(--font-matter);
 }
 
 /* Sonner Toast Styling */

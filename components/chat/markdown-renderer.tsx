@@ -13,8 +13,11 @@ import { sanitizeStreamingMarkdown } from "./streaming-sanitizer";
 const remarkPlugins = [remarkGfm, remarkMath];
 const rehypePlugins = [rehypeHighlight, rehypeKatex];
 
+const matterFont = "font-matter";
+
 const proseClasses = cn(
   "prose prose-invert prose-sm max-w-none wrap-break-word",
+  matterFont,
   // Paragraphs
   "[&_p]:my-2 [&_p]:leading-relaxed",
   // Lists

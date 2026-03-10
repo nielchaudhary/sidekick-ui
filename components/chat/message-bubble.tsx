@@ -45,7 +45,7 @@ export const MessageBubble = memo(function MessageBubble({
     }
 
     if (isUser) {
-      return <p className="whitespace-pre-wrap">{message.content}</p>;
+      return <p className="whitespace-pre-wrap font-matter">{message.content}</p>;
     }
 
     return <MarkdownRenderer content={message.content} isStreaming={isStreaming} />;

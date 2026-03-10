@@ -92,8 +92,7 @@ export function Sidebar({
               <>
                 <div className="flex items-center gap-1 overflow-hidden whitespace-nowrap">
                   <span
-                    className="text-white text-[20px] tracking-tight opacity-100 delay-100 transition-opacity duration-200"
-                    style={{ fontFamily: "Matter, sans-serif", fontWeight: 600 }}
+                    className="text-white text-[20px] tracking-tight opacity-100 delay-100 transition-opacity duration-200 font-matter font-semibold"
                   >
                     sidekick
                   </span>
@@ -130,10 +129,10 @@ export function Sidebar({
                 isOpen ? "opacity-100 delay-100" : "opacity-0 w-0 overflow-hidden"
               )}
             >
-              <span className="font-sans">New Thread</span>
+              <span className="font-matter">New Thread</span>
             </span>
             {isOpen && (
-              <span className="opacity-0 group-hover/new:opacity-100 transition-opacity duration-150 text-[11px] font-semibold text-white/30 font-sans tracking-wide ml-auto">
+              <span className="opacity-0 group-hover/new:opacity-100 transition-opacity duration-150 text-[11px] font-semibold text-white/30 font-matter tracking-wide ml-auto">
                 ⌘ ⌥ O
               </span>
             )}
@@ -151,7 +150,7 @@ export function Sidebar({
         >
           {groupThreads(threads).map((group) => (
             <div key={group.label} className="mb-3 flex flex-col gap-0.5">
-              <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider px-2 mb-1 font-sans">
+              <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider px-2 mb-1 font-matter">
                 {group.label}
               </p>
               {group.threads.map((thread) => (
@@ -159,7 +158,7 @@ export function Sidebar({
                   key={thread.id}
                   onClick={() => onSelectThread(thread.id)}
                   className={cn(
-                    "w-full text-left px-3 py-2 rounded-lg text-sm truncate transition-colors duration-150 cursor-pointer font-sans",
+                    "w-full text-left px-3 py-2 rounded-lg text-sm truncate transition-colors duration-150 cursor-pointer font-matter",
                     activeThreadId === thread.id
                       ? "bg-white/10 text-white"
                       : "text-white hover:bg-white/10"
