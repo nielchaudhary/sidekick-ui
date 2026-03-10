@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { PanelLeftClose, PanelLeft, SquarePen, LogOut } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export interface Thread {
   id: string;
@@ -90,7 +91,8 @@ export function Sidebar({
           >
             {isOpen ? (
               <>
-                <div className="flex items-center gap-1 overflow-hidden whitespace-nowrap">
+                <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
+                  <Image src="/favicon.png" alt="Sidekick" width={24} height={24} className="size-6 shrink-0" />
                   <span
                     className="text-white text-[20px] tracking-tight opacity-100 delay-100 transition-opacity duration-200 font-matter font-semibold"
                   >
