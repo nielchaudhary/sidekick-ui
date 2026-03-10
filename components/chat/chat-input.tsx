@@ -3,8 +3,16 @@
 import { cn } from "@/lib/utils";
 import { ArrowUp, Mic } from "lucide-react";
 import { useRef, useEffect, useState, useCallback, KeyboardEvent } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { AIVoiceInput } from "./ai-voice-input";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+
+const placeholders = [
+  "Ask Sidekick anything...",
+  "Search through your memories...",
+  "Research across your files & memories...",
+  "Summarize, draft, or brainstorm ideas...",
+];
 
 interface ChatInputProps {
   value: string;
@@ -17,6 +25,35 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [voiceMode, setVoiceMode] = useState(false);
   const voiceHasStartedRef = useRef(false);
+
+  // Rotating placeholder
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startAnimation = useCallback(() => {
+    intervalRef.current = setInterval(() => {
+      setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
+    }, 3000);
+  }, []);
+
+  useEffect(() => {
+    startAnimation();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== "visible" && intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      } else if (document.visibilityState === "visible") {
+        startAnimation();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [startAnimation]);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -54,30 +91,49 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
       <HoverBorderGradient
         as="div"
         containerClassName={cn(
-          "max-w-3xl mx-auto rounded-3xl border-none w-full",
+          "max-w-3xl mx-auto rounded-3xl border-none w-[90%]",
           voiceMode ? "bg-transparent" : "bg-black"
         )}
         className="w-full relative rounded-3xl bg-black px-0 py-0"
-        duration={1}
-        style={{ width: "90%" }}
       >
         {voiceMode ? (
           <AIVoiceInput autoStart onStart={handleVoiceStart} onStop={handleVoiceStop} />
         ) : (
           <>
-            <textarea
-              id="chat-input"
-              name="chat-input"
-              ref={textareaRef}
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask Sidekick about anything"
-              disabled={disabled}
-              rows={1}
-              className="w-full resize-none bg-transparent px-6 py-4 pr-12 text-sm text-white placeholder:text-white/30 focus:outline-none scrollbar-hide"
-              style={{ fontFamily: 'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif', fontWeight: 400 }}
-            />
+            <div className="relative w-full">
+              <textarea
+                id="chat-input"
+                name="chat-input"
+                ref={textareaRef}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={disabled}
+                rows={1}
+                className="w-full resize-none bg-transparent px-6 py-4 pr-12 text-sm text-white focus:outline-none scrollbar-hide relative z-10"
+                style={{ fontFamily: 'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif', fontWeight: 400 }}
+              />
+              <div className="absolute inset-0 flex items-center px-6 pointer-events-none overflow-hidden">
+                <AnimatePresence mode="wait">
+                  {!value && (
+                    <motion.p
+                      key={`placeholder-${currentPlaceholder}`}
+                      initial={{ y: 5, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -15, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "linear" }}
+                      className="text-sm text-white/30 truncate"
+                      style={{
+                        fontFamily: 'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+                        fontWeight: 400,
+                      }}
+                    >
+                      {placeholders[currentPlaceholder]}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
             {showMic ? (
               <button
                 onClick={() => setVoiceMode(true)}

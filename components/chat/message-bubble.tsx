@@ -72,30 +72,24 @@ export const MessageBubble = memo(function MessageBubble({
         {!isLoading && !isStreaming && !isUser && (
           <div className="flex items-center gap-0.5 mt-1">
             <CopyButton value={message.content} size="lg" />
-            <button
-              type="button"
-              onClick={() => setFeedback(feedback === "up" ? null : "up")}
-              className={cn(
-                "inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors",
-                feedback === "up"
-                  ? "text-white/60"
-                  : "text-white/30 hover:text-white/60 hover:bg-white/10"
-              )}
-            >
-              <ThumbsUp className="size-4.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setFeedback(feedback === "down" ? null : "down")}
-              className={cn(
-                "inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors",
-                feedback === "down"
-                  ? "text-white/60"
-                  : "text-white/30 hover:text-white/60 hover:bg-white/10"
-              )}
-            >
-              <ThumbsDown className="size-4.5" />
-            </button>
+            {([
+              { icon: ThumbsUp, value: "up" as const },
+              { icon: ThumbsDown, value: "down" as const },
+            ]).map(({ icon: Icon, value }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setFeedback((prev) => (prev === value ? null : value))}
+                className={cn(
+                  "inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors",
+                  feedback === value
+                    ? "text-white/60"
+                    : "text-white/30 hover:text-white/60 hover:bg-white/10"
+                )}
+              >
+                <Icon className="size-4.5" />
+              </button>
+            ))}
             {onRegenerate && (
               <button
                 type="button"

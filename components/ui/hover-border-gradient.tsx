@@ -31,9 +31,6 @@ export function HoverBorderGradient({
         className="flex-none inset-0 overflow-hidden absolute z-0 rounded-[inherit]"
         style={{
           filter: "blur(2px)",
-          position: "absolute",
-          width: "100%",
-          height: "100%",
           background:
             "radial-gradient(75% 181.15942028985506% at 50% 50%, #3275F8 0%, rgba(255, 255, 255, 0) 100%)",
         }}

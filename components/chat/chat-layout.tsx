@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Sidebar, type Thread } from "./sidebar";
 import { ChatArea } from "./chat-area";
 import type { Message } from "./message-bubble";
@@ -150,6 +150,18 @@ export function ChatLayout() {
     setActiveThreadId(id);
     setInput("");
   }, []);
+
+  // Global ⌘+N shortcut for new thread
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey && e.altKey && e.code === "KeyO") {
+        e.preventDefault();
+        handleNewThread();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleNewThread]);
 
   return (
     <div className="flex h-svh overflow-hidden bg-black">
