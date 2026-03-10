@@ -11,6 +11,8 @@ import Link from "next/link";
 
 export function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
   const supabase = createClient();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -42,8 +44,11 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
       email,
       password,
       options: {
-        // The confirmation email link will redirect here after Supabase verifies it
         emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+        },
       },
     });
 
@@ -108,6 +113,24 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
         <CardContent>
           <form onSubmit={handleEmailSignup}>
             <FieldGroup>
+              <div className="flex gap-3">
+                <LabelInput
+                  id="first-name"
+                  label="First name"
+                  type="text"
+                  required
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+                <LabelInput
+                  id="last-name"
+                  label="Last name"
+                  type="text"
+                  required
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
               <LabelInput
                 id="email"
                 label="Email"
