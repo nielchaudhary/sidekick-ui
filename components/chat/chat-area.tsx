@@ -4,6 +4,7 @@ import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MessageBubble, type Message } from "./message-bubble";
 import { ChatInput } from "./chat-input";
+import { FONTS } from "@/lib/theme";
 
 interface ChatAreaProps {
   messages: Message[];
@@ -39,8 +40,18 @@ export function ChatArea({
       }}
     >
       {isEmpty ? (
-        /* Empty state: vertically centered input */
+        /* Empty state: hero heading + vertically centered input */
         <div className="flex-1 flex flex-col items-center justify-center px-4">
+          <h1
+            className="text-[20px] sm:text-[24px] md:text-[26px] tracking-[-0.02em] leading-[1.1] text-center mb-5 select-none"
+            style={{
+              fontFamily: FONTS.serif,
+              fontWeight: 300,
+              color: "rgba(200, 205, 215, 0.7)",
+            }}
+          >
+            your own sidekick, that thinks with you
+          </h1>
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
