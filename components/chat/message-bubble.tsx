@@ -29,7 +29,7 @@ export const MessageBubble = memo(function MessageBubble({
     if (isLoading) {
       return (
         <div className="flex items-center gap-2 py-1">
-          <ShimmerText className="font-medium">Thinking longer for a better answer</ShimmerText>
+          <ShimmerText className="font-semibold">Sidekick is thinking . . .</ShimmerText>
         </div>
       );
     }
