@@ -5,6 +5,7 @@ import { ArrowUp, Mic } from "lucide-react";
 import { useRef, useEffect, useState, useCallback, KeyboardEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AIVoiceInput } from "./ai-voice-input";
+import { ChatInputPlusMenu } from "./chat-input-plus-menu";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 const placeholders = [
@@ -14,17 +15,36 @@ const placeholders = [
   "Summarize, draft, or brainstorm ideas...",
 ];
 
+type SearchMode = "github" | "reddit" | "x";
+
 interface ChatInputProps {
   value: string;
   onChange: (value: string) => void;
   onSend: () => void;
+  onFilesSelected?: (files: File[]) => void;
+  searchModes?: Set<SearchMode>;
+  onSearchModesChange?: (modes: Set<SearchMode>) => void;
   disabled?: boolean;
 }
 
-export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps) {
+export function ChatInput({
+  value,
+  onChange,
+  onSend,
+  onFilesSelected,
+  searchModes: controlledSearchModes,
+  onSearchModesChange: controlledOnSearchModesChange,
+  disabled,
+}: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [voiceMode, setVoiceMode] = useState(false);
   const voiceHasStartedRef = useRef(false);
+
+  // Internal state for search modes when uncontrolled
+  const [internalSearchModes, setInternalSearchModes] = useState<Set<SearchMode>>(new Set());
+  const searchModes = controlledSearchModes ?? internalSearchModes;
+  const handleSearchModesChange = controlledOnSearchModesChange ?? setInternalSearchModes;
+  const handleFilesSelected = onFilesSelected ?? (() => {});
 
   // Rotating placeholder
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
@@ -102,6 +122,13 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
           <AIVoiceInput autoStart onStart={handleVoiceStart} onStop={handleVoiceStop} />
         ) : (
           <>
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 z-20 text-white/60">
+              <ChatInputPlusMenu
+                onFilesSelected={handleFilesSelected}
+                searchModes={searchModes}
+                onSearchModesChange={handleSearchModesChange}
+              />
+            </div>
             <div className="relative w-full">
               <textarea
                 id="chat-input"
@@ -114,7 +141,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
                 onBlur={() => setIsFocused(false)}
                 disabled={disabled}
                 rows={1}
-                className="w-full resize-none bg-transparent px-6 pr-12 text-[15px] leading-normal text-white focus:outline-none scrollbar-hide relative z-10 flex items-center"
+                className="w-full resize-none bg-transparent pl-11 pr-12 text-[15px] leading-normal text-white focus:outline-none scrollbar-hide relative z-10 flex items-center"
                 style={{
                   fontFamily:
                     'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
@@ -126,7 +153,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
                   boxSizing: 'border-box',
                 }}
               />
-              <div className="absolute inset-0 flex items-center px-6 pointer-events-none overflow-hidden">
+              <div className="absolute inset-0 flex items-center pl-11 pr-6 pointer-events-none overflow-hidden">
                 <AnimatePresence mode="wait">
                   {!value && !isFocused && (
                     <motion.p
