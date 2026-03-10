@@ -139,7 +139,7 @@ export function Sidebar({
                 isOpen ? "opacity-100 delay-100" : "opacity-0 w-0 overflow-hidden"
               )}
             >
-              New Thread
+              <span className="font-sans">New Thread</span>
             </span>
           </button>
         </div>
@@ -153,7 +153,7 @@ export function Sidebar({
         >
           {groupThreads(threads).map((group) => (
             <div key={group.label} className="mb-3">
-              <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider px-2 mb-1">
+              <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider px-2 mb-1 font-sans">
                 {group.label}
               </p>
               {group.threads.map((thread) => (
@@ -161,7 +161,7 @@ export function Sidebar({
                   key={thread.id}
                   onClick={() => onSelectThread(thread.id)}
                   className={cn(
-                    "w-full text-left px-3 py-2 rounded-lg text-sm truncate transition-colors duration-150 cursor-pointer",
+                    "w-full text-left px-3 py-2 rounded-lg text-sm truncate transition-colors duration-150 cursor-pointer font-sans",
                     activeThreadId === thread.id
                       ? "bg-white/10 text-white"
                       : "text-white/50 hover:text-white/80 hover:bg-white/4"
