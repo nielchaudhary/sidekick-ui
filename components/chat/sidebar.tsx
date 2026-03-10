@@ -92,7 +92,7 @@ export function Sidebar({
               <>
                 <div className="flex items-center gap-1 overflow-hidden whitespace-nowrap">
                   <span
-                    className="text-white text-[15px] tracking-tight opacity-100 delay-100 transition-opacity duration-200"
+                    className="text-white text-[20px] tracking-tight opacity-100 delay-100 transition-opacity duration-200"
                     style={{ fontFamily: "Matter, sans-serif", fontWeight: 600 }}
                   >
                     sidekick
