@@ -53,7 +53,7 @@ const proseClasses = cn(
   // Strikethrough
   "[&_del]:text-white/40",
   // Inline code (handled separately for code blocks)
-  "[&_:not(pre)>code]:bg-white/10 [&_:not(pre)>code]:px-2 [&_:not(pre)>code]:py-1 [&_:not(pre)>code]:rounded-md [&_:not(pre)>code]:text-xs [&_:not(pre)>code]:font-mono [&_:not(pre)>code]:text-pink-300/90",
+  "[&_:not(pre)>code]:bg-white/10 [&_:not(pre)>code]:px-2 [&_:not(pre)>code]:py-1 [&_:not(pre)>code]:rounded-md [&_:not(pre)>code]:text-xs [&_:not(pre)>code]:font-mono [&_:not(pre)>code]:text-red-400 [&_:not(pre)>code]:font-semibold",
   // Pre - hide default since we use CodeBlock
   "[&_pre]:bg-transparent [&_pre]:p-0 [&_pre]:m-0",
   // KaTeX
