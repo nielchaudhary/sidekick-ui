@@ -36,7 +36,7 @@ export function ChatArea({
     <div
       className="flex-1 flex flex-col min-w-0 h-full overflow-x-hidden relative"
       style={{
-        background: "radial-gradient(125% 125% at 50% 10%, #000000 40%, #2b0707 100%)",
+        background: "transparent",
       }}
     >
       {isEmpty ? (

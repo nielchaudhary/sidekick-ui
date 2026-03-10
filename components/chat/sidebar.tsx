@@ -74,7 +74,7 @@ export function Sidebar({
       {/* Sidebar — always visible on desktop as either expanded (280px) or collapsed rail (64px) */}
       <aside
         className={cn(
-          "z-50 top-0 left-0 h-full flex flex-col bg-black/80 backdrop-blur-md border-r border-white/6 transition-all duration-200 ease-out overflow-hidden",
+          "z-50 top-0 left-0 h-full flex flex-col bg-transparent transition-all duration-200 ease-out overflow-hidden",
           // Mobile: fixed overlay, hidden when closed
           "fixed lg:relative",
           isOpen ? "w-70 translate-x-0" : "-translate-x-full lg:translate-x-0 lg:w-16"
@@ -178,13 +178,13 @@ export function Sidebar({
         </div>
 
         {/* Bottom section: expand toggle (collapsed) + logout */}
-        <div className="shrink-0 border-t border-white/10">
+        <div className="shrink-0">
           {/* Logout */}
           <div className={cn("p-2", isOpen && "px-3 py-3")}>
             <button
               onClick={handleLogout}
               className={cn(
-                "flex items-center rounded-lg text-white/40 hover:text-white/70 hover:bg-white/5 transition-colors cursor-pointer",
+                "flex items-center rounded-lg text-white hover:bg-white/10 transition-all duration-200 cursor-pointer",
                 isOpen ? "w-full gap-2 px-3 py-2 text-sm" : "w-10 h-10 mx-auto justify-center"
               )}
             >
@@ -195,7 +195,7 @@ export function Sidebar({
                   isOpen ? "opacity-100 delay-100" : "opacity-0 w-0 overflow-hidden"
                 )}
               >
-                Log out
+                <span className="font-matter">Log out</span>
               </span>
             </button>
           </div>
