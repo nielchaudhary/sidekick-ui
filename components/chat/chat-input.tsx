@@ -59,9 +59,10 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
   useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
-    textarea.style.height = "auto";
+    textarea.style.height = "44px"; // reset to min-height
     const maxHeight = 6 * 24; // ~6 lines
-    textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
+    const newHeight = Math.max(44, Math.min(textarea.scrollHeight, maxHeight));
+    textarea.style.height = `${newHeight}px`;
     textarea.style.overflowY = textarea.scrollHeight > maxHeight ? "auto" : "hidden";
   }, [value]);
 
@@ -113,8 +114,17 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
                 onBlur={() => setIsFocused(false)}
                 disabled={disabled}
                 rows={1}
-                className="w-full resize-none bg-transparent px-6 py-4 pr-12 text-[15px] text-white focus:outline-none scrollbar-hide relative z-10"
-                style={{ fontFamily: 'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif', fontWeight: 400 }}
+                className="w-full resize-none bg-transparent px-6 pr-12 text-[15px] leading-normal text-white focus:outline-none scrollbar-hide relative z-10 flex items-center"
+                style={{
+                  fontFamily:
+                    'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+                  fontWeight: 400,
+                  paddingTop: '12px',
+                  paddingBottom: '12px',
+                  lineHeight: '20px',
+                  minHeight: '44px',
+                  boxSizing: 'border-box',
+                }}
               />
               <div className="absolute inset-0 flex items-center px-6 pointer-events-none overflow-hidden">
                 <AnimatePresence mode="wait">
@@ -127,7 +137,8 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
                       transition={{ duration: 0.3, ease: "linear" }}
                       className="text-[15px] text-white/36 truncate"
                       style={{
-                        fontFamily: 'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+                        fontFamily:
+                          'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
                         fontWeight: 400,
                       }}
                     >
