@@ -92,10 +92,14 @@ export function Sidebar({
             {isOpen ? (
               <>
                 <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
-                  <Image src="/favicon.png" alt="Sidekick" width={24} height={24} className="size-6 shrink-0" />
-                  <span
-                    className="text-white text-[20px] tracking-tight opacity-100 delay-100 transition-opacity duration-200 font-matter font-semibold"
-                  >
+                  <Image
+                    src="/favicon.png"
+                    alt="Sidekick"
+                    width={26}
+                    height={26}
+                    className="size-6 shrink-0"
+                  />
+                  <span className="text-white text-[18px] tracking-wide opacity-100 delay-100 transition-opacity duration-200 font-matter font-semibold -ml-1">
                     sidekick
                   </span>
                 </div>
