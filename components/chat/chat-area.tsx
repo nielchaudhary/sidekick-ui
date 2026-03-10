@@ -2,7 +2,6 @@
 
 import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { MessageBubble, type Message } from "./message-bubble";
 import { ChatInput } from "./chat-input";
 

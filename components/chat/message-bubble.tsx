@@ -2,7 +2,7 @@
 
 import { memo, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { BarsSpinner } from "@/components/ui/bars-spinner";
+import { ShimmerText } from "@/components/ui/shimmer-text";
 import { CopyButton } from "@/components/ui/copy-button";
 import { MarkdownRenderer } from "./markdown-renderer";
 
@@ -29,7 +29,7 @@ export const MessageBubble = memo(function MessageBubble({
     if (isLoading) {
       return (
         <div className="flex items-center gap-2 py-1">
-          <BarsSpinner size={22} color="rgba(255,255,255,0.5)" />
+          <ShimmerText className="font-medium">Thinking longer for a better answer</ShimmerText>
         </div>
       );
     }
@@ -38,12 +38,7 @@ export const MessageBubble = memo(function MessageBubble({
       return <p className="whitespace-pre-wrap">{message.content}</p>;
     }
 
-    return (
-      <MarkdownRenderer
-        content={message.content}
-        isStreaming={isStreaming}
-      />
-    );
+    return <MarkdownRenderer content={message.content} isStreaming={isStreaming} />;
   }, [isLoading, isUser, isStreaming, message.content]);
 
   return (
@@ -54,10 +49,7 @@ export const MessageBubble = memo(function MessageBubble({
       )}
     >
       <div
-        className={cn(
-          "flex flex-col min-w-0 max-w-[85%]",
-          isUser ? "items-end" : "items-start"
-        )}
+        className={cn("flex flex-col min-w-0 max-w-[85%]", isUser ? "items-end" : "items-start")}
       >
         <div
           className={cn(
