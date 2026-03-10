@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { PanelLeftClose, PanelLeft, SquarePen, LogOut } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
@@ -92,14 +91,10 @@ export function Sidebar({
             {isOpen ? (
               <>
                 <div className="flex items-center gap-1 overflow-hidden whitespace-nowrap">
-                  <Image
-                    src="/favicon.png"
-                    alt="Sidekick"
-                    width={34}
-                    height={34}
-                    className="shrink-0"
-                  />
-                  <span className="text-white font-semibold text-base tracking-tight opacity-100 delay-100 transition-opacity duration-200">
+                  <span
+                    className="text-white text-[15px] tracking-tight opacity-100 delay-100 transition-opacity duration-200"
+                    style={{ fontFamily: "Matter, sans-serif", fontWeight: 600 }}
+                  >
                     sidekick
                   </span>
                 </div>
@@ -111,15 +106,11 @@ export function Sidebar({
                 </button>
               </>
             ) : (
-              <button onClick={onToggle} className="group/logo relative w-7.5 h-7.5 cursor-pointer">
-                <Image
-                  src="/favicon.png"
-                  alt="Sidekick"
-                  width={30}
-                  height={30}
-                  className="transition-opacity duration-150 group-hover/logo:opacity-0"
-                />
-                <PanelLeft className="w-5 h-5 text-white/50 group-hover/logo:text-white absolute inset-0 m-auto opacity-0 group-hover/logo:opacity-100 transition-all duration-150" />
+              <button
+                onClick={onToggle}
+                className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                <PanelLeft className="w-5 h-5" />
               </button>
             )}
           </div>

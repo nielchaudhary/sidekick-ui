@@ -2,23 +2,18 @@
 
 import { cn } from "@/lib/utils";
 import { ArrowUp, Mic, Square } from "lucide-react";
-import {
-  useRef,
-  useEffect,
-  useState,
-  useCallback,
-  KeyboardEvent,
-} from "react";
+import { useRef, useEffect, useState, useCallback, KeyboardEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AIVoiceInput } from "./ai-voice-input";
 import { ChatInputPlusMenu } from "./chat-input-plus-menu";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 const placeholders = [
-  "Ask anything...",
-  "Search through your memories...",
-  "Research across your files & memories...",
-  "Summarize, draft, or brainstorm ideas...",
+  "What's on my calendar today?",
+  "Search through your memories and past chats",
+  "Find insights across your files and documents",
+  "Summarize notes, draft content, or brainstorm ideas",
+  "Ask anything… research, code, or think with AI",
 ];
 
 type SearchMode = "github" | "reddit" | "x";
@@ -53,12 +48,9 @@ export function ChatInput({
   const isComposingRef = useRef(false);
 
   // Internal state for search modes when uncontrolled
-  const [internalSearchModes, setInternalSearchModes] = useState<
-    Set<SearchMode>
-  >(new Set());
+  const [internalSearchModes, setInternalSearchModes] = useState<Set<SearchMode>>(new Set());
   const searchModes = controlledSearchModes ?? internalSearchModes;
-  const handleSearchModesChange =
-    controlledOnSearchModesChange ?? setInternalSearchModes;
+  const handleSearchModesChange = controlledOnSearchModesChange ?? setInternalSearchModes;
   const handleFilesSelected = onFilesSelected ?? (() => {});
 
   // Rotating placeholder
@@ -102,10 +94,7 @@ export function ChatInput({
     textarea.style.height = `${MIN_HEIGHT}px`;
     const isMobile = window.innerWidth < 768;
     const maxH = isMobile ? MOBILE_MAX_HEIGHT : MAX_HEIGHT;
-    const newHeight = Math.max(
-      MIN_HEIGHT,
-      Math.min(textarea.scrollHeight, maxH)
-    );
+    const newHeight = Math.max(MIN_HEIGHT, Math.min(textarea.scrollHeight, maxH));
     textarea.style.height = `${newHeight}px`;
     textarea.style.overflowY = textarea.scrollHeight > maxH ? "auto" : "hidden";
   }, [value]);
@@ -183,133 +172,124 @@ export function ChatInput({
         )}
         className="w-full relative rounded-2xl bg-black px-0 py-0"
       >
-        <div
-          ref={containerRef}
-          className="relative w-full"
-        >
-        {voiceMode ? (
-          <AIVoiceInput
-            autoStart
-            onStart={handleVoiceStart}
-            onStop={handleVoiceStop}
-          />
-        ) : (
-          <>
-            {/* Text area zone */}
-            <div className="relative w-full">
-              <textarea
-                id="chat-input"
-                name="chat-input"
-                ref={textareaRef}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onCompositionStart={handleCompositionStart}
-                onCompositionEnd={handleCompositionEnd}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                disabled={disabled}
-                aria-label="Chat message input"
-                rows={1}
-                className="w-full resize-none bg-transparent text-[15px] text-white focus:outline-none scrollbar-hide relative z-10"
-                style={{
-                  fontFamily:
-                    'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
-                  fontWeight: 400,
-                  lineHeight: "1.5",
-                  paddingTop: "14px",
-                  paddingLeft: "16px",
-                  paddingRight: "16px",
-                  paddingBottom: "50px",
-                  minHeight: `${MIN_HEIGHT}px`,
-                  boxSizing: "border-box",
-                }}
-              />
-              {/* Animated placeholder */}
-              <div className="absolute top-[14px] left-[16px] right-[16px] pointer-events-none overflow-hidden z-0">
-                <AnimatePresence mode="wait">
-                  {!value && !isFocused && (
-                    <motion.p
-                      key={`placeholder-${currentPlaceholder}`}
-                      initial={{ y: 5, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: -15, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "linear" }}
-                      className="text-[15px] text-[#9CA3AF] truncate"
-                      style={{
-                        fontFamily:
-                          'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
-                        fontWeight: 400,
-                        lineHeight: "1.5",
-                      }}
-                    >
-                      {placeholders[currentPlaceholder]}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-
-            {/* Action bar - pinned to bottom */}
-            <div className="absolute bottom-0 left-0 right-0 h-[48px] flex items-center justify-between px-3 z-20">
-              {/* Left: attachment menu */}
-              <div className="text-white/60">
-                <ChatInputPlusMenu
-                  onFilesSelected={handleFilesSelected}
-                  searchModes={searchModes}
-                  onSearchModesChange={handleSearchModesChange}
+        <div ref={containerRef} className="relative w-full">
+          {voiceMode ? (
+            <AIVoiceInput autoStart onStart={handleVoiceStart} onStop={handleVoiceStop} />
+          ) : (
+            <>
+              {/* Text area zone */}
+              <div className="relative w-full">
+                <textarea
+                  id="chat-input"
+                  name="chat-input"
+                  ref={textareaRef}
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  onCompositionStart={handleCompositionStart}
+                  onCompositionEnd={handleCompositionEnd}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  disabled={disabled}
+                  aria-label="Chat message input"
+                  rows={1}
+                  className="w-full resize-none bg-transparent text-[15px] text-white focus:outline-none scrollbar-hide relative z-10"
+                  style={{
+                    fontFamily:
+                      'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+                    fontWeight: 400,
+                    lineHeight: "1.5",
+                    paddingTop: "14px",
+                    paddingLeft: "16px",
+                    paddingRight: "16px",
+                    paddingBottom: "50px",
+                    minHeight: `${MIN_HEIGHT}px`,
+                    boxSizing: "border-box",
+                  }}
                 />
+                {/* Animated placeholder */}
+                <div className="absolute top-[14px] left-[16px] right-[16px] pointer-events-none overflow-hidden z-0">
+                  <AnimatePresence mode="wait">
+                    {!value && !isFocused && (
+                      <motion.p
+                        key={`placeholder-${currentPlaceholder}`}
+                        initial={{ y: 5, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -15, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "linear" }}
+                        className="text-[15px] text-[#9CA3AF] truncate"
+                        style={{
+                          fontFamily:
+                            'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+                          fontWeight: 500,
+                          lineHeight: "1.5",
+                        }}
+                      >
+                        {placeholders[currentPlaceholder]}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
 
-              {/* Right: mic & send */}
-              <div className="flex items-center gap-1.5">
-                <AnimatePresence mode="wait" initial={false}>
-                  {showMic ? (
-                    <motion.button
-                      key="mic"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      transition={{ duration: 0.15, ease: "easeOut" }}
-                      onClick={() => setVoiceMode(true)}
-                      aria-label="Start voice recording"
-                      className="size-9 rounded-full flex items-center justify-center transition-colors duration-150 bg-white/10 text-white/50 hover:bg-white/20 hover:text-white/80 cursor-pointer"
-                    >
-                      <Mic className="size-[18px]" />
-                    </motion.button>
-                  ) : (
-                    <motion.button
-                      key="send"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      transition={{ duration: 0.15, ease: "easeOut" }}
-                      onClick={handleSendClick}
-                      disabled={!canSend && !isStreaming}
-                      aria-label={
-                        isStreaming ? "Stop response" : "Send message"
-                      }
-                      className={cn(
-                        "size-9 rounded-full flex items-center justify-center transition-colors duration-150 cursor-pointer",
-                        isStreaming
-                          ? "bg-white/20 text-white/70 hover:bg-red-500/80 hover:text-white"
-                          : canSend
-                            ? "bg-white text-black hover:bg-white/90"
-                            : "bg-white/10 text-white/20"
-                      )}
-                    >
-                      {isStreaming ? (
-                        <Square className="size-3.5" fill="currentColor" />
-                      ) : (
-                        <ArrowUp className="size-[18px]" strokeWidth={2.5} />
-                      )}
-                    </motion.button>
-                  )}
-                </AnimatePresence>
+              {/* Action bar - pinned to bottom */}
+              <div className="absolute bottom-0 left-0 right-0 h-[48px] flex items-center justify-between px-3 z-20">
+                {/* Left: attachment menu */}
+                <div className="text-white/60">
+                  <ChatInputPlusMenu
+                    onFilesSelected={handleFilesSelected}
+                    searchModes={searchModes}
+                    onSearchModesChange={handleSearchModesChange}
+                  />
+                </div>
+
+                {/* Right: mic & send */}
+                <div className="flex items-center gap-1.5">
+                  <AnimatePresence mode="wait" initial={false}>
+                    {showMic ? (
+                      <motion.button
+                        key="mic"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        onClick={() => setVoiceMode(true)}
+                        aria-label="Start voice recording"
+                        className="size-9 rounded-full flex items-center justify-center transition-colors duration-150 bg-white/10 text-white/50 hover:bg-white/20 hover:text-white/80 cursor-pointer"
+                      >
+                        <Mic className="size-[18px]" />
+                      </motion.button>
+                    ) : (
+                      <motion.button
+                        key="send"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        onClick={handleSendClick}
+                        disabled={!canSend && !isStreaming}
+                        aria-label={isStreaming ? "Stop response" : "Send message"}
+                        className={cn(
+                          "size-9 rounded-full flex items-center justify-center transition-colors duration-150 cursor-pointer",
+                          isStreaming
+                            ? "bg-white/20 text-white/70 hover:bg-red-500/80 hover:text-white"
+                            : canSend
+                              ? "bg-white text-black hover:bg-white/90"
+                              : "bg-white/10 text-white/20"
+                        )}
+                      >
+                        {isStreaming ? (
+                          <Square className="size-3.5" fill="currentColor" />
+                        ) : (
+                          <ArrowUp className="size-[18px]" strokeWidth={2.5} />
+                        )}
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
         </div>
       </HoverBorderGradient>
     </div>
