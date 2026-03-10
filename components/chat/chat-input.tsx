@@ -49,7 +49,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
   }, []);
 
   return (
-    <div className="bg-black/40 backdrop-blur-sm px-4 py-3">
+    <div className="backdrop-blur-sm px-4 py-3">
       <div
         className={cn(
           "max-w-3xl mx-auto relative rounded-3xl border border-white/10 overflow-hidden transition-colors",
