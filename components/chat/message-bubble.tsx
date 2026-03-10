@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ThumbsUp, ThumbsDown, RotateCcw } from "lucide-react";
 import { ShimmerText } from "@/components/ui/shimmer-text";
@@ -28,22 +28,53 @@ export const MessageBubble = memo(function MessageBubble({
   onRegenerate,
 }: MessageBubbleProps) {
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [thinkingDuration, setThinkingDuration] = useState<number | null>(null);
   const isUser = message.role === "user";
 
-  const renderedContent = useMemo(() => {
+  useEffect(() => {
+    if (!isLoading) return;
+
+    const startTime = Date.now();
+
+    const update = () => {
+      setElapsedSeconds(Math.max(1, Math.round((Date.now() - startTime) / 1000)));
+    };
+
+    const firstTick = setTimeout(update, 0);
+    const interval = setInterval(update, 1000);
+
+    return () => {
+      clearTimeout(firstTick);
+      clearInterval(interval);
+      setThinkingDuration(Math.max(1, Math.round((Date.now() - startTime) / 1000)));
+    };
+  }, [isLoading]);
+
+  const thinkingIndicator = useMemo(() => {
     if (isLoading) {
       return (
-        /* use these later
-"Thinking alongside you..." — matches the "think alongside someone who remembers" pillar
-"Pulling from your context..." — matches the memory/retrieval identity
-"Reasoning through this..." — matches the reasoning pillar
-"Connecting the dots..."
-        */
         <div className="flex items-center gap-2 py-1">
-          <ShimmerText className="font-semibold">Sidekick is thinking . . .</ShimmerText>
+          <ShimmerText className="font-semibold">
+            Sidekick is thinking . . . ({elapsedSeconds}s)
+          </ShimmerText>
         </div>
       );
     }
+    if (thinkingDuration !== null) {
+      return (
+        <div className="flex items-center gap-2 py-1">
+          <span className="font-semibold text-white/50 text-sm">
+            Sidekick thought for {thinkingDuration}s
+          </span>
+        </div>
+      );
+    }
+    return null;
+  }, [isLoading, elapsedSeconds, thinkingDuration]);
+
+  const renderedContent = useMemo(() => {
+    if (isLoading) return null;
 
     if (isUser) {
       return <p className="whitespace-pre-wrap font-matter">{message.content}</p>;
@@ -68,6 +99,7 @@ export const MessageBubble = memo(function MessageBubble({
             isUser ? "bg-white/10 text-white" : "text-white/90"
           )}
         >
+          {thinkingIndicator}
           {renderedContent}
         </div>
         {!isLoading && !isStreaming && isUser && (
@@ -82,10 +114,10 @@ export const MessageBubble = memo(function MessageBubble({
             <ActionTooltip label="Copy">
               <CopyButton value={message.content} size="lg" />
             </ActionTooltip>
-            {([
+            {[
               { icon: ThumbsUp, value: "up" as const, label: "Good response" },
               { icon: ThumbsDown, value: "down" as const, label: "Bad response" },
-            ]).map(({ icon: Icon, value, label }) => (
+            ].map(({ icon: Icon, value, label }) => (
               <ActionTooltip key={value} label={label}>
                 <button
                   type="button"
