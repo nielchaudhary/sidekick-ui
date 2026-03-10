@@ -28,6 +28,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
 
   // Rotating placeholder
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const [isFocused, setIsFocused] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startAnimation = useCallback(() => {
@@ -108,6 +109,8 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 onKeyDown={handleKeyDown}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
                 disabled={disabled}
                 rows={1}
                 className="w-full resize-none bg-transparent px-6 py-4 pr-12 text-sm text-white focus:outline-none scrollbar-hide relative z-10"
@@ -115,14 +118,14 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
               />
               <div className="absolute inset-0 flex items-center px-6 pointer-events-none overflow-hidden">
                 <AnimatePresence mode="wait">
-                  {!value && (
+                  {!value && !isFocused && (
                     <motion.p
                       key={`placeholder-${currentPlaceholder}`}
                       initial={{ y: 5, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       exit={{ y: -15, opacity: 0 }}
                       transition={{ duration: 0.3, ease: "linear" }}
-                      className="text-sm text-white/30 truncate"
+                      className="text-[15px] text-white/36 truncate"
                       style={{
                         fontFamily: 'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
                         fontWeight: 400,
