@@ -53,7 +53,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
       <div
         className={cn(
           "max-w-3xl mx-auto relative rounded-3xl border border-white/10 overflow-hidden transition-colors",
-          voiceMode ? "bg-transparent" : "bg-white/5 focus-within:border-white/20"
+          voiceMode ? "bg-transparent" : "bg-black focus-within:border-white/20"
         )}
         style={{ width: "90%" }}
       >

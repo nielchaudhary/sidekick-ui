@@ -128,7 +128,7 @@ export function Sidebar({
           <button
             onClick={onNewThread}
             className={cn(
-              "flex items-center rounded-lg  text-white/70 hover:text-white hover:bg-white/5  transition-all duration-200 cursor-pointer",
+              "flex items-center rounded-lg text-white hover:bg-white/5 transition-all duration-200 cursor-pointer",
               isOpen ? "w-full gap-2 px-3 py-2 text-sm" : "w-10 h-10 mx-auto justify-center"
             )}
           >
@@ -154,7 +154,7 @@ export function Sidebar({
           )}
         >
           {groupThreads(threads).map((group) => (
-            <div key={group.label} className="mb-3">
+            <div key={group.label} className="mb-3 flex flex-col gap-0.5">
               <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider px-2 mb-1 font-sans">
                 {group.label}
               </p>
@@ -166,7 +166,7 @@ export function Sidebar({
                     "w-full text-left px-3 py-2 rounded-lg text-sm truncate transition-colors duration-150 cursor-pointer font-sans",
                     activeThreadId === thread.id
                       ? "bg-white/10 text-white"
-                      : "text-white/50 hover:text-white/80 hover:bg-white/4"
+                      : "text-white hover:bg-white/10"
                   )}
                 >
                   {thread.title}
