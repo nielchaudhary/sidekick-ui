@@ -39,22 +39,20 @@ export function ChatArea({
       }}
     >
       {isEmpty ? (
-        /* Empty state: input centered with suggestions below */
+        /* Empty state: vertically centered input */
         <div className="flex-1 flex flex-col items-center justify-center px-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="flex flex-col items-center gap-2 w-full max-w-3xl"
+            className="w-full"
           >
-            <div className="w-full">
-              <ChatInput
-                value={input}
-                onChange={onInputChange}
-                onSend={onSend}
-                disabled={isLoading}
-              />
-            </div>
+            <ChatInput
+              value={input}
+              onChange={onInputChange}
+              onSend={onSend}
+              isStreaming={isLoading}
+            />
           </motion.div>
         </div>
       ) : (
@@ -74,7 +72,12 @@ export function ChatArea({
           </div>
 
           {/* Input bar */}
-          <ChatInput value={input} onChange={onInputChange} onSend={onSend} disabled={isLoading} />
+          <ChatInput
+            value={input}
+            onChange={onInputChange}
+            onSend={onSend}
+            isStreaming={isLoading}
+          />
         </>
       )}
     </div>

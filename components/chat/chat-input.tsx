@@ -26,7 +26,6 @@ interface ChatInputProps {
   onFilesSelected?: (files: File[]) => void;
   searchModes?: Set<SearchMode>;
   onSearchModesChange?: (modes: Set<SearchMode>) => void;
-  disabled?: boolean;
   isStreaming?: boolean;
 }
 
@@ -38,7 +37,6 @@ export function ChatInput({
   onFilesSelected,
   searchModes: controlledSearchModes,
   onSearchModesChange: controlledOnSearchModesChange,
-  disabled,
   isStreaming,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -112,7 +110,7 @@ export function ChatInput({
     if (isComposingRef.current) return;
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (value.trim() && !disabled && !isStreaming) {
+      if (value.trim() && !isStreaming) {
         onSend();
       }
     }
@@ -140,8 +138,8 @@ export function ChatInput({
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
-  const canSend = value.trim().length > 0 && !disabled;
-  const showMic = !value.trim() && !disabled && !isStreaming;
+  const canSend = value.trim().length > 0 && !isStreaming;
+  const showMic = !value.trim() && !isStreaming;
 
   const handleVoiceStart = useCallback(() => {
     voiceHasStartedRef.current = true;
@@ -167,12 +165,11 @@ export function ChatInput({
         as="div"
         containerClassName={cn(
           "max-w-3xl mx-auto rounded-2xl border-none w-full md:w-[90%]",
-          voiceMode ? "bg-transparent" : "bg-black",
-          disabled && "opacity-50 pointer-events-none"
+          voiceMode ? "bg-transparent" : "bg-black"
         )}
         className="w-full relative rounded-2xl bg-black px-0 py-0"
       >
-        <div ref={containerRef} className="relative w-full">
+        <div ref={containerRef} className="relative w-full" style={{ minHeight: `${MIN_HEIGHT}px` }}>
           {voiceMode ? (
             <AIVoiceInput autoStart onStart={handleVoiceStart} onStop={handleVoiceStop} />
           ) : (
@@ -190,7 +187,6 @@ export function ChatInput({
                   onCompositionEnd={handleCompositionEnd}
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
-                  disabled={disabled}
                   aria-label="Chat message input"
                   rows={1}
                   className="w-full resize-none bg-transparent text-[15px] text-white focus:outline-none scrollbar-hide relative z-10"
