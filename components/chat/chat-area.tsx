@@ -43,14 +43,14 @@ export function ChatArea({
         /* Empty state: hero heading + vertically centered input */
         <div className="flex-1 flex flex-col items-center justify-center px-4">
           <h1
-            className="text-[22px] sm:text-[28px] md:text-[32px] tracking-[-0.03em] leading-[1.15] text-center mb-6 select-none"
+            className="text-[26px] sm:text-[28px] md:text-[28px] tracking-[0.012em] leading-[1.15] text-center mb-6 select-none"
             style={{
-              fontFamily: FONTS.serif,
-              fontWeight: 300,
+              fontFamily: "Matter",
+              fontWeight: 400,
             }}
           >
             <span style={{ color: "rgba(255,255,255,0.6)" }}>
-              your own sidekick, that thinks with you
+              your thinking partner, powered by your context
             </span>
           </h1>
           <motion.div
