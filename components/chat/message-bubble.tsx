@@ -6,6 +6,7 @@ import { ThumbsUp, ThumbsDown, RotateCcw } from "lucide-react";
 import { ShimmerText } from "@/components/ui/shimmer-text";
 import { CopyButton } from "@/components/ui/copy-button";
 import { MarkdownRenderer } from "./markdown-renderer";
+import { ActionTooltip } from "@/components/ui/action-tooltip";
 
 export interface Message {
   id: string;
@@ -69,35 +70,47 @@ export const MessageBubble = memo(function MessageBubble({
         >
           {renderedContent}
         </div>
+        {!isLoading && !isStreaming && isUser && (
+          <div className="flex items-center gap-0.5 mt-1">
+            <ActionTooltip label="Copy">
+              <CopyButton value={message.content} size="lg" />
+            </ActionTooltip>
+          </div>
+        )}
         {!isLoading && !isStreaming && !isUser && (
           <div className="flex items-center gap-0.5 mt-1">
-            <CopyButton value={message.content} size="lg" />
+            <ActionTooltip label="Copy">
+              <CopyButton value={message.content} size="lg" />
+            </ActionTooltip>
             {([
-              { icon: ThumbsUp, value: "up" as const },
-              { icon: ThumbsDown, value: "down" as const },
-            ]).map(({ icon: Icon, value }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setFeedback((prev) => (prev === value ? null : value))}
-                className={cn(
-                  "inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors",
-                  feedback === value
-                    ? "text-white/60"
-                    : "text-white/30 hover:text-white/60 hover:bg-white/10"
-                )}
-              >
-                <Icon className="size-4.5" />
-              </button>
+              { icon: ThumbsUp, value: "up" as const, label: "Good response" },
+              { icon: ThumbsDown, value: "down" as const, label: "Bad response" },
+            ]).map(({ icon: Icon, value, label }) => (
+              <ActionTooltip key={value} label={label}>
+                <button
+                  type="button"
+                  onClick={() => setFeedback((prev) => (prev === value ? null : value))}
+                  className={cn(
+                    "inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors",
+                    feedback === value
+                      ? "text-white/60"
+                      : "text-white/30 hover:text-white/60 hover:bg-white/10"
+                  )}
+                >
+                  <Icon className="size-4.5" />
+                </button>
+              </ActionTooltip>
             ))}
             {onRegenerate && (
-              <button
-                type="button"
-                onClick={onRegenerate}
-                className="inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors text-white/30 hover:text-white/60 hover:bg-white/10"
-              >
-                <RotateCcw className="size-4.5" />
-              </button>
+              <ActionTooltip label="Regenerate">
+                <button
+                  type="button"
+                  onClick={onRegenerate}
+                  className="inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors text-white/30 hover:text-white/60 hover:bg-white/10"
+                >
+                  <RotateCcw className="size-4.5" />
+                </button>
+              </ActionTooltip>
             )}
           </div>
         )}
