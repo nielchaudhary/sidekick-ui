@@ -1,15 +1,21 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { ArrowUp, Mic } from "lucide-react";
-import { useRef, useEffect, useState, useCallback, KeyboardEvent } from "react";
+import { ArrowUp, Mic, Square } from "lucide-react";
+import {
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+  KeyboardEvent,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AIVoiceInput } from "./ai-voice-input";
 import { ChatInputPlusMenu } from "./chat-input-plus-menu";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 const placeholders = [
-  "Ask Sidekick anything...",
+  "Ask anything...",
   "Search through your memories...",
   "Research across your files & memories...",
   "Summarize, draft, or brainstorm ideas...",
@@ -21,29 +27,38 @@ interface ChatInputProps {
   value: string;
   onChange: (value: string) => void;
   onSend: () => void;
+  onStop?: () => void;
   onFilesSelected?: (files: File[]) => void;
   searchModes?: Set<SearchMode>;
   onSearchModesChange?: (modes: Set<SearchMode>) => void;
   disabled?: boolean;
+  isStreaming?: boolean;
 }
 
 export function ChatInput({
   value,
   onChange,
   onSend,
+  onStop,
   onFilesSelected,
   searchModes: controlledSearchModes,
   onSearchModesChange: controlledOnSearchModesChange,
   disabled,
+  isStreaming,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [voiceMode, setVoiceMode] = useState(false);
   const voiceHasStartedRef = useRef(false);
+  const isComposingRef = useRef(false);
 
   // Internal state for search modes when uncontrolled
-  const [internalSearchModes, setInternalSearchModes] = useState<Set<SearchMode>>(new Set());
+  const [internalSearchModes, setInternalSearchModes] = useState<
+    Set<SearchMode>
+  >(new Set());
   const searchModes = controlledSearchModes ?? internalSearchModes;
-  const handleSearchModesChange = controlledOnSearchModesChange ?? setInternalSearchModes;
+  const handleSearchModesChange =
+    controlledOnSearchModesChange ?? setInternalSearchModes;
   const handleFilesSelected = onFilesSelected ?? (() => {});
 
   // Rotating placeholder
@@ -76,27 +91,68 @@ export function ChatInput({
     };
   }, [startAnimation]);
 
+  // Auto-resize textarea
+  const MIN_HEIGHT = 56;
+  const MAX_HEIGHT = 200;
+  const MOBILE_MAX_HEIGHT = 160;
+
   useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
-    textarea.style.height = "44px"; // reset to min-height
-    const maxHeight = 6 * 24; // ~6 lines
-    const newHeight = Math.max(44, Math.min(textarea.scrollHeight, maxHeight));
+    textarea.style.height = `${MIN_HEIGHT}px`;
+    const isMobile = window.innerWidth < 768;
+    const maxH = isMobile ? MOBILE_MAX_HEIGHT : MAX_HEIGHT;
+    const newHeight = Math.max(
+      MIN_HEIGHT,
+      Math.min(textarea.scrollHeight, maxH)
+    );
     textarea.style.height = `${newHeight}px`;
-    textarea.style.overflowY = textarea.scrollHeight > maxHeight ? "auto" : "hidden";
+    textarea.style.overflowY = textarea.scrollHeight > maxH ? "auto" : "hidden";
   }, [value]);
 
+  // IME composition handling
+  const handleCompositionStart = () => {
+    isComposingRef.current = true;
+  };
+
+  const handleCompositionEnd = () => {
+    isComposingRef.current = false;
+  };
+
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (isComposingRef.current) return;
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (value.trim() && !disabled) {
+      if (value.trim() && !disabled && !isStreaming) {
         onSend();
       }
     }
+    if (e.key === "Escape") {
+      textareaRef.current?.blur();
+    }
   };
 
+  // Auto-focus on alphanumeric keypress (desktop QoL)
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (window.innerWidth < 768) return;
+      if (document.activeElement === textareaRef.current) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (
+        document.activeElement instanceof HTMLInputElement ||
+        document.activeElement instanceof HTMLTextAreaElement
+      )
+        return;
+      if (e.key.length === 1 && /^[a-zA-Z0-9]$/.test(e.key)) {
+        textareaRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
+
   const canSend = value.trim().length > 0 && !disabled;
-  const showMic = !value.trim() && !disabled;
+  const showMic = !value.trim() && !disabled && !isStreaming;
 
   const handleVoiceStart = useCallback(() => {
     voiceHasStartedRef.current = true;
@@ -108,27 +164,38 @@ export function ChatInput({
     setVoiceMode(false);
   }, []);
 
+  const handleSendClick = () => {
+    if (isStreaming && onStop) {
+      onStop();
+    } else if (canSend) {
+      onSend();
+    }
+  };
+
   return (
-    <div className="backdrop-blur-sm px-4 py-3">
+    <div className="backdrop-blur-sm px-4 md:px-0 py-3">
       <HoverBorderGradient
         as="div"
         containerClassName={cn(
-          "max-w-3xl mx-auto rounded-3xl border-none w-[90%]",
-          voiceMode ? "bg-transparent" : "bg-black"
+          "max-w-3xl mx-auto rounded-2xl border-none w-full md:w-[90%]",
+          voiceMode ? "bg-transparent" : "bg-black",
+          disabled && "opacity-50 pointer-events-none"
         )}
-        className="w-full relative rounded-3xl bg-black px-0 py-0"
+        className="w-full relative rounded-2xl bg-black px-0 py-0"
       >
+        <div
+          ref={containerRef}
+          className="relative w-full"
+        >
         {voiceMode ? (
-          <AIVoiceInput autoStart onStart={handleVoiceStart} onStop={handleVoiceStop} />
+          <AIVoiceInput
+            autoStart
+            onStart={handleVoiceStart}
+            onStop={handleVoiceStop}
+          />
         ) : (
           <>
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 z-20 text-white/60">
-              <ChatInputPlusMenu
-                onFilesSelected={handleFilesSelected}
-                searchModes={searchModes}
-                onSearchModesChange={handleSearchModesChange}
-              />
-            </div>
+            {/* Text area zone */}
             <div className="relative w-full">
               <textarea
                 id="chat-input"
@@ -137,23 +204,29 @@ export function ChatInput({
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 onKeyDown={handleKeyDown}
+                onCompositionStart={handleCompositionStart}
+                onCompositionEnd={handleCompositionEnd}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 disabled={disabled}
+                aria-label="Chat message input"
                 rows={1}
-                className="w-full resize-none bg-transparent pl-11 pr-12 text-[15px] leading-normal text-white focus:outline-none scrollbar-hide relative z-10 flex items-center"
+                className="w-full resize-none bg-transparent text-[15px] text-white focus:outline-none scrollbar-hide relative z-10"
                 style={{
                   fontFamily:
-                    'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+                    'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
                   fontWeight: 400,
-                  paddingTop: '12px',
-                  paddingBottom: '12px',
-                  lineHeight: '20px',
-                  minHeight: '44px',
-                  boxSizing: 'border-box',
+                  lineHeight: "1.5",
+                  paddingTop: "14px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                  paddingBottom: "50px",
+                  minHeight: `${MIN_HEIGHT}px`,
+                  boxSizing: "border-box",
                 }}
               />
-              <div className="absolute inset-0 flex items-center pl-11 pr-6 pointer-events-none overflow-hidden">
+              {/* Animated placeholder */}
+              <div className="absolute top-[14px] left-[16px] right-[16px] pointer-events-none overflow-hidden z-0">
                 <AnimatePresence mode="wait">
                   {!value && !isFocused && (
                     <motion.p
@@ -162,11 +235,12 @@ export function ChatInput({
                       animate={{ y: 0, opacity: 1 }}
                       exit={{ y: -15, opacity: 0 }}
                       transition={{ duration: 0.3, ease: "linear" }}
-                      className="text-[15px] text-white/36 truncate"
+                      className="text-[15px] text-[#9CA3AF] truncate"
                       style={{
                         fontFamily:
-                          'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+                          'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
                         fontWeight: 400,
+                        lineHeight: "1.5",
                       }}
                     >
                       {placeholders[currentPlaceholder]}
@@ -175,29 +249,68 @@ export function ChatInput({
                 </AnimatePresence>
               </div>
             </div>
-            {showMic ? (
-              <button
-                onClick={() => setVoiceMode(true)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-all duration-200 ease-out bg-white/10 text-white/40 hover:bg-white/20 hover:text-white/70 cursor-pointer"
-              >
-                <Mic className="w-4 h-4" />
-              </button>
-            ) : (
-              <button
-                onClick={onSend}
-                disabled={!canSend}
-                className={cn(
-                  "absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-all duration-200 ease-out",
-                  canSend
-                    ? "bg-white/20 text-white/60 hover:bg-white hover:text-black cursor-pointer"
-                    : "bg-white/10 text-white/20 cursor-pointer"
-                )}
-              >
-                <ArrowUp className="w-4 h-4" />
-              </button>
-            )}
+
+            {/* Action bar - pinned to bottom */}
+            <div className="absolute bottom-0 left-0 right-0 h-[48px] flex items-center justify-between px-3 z-20">
+              {/* Left: attachment menu */}
+              <div className="text-white/60">
+                <ChatInputPlusMenu
+                  onFilesSelected={handleFilesSelected}
+                  searchModes={searchModes}
+                  onSearchModesChange={handleSearchModesChange}
+                />
+              </div>
+
+              {/* Right: mic & send */}
+              <div className="flex items-center gap-1.5">
+                <AnimatePresence mode="wait" initial={false}>
+                  {showMic ? (
+                    <motion.button
+                      key="mic"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      transition={{ duration: 0.15, ease: "easeOut" }}
+                      onClick={() => setVoiceMode(true)}
+                      aria-label="Start voice recording"
+                      className="size-9 rounded-full flex items-center justify-center transition-colors duration-150 bg-white/10 text-white/50 hover:bg-white/20 hover:text-white/80 cursor-pointer"
+                    >
+                      <Mic className="size-[18px]" />
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      key="send"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      transition={{ duration: 0.15, ease: "easeOut" }}
+                      onClick={handleSendClick}
+                      disabled={!canSend && !isStreaming}
+                      aria-label={
+                        isStreaming ? "Stop response" : "Send message"
+                      }
+                      className={cn(
+                        "size-9 rounded-full flex items-center justify-center transition-colors duration-150 cursor-pointer",
+                        isStreaming
+                          ? "bg-white/20 text-white/70 hover:bg-red-500/80 hover:text-white"
+                          : canSend
+                            ? "bg-white text-black hover:bg-white/90"
+                            : "bg-white/10 text-white/20"
+                      )}
+                    >
+                      {isStreaming ? (
+                        <Square className="size-3.5" fill="currentColor" />
+                      ) : (
+                        <ArrowUp className="size-[18px]" strokeWidth={2.5} />
+                      )}
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
           </>
         )}
+        </div>
       </HoverBorderGradient>
     </div>
   );
