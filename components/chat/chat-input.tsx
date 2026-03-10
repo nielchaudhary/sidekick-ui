@@ -113,7 +113,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
                 onBlur={() => setIsFocused(false)}
                 disabled={disabled}
                 rows={1}
-                className="w-full resize-none bg-transparent px-6 py-4 pr-12 text-sm text-white focus:outline-none scrollbar-hide relative z-10"
+                className="w-full resize-none bg-transparent px-6 py-4 pr-12 text-[15px] text-white focus:outline-none scrollbar-hide relative z-10"
                 style={{ fontFamily: 'pplxSans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif', fontWeight: 400 }}
               />
               <div className="absolute inset-0 flex items-center px-6 pointer-events-none overflow-hidden">
