@@ -1,17 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Plus, Paperclip, Github, Twitter } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuItem,
-  DropdownMenuCheckboxItem,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import { AnimatePresence, motion } from "framer-motion";
 
 type SearchMode = "github" | "reddit" | "x";
 
@@ -37,6 +29,28 @@ function RedditIcon({ className }: { className?: string }) {
   );
 }
 
+const itemClass =
+  "px-3 py-2 rounded-lg text-sm text-white hover:bg-white/10 focus:bg-white/10 cursor-pointer relative flex items-center gap-1.5 outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0";
+
+const checkboxItemClass =
+  "px-3 py-2 pr-8 rounded-lg text-sm text-white hover:bg-white/10 focus:bg-white/10 data-[state=checked]:bg-white/10 cursor-pointer relative flex items-center gap-1.5 outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0";
+
+const contentVariants = {
+  hidden: { opacity: 0, scale: 0.95, y: -4 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1] as const },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+    y: -4,
+    transition: { duration: 0.12, ease: [0.4, 0, 1, 1] as const },
+  },
+};
+
 interface ChatInputPlusMenuProps {
   onFilesSelected: (files: File[]) => void;
   searchModes: Set<SearchMode>;
@@ -49,13 +63,13 @@ export function ChatInputPlusMenu({
   onSearchModesChange,
 }: ChatInputPlusMenuProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       onFilesSelected(Array.from(files));
     }
-    // Reset so the same file can be selected again
     e.target.value = "";
   };
 
@@ -79,62 +93,124 @@ export function ChatInputPlusMenu({
         className="hidden"
         onChange={handleFileChange}
       />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <DropdownMenuPrimitive.Root open={open} onOpenChange={setOpen}>
+        <DropdownMenuPrimitive.Trigger asChild>
           <button
-            className="size-8 rounded-full flex items-center justify-center bg-transparent hover:bg-white/10 text-white/60 hover:text-white transition-all duration-150 data-[state=open]:rotate-45 cursor-pointer focus:outline-none"
+            className="size-8 rounded-full flex items-center justify-center bg-transparent hover:bg-white/10 text-white/60 hover:text-white transition-all duration-150 cursor-pointer focus:outline-none"
           >
-            <Plus className="size-[18px]" strokeWidth={2} />
+            <Plus
+              className="size-4.5 transition-transform duration-200 ease-out"
+              style={{ transform: open ? "rotate(45deg)" : "rotate(0deg)" }}
+              strokeWidth={2}
+            />
           </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          sideOffset={6}
-          className="w-64 bg-black/80 backdrop-blur-md border-white/6"
-        >
-          <DropdownMenuGroup>
-            <DropdownMenuLabel className="text-[11px] text-white/30 uppercase tracking-wider px-3">Attach</DropdownMenuLabel>
-            <DropdownMenuItem
-              onSelect={() => fileInputRef.current?.click()}
-              className="px-3 py-2 rounded-lg text-white hover:bg-white/10 focus:bg-white/10 cursor-pointer"
-            >
-              <Paperclip className="size-4" />
-              Add PDFs or Images
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuLabel className="text-[11px] text-white/30 uppercase tracking-wider px-3">Search modes</DropdownMenuLabel>
-            <DropdownMenuCheckboxItem
-              checked={searchModes.has("github")}
-              onCheckedChange={() => toggleSearchMode("github")}
-              onSelect={(e) => e.preventDefault()}
-              className="px-3 py-2 rounded-lg text-white hover:bg-white/10 focus:bg-white/10 data-[state=checked]:bg-white/10 cursor-pointer"
-            >
-              <Github className="size-4 text-foreground" />
-              GitHub
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={searchModes.has("reddit")}
-              onCheckedChange={() => toggleSearchMode("reddit")}
-              onSelect={(e) => e.preventDefault()}
-              className="px-3 py-2 rounded-lg text-white hover:bg-white/10 focus:bg-white/10 data-[state=checked]:bg-white/10 cursor-pointer"
-            >
-              <RedditIcon className="size-4 text-[#FF4500]" />
-              Reddit
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={searchModes.has("x")}
-              onCheckedChange={() => toggleSearchMode("x")}
-              onSelect={(e) => e.preventDefault()}
-              className="px-3 py-2 rounded-lg text-white hover:bg-white/10 focus:bg-white/10 data-[state=checked]:bg-white/10 cursor-pointer"
-            >
-              <Twitter className="size-4 text-foreground" />
-              X
-            </DropdownMenuCheckboxItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </DropdownMenuPrimitive.Trigger>
+
+        <AnimatePresence>
+          {open && (
+            <DropdownMenuPrimitive.Portal forceMount>
+              <DropdownMenuPrimitive.Content
+                align="start"
+                sideOffset={6}
+                asChild
+                onCloseAutoFocus={(e) => e.preventDefault()}
+              >
+                <motion.div
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="w-64 rounded-lg p-1 shadow-md z-50 bg-black/80 backdrop-blur-md border border-white/6 origin-(--radix-dropdown-menu-content-transform-origin)"
+                >
+                  <DropdownMenuPrimitive.Group>
+                    <DropdownMenuPrimitive.Label className="text-[11px] text-white/30 uppercase tracking-wider px-3 py-1 font-medium">
+                      Attach
+                    </DropdownMenuPrimitive.Label>
+                    <DropdownMenuPrimitive.Item
+                      onSelect={() => fileInputRef.current?.click()}
+                      className={itemClass}
+                    >
+                      <Paperclip className="size-4" />
+                      Add PDFs or Images
+                    </DropdownMenuPrimitive.Item>
+                  </DropdownMenuPrimitive.Group>
+
+                  <DropdownMenuPrimitive.Separator className="bg-white/6 -mx-1 my-1 h-px" />
+
+                  <DropdownMenuPrimitive.Group>
+                    <DropdownMenuPrimitive.Label className="text-[11px] text-white/30 uppercase tracking-wider px-3 py-1 font-medium">
+                      Search modes
+                    </DropdownMenuPrimitive.Label>
+                    <DropdownMenuPrimitive.CheckboxItem
+                      checked={searchModes.has("github")}
+                      onCheckedChange={() => toggleSearchMode("github")}
+                      onSelect={(e) => e.preventDefault()}
+                      className={checkboxItemClass}
+                    >
+                      <Github className="size-4 text-foreground" />
+                      GitHub
+                      <span className="absolute right-2 flex items-center justify-center pointer-events-none">
+                        <DropdownMenuPrimitive.ItemIndicator>
+                          <CheckIcon />
+                        </DropdownMenuPrimitive.ItemIndicator>
+                      </span>
+                    </DropdownMenuPrimitive.CheckboxItem>
+                    <DropdownMenuPrimitive.CheckboxItem
+                      checked={searchModes.has("reddit")}
+                      onCheckedChange={() => toggleSearchMode("reddit")}
+                      onSelect={(e) => e.preventDefault()}
+                      className={checkboxItemClass}
+                    >
+                      <RedditIcon className="size-4 text-[#FF4500]" />
+                      Reddit
+                      <span className="absolute right-2 flex items-center justify-center pointer-events-none">
+                        <DropdownMenuPrimitive.ItemIndicator>
+                          <CheckIcon />
+                        </DropdownMenuPrimitive.ItemIndicator>
+                      </span>
+                    </DropdownMenuPrimitive.CheckboxItem>
+                    <DropdownMenuPrimitive.CheckboxItem
+                      checked={searchModes.has("x")}
+                      onCheckedChange={() => toggleSearchMode("x")}
+                      onSelect={(e) => e.preventDefault()}
+                      className={checkboxItemClass}
+                    >
+                      <Twitter className="size-4 text-foreground" />
+                      X
+                      <span className="absolute right-2 flex items-center justify-center pointer-events-none">
+                        <DropdownMenuPrimitive.ItemIndicator>
+                          <CheckIcon />
+                        </DropdownMenuPrimitive.ItemIndicator>
+                      </span>
+                    </DropdownMenuPrimitive.CheckboxItem>
+                  </DropdownMenuPrimitive.Group>
+                </motion.div>
+              </DropdownMenuPrimitive.Content>
+            </DropdownMenuPrimitive.Portal>
+          )}
+        </AnimatePresence>
+      </DropdownMenuPrimitive.Root>
     </>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <motion.svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </motion.svg>
   );
 }
