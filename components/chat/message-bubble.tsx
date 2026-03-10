@@ -28,6 +28,12 @@ export const MessageBubble = memo(function MessageBubble({
   const renderedContent = useMemo(() => {
     if (isLoading) {
       return (
+        /* use these later
+"Thinking alongside you..." — matches the "think alongside someone who remembers" pillar
+"Pulling from your context..." — matches the memory/retrieval identity
+"Reasoning through this..." — matches the reasoning pillar
+"Connecting the dots..."
+        */
         <div className="flex items-center gap-2 py-1">
           <ShimmerText className="font-semibold">Sidekick is thinking . . .</ShimmerText>
         </div>
