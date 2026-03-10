@@ -43,7 +43,7 @@ export function ChatArea({
         /* Empty state: hero heading + vertically centered input */
         <div className="flex-1 flex flex-col items-center justify-center px-4">
           <h1
-            className="text-[26px] sm:text-[28px] md:text-[28px] tracking-[0.012em] leading-[1.15] text-center mb-6 select-none"
+            className="text-[26px] sm:text-[28px] md:text-[28px] tracking-[0.012em] leading-[1.15] text-center mb-3 select-none"
             style={{
               fontFamily: "Matter",
               fontWeight: 400,
