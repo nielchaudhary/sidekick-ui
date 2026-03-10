@@ -51,27 +51,19 @@ export const MessageBubble = memo(function MessageBubble({
     };
   }, [isLoading]);
 
-  const thinkingIndicator = useMemo(() => {
-    if (isLoading) {
-      return (
-        <div className="flex items-center gap-2 py-1">
-          <ShimmerText className="font-semibold">
-            Sidekick is thinking . . . ({elapsedSeconds}s)
-          </ShimmerText>
-        </div>
-      );
-    }
-    if (thinkingDuration !== null) {
-      return (
-        <div className="flex items-center gap-2 py-1">
-          <span className="font-semibold text-white/50 text-sm">
-            Sidekick thought for {thinkingDuration}s
-          </span>
-        </div>
-      );
-    }
-    return null;
-  }, [isLoading, elapsedSeconds, thinkingDuration]);
+  const thinkingIndicator = isLoading ? (
+    <div className="flex items-center gap-2 py-1">
+      <ShimmerText className="font-semibold">
+        Sidekick is thinking . . . ({elapsedSeconds}s)
+      </ShimmerText>
+    </div>
+  ) : thinkingDuration !== null ? (
+    <div className="flex items-center gap-2 py-1">
+      <span className="font-semibold text-white/50 text-sm">
+        Sidekick thought for {thinkingDuration}s
+      </span>
+    </div>
+  ) : null;
 
   const renderedContent = useMemo(() => {
     if (isLoading) return null;

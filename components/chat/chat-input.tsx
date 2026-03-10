@@ -8,6 +8,9 @@ import { AIVoiceInput } from "./ai-voice-input";
 import { ChatInputPlusMenu } from "./chat-input-plus-menu";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
+const SYSTEM_FONT_STACK =
+  'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
+
 const placeholders = [
   "What's on my calendar today?",
   "Search through your memories and past chats",
@@ -16,7 +19,7 @@ const placeholders = [
   "Ask anything… research, code, or think with AI",
 ];
 
-type SearchMode = "github" | "reddit" | "x";
+export type SearchMode = "github" | "reddit" | "x";
 
 interface ChatInputProps {
   value: string;
@@ -192,7 +195,7 @@ export function ChatInput({
                   className="w-full resize-none bg-transparent text-[15px] text-white focus:outline-none scrollbar-hide relative z-10"
                   style={{
                     fontFamily:
-                      'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+                      SYSTEM_FONT_STACK,
                     fontWeight: 400,
                     lineHeight: "1.5",
                     paddingTop: "14px",
@@ -216,7 +219,7 @@ export function ChatInput({
                         className="text-[15px] text-[#9CA3AF] truncate"
                         style={{
                           fontFamily:
-                            'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+                            SYSTEM_FONT_STACK,
                           fontWeight: 500,
                           lineHeight: "1.5",
                         }}

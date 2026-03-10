@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { PanelLeftClose, PanelLeft, SquarePen, LogOut } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
@@ -45,6 +46,18 @@ function groupThreads(threads: Thread[]) {
   return groups.filter((g) => g.threads.length > 0);
 }
 
+const sidebarButtonClass = (isOpen: boolean) =>
+  cn(
+    "flex items-center rounded-lg text-white hover:bg-white/10 transition-all duration-200 cursor-pointer",
+    isOpen ? "w-full gap-2 px-3 py-2 text-sm" : "w-10 h-10 mx-auto justify-center"
+  );
+
+const sidebarLabelClass = (isOpen: boolean) =>
+  cn(
+    "transition-opacity duration-200 whitespace-nowrap",
+    isOpen ? "opacity-100 delay-100" : "opacity-0 w-0 overflow-hidden"
+  );
+
 export function Sidebar({
   threads,
   activeThreadId,
@@ -53,6 +66,7 @@ export function Sidebar({
   isOpen,
   onToggle,
 }: SidebarProps) {
+  const groups = useMemo(() => groupThreads(threads), [threads]);
   const supabase = createClient();
   const router = useRouter();
 
@@ -123,18 +137,10 @@ export function Sidebar({
           {/* New thread button */}
           <button
             onClick={onNewThread}
-            className={cn(
-              "group/new flex items-center rounded-lg text-white hover:bg-white/10 transition-all duration-200 cursor-pointer",
-              isOpen ? "w-full gap-2 px-3 py-2 text-sm" : "w-10 h-10 mx-auto justify-center"
-            )}
+            className={cn(sidebarButtonClass(isOpen), "group/new")}
           >
             <SquarePen className="w-4 h-4 shrink-0" />
-            <span
-              className={cn(
-                "transition-opacity duration-200 whitespace-nowrap",
-                isOpen ? "opacity-100 delay-100" : "opacity-0 w-0 overflow-hidden"
-              )}
-            >
+            <span className={sidebarLabelClass(isOpen)}>
               <span className="font-matter">New Thread</span>
             </span>
             {isOpen && (
@@ -154,7 +160,7 @@ export function Sidebar({
             isOpen ? "opacity-100 delay-100" : "opacity-0 pointer-events-none"
           )}
         >
-          {groupThreads(threads).map((group) => (
+          {groups.map((group) => (
             <div key={group.label} className="mb-3 flex flex-col gap-0.5">
               <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider px-2 mb-1 font-matter">
                 {group.label}
@@ -183,18 +189,10 @@ export function Sidebar({
           <div className={cn("p-2", isOpen && "px-3 py-3")}>
             <button
               onClick={handleLogout}
-              className={cn(
-                "flex items-center rounded-lg text-white hover:bg-white/10 transition-all duration-200 cursor-pointer",
-                isOpen ? "w-full gap-2 px-3 py-2 text-sm" : "w-10 h-10 mx-auto justify-center"
-              )}
+              className={sidebarButtonClass(isOpen)}
             >
               <LogOut className="w-4 h-4 shrink-0" />
-              <span
-                className={cn(
-                  "transition-opacity duration-200 whitespace-nowrap",
-                  isOpen ? "opacity-100 delay-100" : "opacity-0 w-0 overflow-hidden"
-                )}
-              >
+              <span className={sidebarLabelClass(isOpen)}>
                 <span className="font-matter">Log out</span>
               </span>
             </button>

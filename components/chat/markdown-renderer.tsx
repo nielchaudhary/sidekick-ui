@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, type ComponentPropsWithoutRef } from "react";
+import { memo, type ComponentPropsWithoutRef } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -60,6 +60,64 @@ const proseClasses = cn(
   "[&_.katex-display]:my-3 [&_.katex-display]:overflow-x-auto [&_.katex]:text-white/90"
 );
 
+const markdownComponents: Components = {
+  code(props: ComponentPropsWithoutRef<"code">) {
+    const { children, className, ...rest } = props;
+    const match = /language-(\w+)/.exec(className || "");
+    const isBlock = Boolean(match || className);
+
+    if (isBlock) {
+      return (
+        <CodeBlock language={match?.[1] || undefined}>
+          {children}
+        </CodeBlock>
+      );
+    }
+
+    return (
+      <code className={className} {...rest}>
+        {children}
+      </code>
+    );
+  },
+
+  a(props: ComponentPropsWithoutRef<"a">) {
+    const { href, children, ...rest } = props;
+    if (
+      href &&
+      !href.startsWith("http://") &&
+      !href.startsWith("https://") &&
+      !href.startsWith("mailto:")
+    ) {
+      return <span>{children}</span>;
+    }
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        {...rest}
+      >
+        {children}
+      </a>
+    );
+  },
+
+  table(props: ComponentPropsWithoutRef<"table">) {
+    const { children, ...rest } = props;
+    return (
+      <div className="my-3 overflow-x-auto rounded-lg border border-white/10">
+        <table {...rest}>{children}</table>
+      </div>
+    );
+  },
+
+  pre(props: ComponentPropsWithoutRef<"pre">) {
+    const { children } = props;
+    return <>{children}</>;
+  },
+};
+
 interface MarkdownRendererProps {
   content: string;
   isStreaming?: boolean;
@@ -73,79 +131,12 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
     ? sanitizeStreamingMarkdown(content)
     : content;
 
-  const components: Components = useMemo(
-    () => ({
-      // Code blocks and inline code
-      code(props: ComponentPropsWithoutRef<"code">) {
-        const { children, className, ...rest } = props;
-        const match = /language-(\w+)/.exec(className || "");
-        // Detect block code: has a language class or is inside a <pre> (className set by rehype-highlight)
-        const isBlock = Boolean(match || className);
-
-        if (isBlock) {
-          return (
-            <CodeBlock language={match?.[0] || undefined}>
-              {children}
-            </CodeBlock>
-          );
-        }
-
-        return (
-          <code className={className} {...rest}>
-            {children}
-          </code>
-        );
-      },
-
-      // Links with safety attributes
-      a(props: ComponentPropsWithoutRef<"a">) {
-        const { href, children, ...rest } = props;
-        // Reject dangerous URL schemes
-        if (
-          href &&
-          !href.startsWith("http://") &&
-          !href.startsWith("https://") &&
-          !href.startsWith("mailto:")
-        ) {
-          return <span>{children}</span>;
-        }
-        return (
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            {...rest}
-          >
-            {children}
-          </a>
-        );
-      },
-
-      // Scrollable table wrapper
-      table(props: ComponentPropsWithoutRef<"table">) {
-        const { children, ...rest } = props;
-        return (
-          <div className="my-3 overflow-x-auto rounded-lg border border-white/10">
-            <table {...rest}>{children}</table>
-          </div>
-        );
-      },
-
-      // Pre tag passthrough (CodeBlock handles styling)
-      pre(props: ComponentPropsWithoutRef<"pre">) {
-        const { children } = props;
-        return <>{children}</>;
-      },
-    }),
-    []
-  );
-
   return (
     <div className={proseClasses}>
       <ReactMarkdown
         remarkPlugins={remarkPlugins}
         rehypePlugins={rehypePlugins}
-        components={components}
+        components={markdownComponents}
       >
         {processedContent}
       </ReactMarkdown>

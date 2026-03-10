@@ -5,7 +5,7 @@ import { Plus, Paperclip, Github, Twitter } from "lucide-react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
 
-type SearchMode = "github" | "reddit" | "x";
+import type { SearchMode } from "./chat-input";
 
 function RedditIcon({ className }: { className?: string }) {
   return (
@@ -147,48 +147,27 @@ export function ChatInputPlusMenu({
                       <DropdownMenuPrimitive.Label className="text-[11px] text-white/30 uppercase tracking-wider px-3 py-1 font-medium">
                         Search modes
                       </DropdownMenuPrimitive.Label>
-                      <DropdownMenuPrimitive.CheckboxItem
-                        checked={searchModes.has("github")}
-                        onCheckedChange={() => toggleSearchMode("github")}
-                        onSelect={(e) => e.preventDefault()}
-                        className={checkboxItemClass}
-                      >
-                        <Github className="size-4 text-foreground" />
-                        GitHub
-                        <span className="absolute right-2 flex items-center justify-center pointer-events-none">
-                          <DropdownMenuPrimitive.ItemIndicator>
-                            <CheckIcon />
-                          </DropdownMenuPrimitive.ItemIndicator>
-                        </span>
-                      </DropdownMenuPrimitive.CheckboxItem>
-                      <DropdownMenuPrimitive.CheckboxItem
-                        checked={searchModes.has("reddit")}
-                        onCheckedChange={() => toggleSearchMode("reddit")}
-                        onSelect={(e) => e.preventDefault()}
-                        className={checkboxItemClass}
-                      >
-                        <RedditIcon className="size-4 text-[#FF4500]" />
-                        Reddit
-                        <span className="absolute right-2 flex items-center justify-center pointer-events-none">
-                          <DropdownMenuPrimitive.ItemIndicator>
-                            <CheckIcon />
-                          </DropdownMenuPrimitive.ItemIndicator>
-                        </span>
-                      </DropdownMenuPrimitive.CheckboxItem>
-                      <DropdownMenuPrimitive.CheckboxItem
-                        checked={searchModes.has("x")}
-                        onCheckedChange={() => toggleSearchMode("x")}
-                        onSelect={(e) => e.preventDefault()}
-                        className={checkboxItemClass}
-                      >
-                        <Twitter className="size-4 text-foreground" />
-                        X
-                        <span className="absolute right-2 flex items-center justify-center pointer-events-none">
-                          <DropdownMenuPrimitive.ItemIndicator>
-                            <CheckIcon />
-                          </DropdownMenuPrimitive.ItemIndicator>
-                        </span>
-                      </DropdownMenuPrimitive.CheckboxItem>
+                      {([
+                        { mode: "github" as const, icon: <Github className="size-4 text-foreground" />, label: "GitHub" },
+                        { mode: "reddit" as const, icon: <RedditIcon className="size-4 text-[#FF4500]" />, label: "Reddit" },
+                        { mode: "x" as const, icon: <Twitter className="size-4 text-foreground" />, label: "X" },
+                      ]).map(({ mode, icon, label }) => (
+                        <DropdownMenuPrimitive.CheckboxItem
+                          key={mode}
+                          checked={searchModes.has(mode)}
+                          onCheckedChange={() => toggleSearchMode(mode)}
+                          onSelect={(e) => e.preventDefault()}
+                          className={checkboxItemClass}
+                        >
+                          {icon}
+                          {label}
+                          <span className="absolute right-2 flex items-center justify-center pointer-events-none">
+                            <DropdownMenuPrimitive.ItemIndicator>
+                              <CheckIcon />
+                            </DropdownMenuPrimitive.ItemIndicator>
+                          </span>
+                        </DropdownMenuPrimitive.CheckboxItem>
+                      ))}
                     </DropdownMenuPrimitive.Group>
                   </motion.div>
                 </DropdownMenuPrimitive.Content>
