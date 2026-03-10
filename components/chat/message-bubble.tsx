@@ -1,7 +1,8 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { ThumbsUp, ThumbsDown, RotateCcw } from "lucide-react";
 import { ShimmerText } from "@/components/ui/shimmer-text";
 import { CopyButton } from "@/components/ui/copy-button";
 import { MarkdownRenderer } from "./markdown-renderer";
@@ -16,13 +17,16 @@ interface MessageBubbleProps {
   message: Message;
   isLoading?: boolean;
   isStreaming?: boolean;
+  onRegenerate?: () => void;
 }
 
 export const MessageBubble = memo(function MessageBubble({
   message,
   isLoading,
   isStreaming,
+  onRegenerate,
 }: MessageBubbleProps) {
+  const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
   const isUser = message.role === "user";
 
   const renderedContent = useMemo(() => {
@@ -65,8 +69,43 @@ export const MessageBubble = memo(function MessageBubble({
         >
           {renderedContent}
         </div>
-        {!isLoading && !isStreaming && (
-          <CopyButton value={message.content} size="lg" className="mt-1" />
+        {!isLoading && !isStreaming && !isUser && (
+          <div className="flex items-center gap-0.5 mt-1">
+            <CopyButton value={message.content} size="lg" />
+            <button
+              type="button"
+              onClick={() => setFeedback(feedback === "up" ? null : "up")}
+              className={cn(
+                "inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors",
+                feedback === "up"
+                  ? "text-white/60"
+                  : "text-white/30 hover:text-white/60 hover:bg-white/10"
+              )}
+            >
+              <ThumbsUp className="size-4.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setFeedback(feedback === "down" ? null : "down")}
+              className={cn(
+                "inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors",
+                feedback === "down"
+                  ? "text-white/60"
+                  : "text-white/30 hover:text-white/60 hover:bg-white/10"
+              )}
+            >
+              <ThumbsDown className="size-4.5" />
+            </button>
+            {onRegenerate && (
+              <button
+                type="button"
+                onClick={onRegenerate}
+                className="inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors text-white/30 hover:text-white/60 hover:bg-white/10"
+              >
+                <RotateCcw className="size-4.5" />
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>
