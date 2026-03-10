@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { ArrowUp, Mic } from "lucide-react";
 import { useRef, useEffect, useState, useCallback, KeyboardEvent } from "react";
 import { AIVoiceInput } from "./ai-voice-input";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 interface ChatInputProps {
   value: string;
@@ -50,11 +51,14 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
 
   return (
     <div className="backdrop-blur-sm px-4 py-3">
-      <div
-        className={cn(
-          "max-w-3xl mx-auto relative rounded-3xl border border-white/10 overflow-hidden transition-colors",
-          voiceMode ? "bg-transparent" : "bg-black focus-within:border-white/20"
+      <HoverBorderGradient
+        as="div"
+        containerClassName={cn(
+          "max-w-3xl mx-auto rounded-3xl border-none w-full",
+          voiceMode ? "bg-transparent" : "bg-black"
         )}
+        className="w-full relative rounded-3xl bg-black px-0 py-0"
+        duration={1}
         style={{ width: "90%" }}
       >
         {voiceMode ? (
@@ -97,7 +101,7 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
             )}
           </>
         )}
-      </div>
+      </HoverBorderGradient>
     </div>
   );
 }
