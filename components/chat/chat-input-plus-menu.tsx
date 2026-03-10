@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Plus, Paperclip, Github, Twitter } from "lucide-react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
@@ -64,6 +64,11 @@ export function ChatInputPlusMenu({
 }: ChatInputPlusMenuProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -93,103 +98,111 @@ export function ChatInputPlusMenu({
         className="hidden"
         onChange={handleFileChange}
       />
-      <DropdownMenuPrimitive.Root open={open} onOpenChange={setOpen}>
-        <DropdownMenuPrimitive.Trigger asChild>
-          <button
-            className="size-8 rounded-full flex items-center justify-center bg-transparent hover:bg-white/10 text-white/60 hover:text-white transition-all duration-150 cursor-pointer focus:outline-none"
-          >
-            <Plus
-              className="size-4.5 transition-transform duration-200 ease-out"
-              style={{ transform: open ? "rotate(45deg)" : "rotate(0deg)" }}
-              strokeWidth={2}
-            />
-          </button>
-        </DropdownMenuPrimitive.Trigger>
+      {mounted ? (
+        <DropdownMenuPrimitive.Root open={open} onOpenChange={setOpen}>
+          <DropdownMenuPrimitive.Trigger asChild>
+            <button
+              className="size-8 rounded-full flex items-center justify-center bg-transparent hover:bg-white/10 text-white/60 hover:text-white transition-all duration-150 cursor-pointer focus:outline-none"
+            >
+              <Plus
+                className="size-4.5 transition-transform duration-200 ease-out"
+                style={{ transform: open ? "rotate(45deg)" : "rotate(0deg)" }}
+                strokeWidth={2}
+              />
+            </button>
+          </DropdownMenuPrimitive.Trigger>
 
-        <AnimatePresence>
-          {open && (
-            <DropdownMenuPrimitive.Portal forceMount>
-              <DropdownMenuPrimitive.Content
-                align="start"
-                sideOffset={6}
-                asChild
-                onCloseAutoFocus={(e) => e.preventDefault()}
-              >
-                <motion.div
-                  variants={contentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="w-64 rounded-lg p-1 shadow-md z-50 bg-black/80 backdrop-blur-md border border-white/6 origin-(--radix-dropdown-menu-content-transform-origin)"
+          <AnimatePresence>
+            {open && (
+              <DropdownMenuPrimitive.Portal forceMount>
+                <DropdownMenuPrimitive.Content
+                  align="start"
+                  sideOffset={6}
+                  asChild
+                  onCloseAutoFocus={(e) => e.preventDefault()}
                 >
-                  <DropdownMenuPrimitive.Group>
-                    <DropdownMenuPrimitive.Label className="text-[11px] text-white/30 uppercase tracking-wider px-3 py-1 font-medium">
-                      Attach
-                    </DropdownMenuPrimitive.Label>
-                    <DropdownMenuPrimitive.Item
-                      onSelect={() => fileInputRef.current?.click()}
-                      className={itemClass}
-                    >
-                      <Paperclip className="size-4" />
-                      Add PDFs or Images
-                    </DropdownMenuPrimitive.Item>
-                  </DropdownMenuPrimitive.Group>
+                  <motion.div
+                    variants={contentVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="w-64 rounded-lg p-1 shadow-md z-50 bg-black/80 backdrop-blur-md border border-white/6 origin-(--radix-dropdown-menu-content-transform-origin)"
+                  >
+                    <DropdownMenuPrimitive.Group>
+                      <DropdownMenuPrimitive.Label className="text-[11px] text-white/30 uppercase tracking-wider px-3 py-1 font-medium">
+                        Attach
+                      </DropdownMenuPrimitive.Label>
+                      <DropdownMenuPrimitive.Item
+                        onSelect={() => fileInputRef.current?.click()}
+                        className={itemClass}
+                      >
+                        <Paperclip className="size-4" />
+                        Add PDFs or Images
+                      </DropdownMenuPrimitive.Item>
+                    </DropdownMenuPrimitive.Group>
 
-                  <DropdownMenuPrimitive.Separator className="bg-white/6 -mx-1 my-1 h-px" />
+                    <DropdownMenuPrimitive.Separator className="bg-white/6 -mx-1 my-1 h-px" />
 
-                  <DropdownMenuPrimitive.Group>
-                    <DropdownMenuPrimitive.Label className="text-[11px] text-white/30 uppercase tracking-wider px-3 py-1 font-medium">
-                      Search modes
-                    </DropdownMenuPrimitive.Label>
-                    <DropdownMenuPrimitive.CheckboxItem
-                      checked={searchModes.has("github")}
-                      onCheckedChange={() => toggleSearchMode("github")}
-                      onSelect={(e) => e.preventDefault()}
-                      className={checkboxItemClass}
-                    >
-                      <Github className="size-4 text-foreground" />
-                      GitHub
-                      <span className="absolute right-2 flex items-center justify-center pointer-events-none">
-                        <DropdownMenuPrimitive.ItemIndicator>
-                          <CheckIcon />
-                        </DropdownMenuPrimitive.ItemIndicator>
-                      </span>
-                    </DropdownMenuPrimitive.CheckboxItem>
-                    <DropdownMenuPrimitive.CheckboxItem
-                      checked={searchModes.has("reddit")}
-                      onCheckedChange={() => toggleSearchMode("reddit")}
-                      onSelect={(e) => e.preventDefault()}
-                      className={checkboxItemClass}
-                    >
-                      <RedditIcon className="size-4 text-[#FF4500]" />
-                      Reddit
-                      <span className="absolute right-2 flex items-center justify-center pointer-events-none">
-                        <DropdownMenuPrimitive.ItemIndicator>
-                          <CheckIcon />
-                        </DropdownMenuPrimitive.ItemIndicator>
-                      </span>
-                    </DropdownMenuPrimitive.CheckboxItem>
-                    <DropdownMenuPrimitive.CheckboxItem
-                      checked={searchModes.has("x")}
-                      onCheckedChange={() => toggleSearchMode("x")}
-                      onSelect={(e) => e.preventDefault()}
-                      className={checkboxItemClass}
-                    >
-                      <Twitter className="size-4 text-foreground" />
-                      X
-                      <span className="absolute right-2 flex items-center justify-center pointer-events-none">
-                        <DropdownMenuPrimitive.ItemIndicator>
-                          <CheckIcon />
-                        </DropdownMenuPrimitive.ItemIndicator>
-                      </span>
-                    </DropdownMenuPrimitive.CheckboxItem>
-                  </DropdownMenuPrimitive.Group>
-                </motion.div>
-              </DropdownMenuPrimitive.Content>
-            </DropdownMenuPrimitive.Portal>
-          )}
-        </AnimatePresence>
-      </DropdownMenuPrimitive.Root>
+                    <DropdownMenuPrimitive.Group>
+                      <DropdownMenuPrimitive.Label className="text-[11px] text-white/30 uppercase tracking-wider px-3 py-1 font-medium">
+                        Search modes
+                      </DropdownMenuPrimitive.Label>
+                      <DropdownMenuPrimitive.CheckboxItem
+                        checked={searchModes.has("github")}
+                        onCheckedChange={() => toggleSearchMode("github")}
+                        onSelect={(e) => e.preventDefault()}
+                        className={checkboxItemClass}
+                      >
+                        <Github className="size-4 text-foreground" />
+                        GitHub
+                        <span className="absolute right-2 flex items-center justify-center pointer-events-none">
+                          <DropdownMenuPrimitive.ItemIndicator>
+                            <CheckIcon />
+                          </DropdownMenuPrimitive.ItemIndicator>
+                        </span>
+                      </DropdownMenuPrimitive.CheckboxItem>
+                      <DropdownMenuPrimitive.CheckboxItem
+                        checked={searchModes.has("reddit")}
+                        onCheckedChange={() => toggleSearchMode("reddit")}
+                        onSelect={(e) => e.preventDefault()}
+                        className={checkboxItemClass}
+                      >
+                        <RedditIcon className="size-4 text-[#FF4500]" />
+                        Reddit
+                        <span className="absolute right-2 flex items-center justify-center pointer-events-none">
+                          <DropdownMenuPrimitive.ItemIndicator>
+                            <CheckIcon />
+                          </DropdownMenuPrimitive.ItemIndicator>
+                        </span>
+                      </DropdownMenuPrimitive.CheckboxItem>
+                      <DropdownMenuPrimitive.CheckboxItem
+                        checked={searchModes.has("x")}
+                        onCheckedChange={() => toggleSearchMode("x")}
+                        onSelect={(e) => e.preventDefault()}
+                        className={checkboxItemClass}
+                      >
+                        <Twitter className="size-4 text-foreground" />
+                        X
+                        <span className="absolute right-2 flex items-center justify-center pointer-events-none">
+                          <DropdownMenuPrimitive.ItemIndicator>
+                            <CheckIcon />
+                          </DropdownMenuPrimitive.ItemIndicator>
+                        </span>
+                      </DropdownMenuPrimitive.CheckboxItem>
+                    </DropdownMenuPrimitive.Group>
+                  </motion.div>
+                </DropdownMenuPrimitive.Content>
+              </DropdownMenuPrimitive.Portal>
+            )}
+          </AnimatePresence>
+        </DropdownMenuPrimitive.Root>
+      ) : (
+        <button
+          className="size-8 rounded-full flex items-center justify-center bg-transparent hover:bg-white/10 text-white/60 hover:text-white transition-all duration-150 cursor-pointer focus:outline-none"
+        >
+          <Plus className="size-4.5" strokeWidth={2} />
+        </button>
+      )}
     </>
   );
 }
