@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { PanelLeftClose, PanelLeft, SquarePen, LogOut } from "lucide-react";
+import { PanelLeftClose, PanelLeft, SquarePen, LogOut, Pencil, Check, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -18,6 +18,7 @@ interface SidebarProps {
   activeThreadId: string | null;
   onSelectThread: (id: string) => void;
   onNewThread: () => void;
+  onRenameThread: (id: string, title: string) => void;
   isOpen: boolean;
   onToggle: () => void;
 }
@@ -63,12 +64,39 @@ export function Sidebar({
   activeThreadId,
   onSelectThread,
   onNewThread,
+  onRenameThread,
   isOpen,
   onToggle,
 }: SidebarProps) {
   const groups = useMemo(() => groupThreads(threads), [threads]);
   const supabase = createClient();
   const router = useRouter();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const editInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editingId && editInputRef.current) {
+      editInputRef.current.focus();
+      editInputRef.current.select();
+    }
+  }, [editingId]);
+
+  const startEditing = (thread: Thread) => {
+    setEditingId(thread.id);
+    setEditValue(thread.title);
+  };
+
+  const confirmEdit = () => {
+    if (editingId && editValue.trim()) {
+      onRenameThread(editingId, editValue.trim());
+    }
+    setEditingId(null);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -162,20 +190,63 @@ export function Sidebar({
               <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider px-2 mb-1 font-matter">
                 {group.label}
               </p>
-              {group.threads.map((thread) => (
-                <button
-                  key={thread.id}
-                  onClick={() => onSelectThread(thread.id)}
-                  className={cn(
-                    "w-full text-left px-3 py-2 rounded-lg text-sm truncate transition-colors duration-150 cursor-pointer font-matter",
-                    activeThreadId === thread.id
-                      ? "bg-white/10 text-white"
-                      : "text-white hover:bg-white/10"
-                  )}
-                >
-                  {thread.title}
-                </button>
-              ))}
+              {group.threads.map((thread) =>
+                editingId === thread.id ? (
+                  <div
+                    key={thread.id}
+                    className="flex items-center gap-1 px-1 py-1"
+                  >
+                    <input
+                      ref={editInputRef}
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") confirmEdit();
+                        if (e.key === "Escape") cancelEdit();
+                      }}
+                      onBlur={confirmEdit}
+                      className="flex-1 min-w-0 bg-white/10 text-white text-sm px-2 py-1.5 rounded-lg outline-none font-matter"
+                    />
+                    <button
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={confirmEdit}
+                      className="p-1 rounded text-white/50 hover:text-white hover:bg-white/10 cursor-pointer"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={cancelEdit}
+                      className="p-1 rounded text-white/50 hover:text-white hover:bg-white/10 cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    key={thread.id}
+                    className={cn(
+                      "group/thread flex items-center rounded-lg transition-colors duration-150",
+                      activeThreadId === thread.id
+                        ? "bg-white/10 text-white"
+                        : "text-white hover:bg-white/10"
+                    )}
+                  >
+                    <button
+                      onClick={() => onSelectThread(thread.id)}
+                      className="flex-1 min-w-0 text-left px-3 py-2 text-sm truncate cursor-pointer font-matter"
+                    >
+                      {thread.title}
+                    </button>
+                    <button
+                      onClick={() => startEditing(thread)}
+                      className="opacity-0 group-hover/thread:opacity-100 p-1.5 mr-1 rounded text-white/40 hover:text-white hover:bg-white/10 cursor-pointer transition-opacity duration-150"
+                    >
+                      <Pencil className="w-3 h-3" />
+                    </button>
+                  </div>
+                )
+              )}
             </div>
           ))}
         </div>

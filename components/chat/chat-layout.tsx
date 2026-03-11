@@ -170,6 +170,12 @@ export function ChatLayout() {
     setInput("");
   }, []);
 
+  const handleRenameThread = useCallback((id: string, title: string) => {
+    setThreads((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, title } : t))
+    );
+  }, []);
+
   // Global ⌘+N shortcut for new thread
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -189,6 +195,7 @@ export function ChatLayout() {
         activeThreadId={activeThreadId}
         onSelectThread={handleSelectThread}
         onNewThread={handleNewThread}
+        onRenameThread={handleRenameThread}
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
