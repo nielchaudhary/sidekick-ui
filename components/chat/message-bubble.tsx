@@ -62,19 +62,14 @@ export const MessageBubble = memo(function MessageBubble({
           ? `Sidekick web search active (${elapsedSeconds}s)`
           : `Sidekick is thinking . . . (${elapsedSeconds}s)`}
       </ShimmerText>
-      {isWebSearching && (
-        <Globe className="size-4 text-white/50 animate-pulse" />
-      )}
+      {isWebSearching && <Globe className="size-4 text-white/50 animate-pulse" />}
     </div>
   ) : thinkingDuration !== null ? (
     <div className="flex items-center gap-2 py-1">
       <span className="font-semibold text-white/50 text-sm">
-        Sidekick thought for {thinkingDuration}s
-        {didWebSearch && " · searched the web"}
+        Sidekick thought for {thinkingDuration}s{didWebSearch && " · searched the web"}
       </span>
-      {didWebSearch && (
-        <Globe className="size-4 text-white/50" />
-      )}
+      {didWebSearch && <Globe className="size-4 text-white/50" />}
     </div>
   ) : null;
 
@@ -101,7 +96,7 @@ export const MessageBubble = memo(function MessageBubble({
         <div
           className={cn(
             "rounded-2xl px-3 py-2 text-md leading-relaxed min-w-0 wrap-break-word overflow-hidden",
-            isUser ? "bg-white/10 text-white" : "text-white/90"
+            isUser ? "bg-neutral-800 text-white" : "text-white/90"
           )}
         >
           {thinkingIndicator}
