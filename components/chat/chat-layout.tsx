@@ -5,6 +5,7 @@ import { Sidebar, type Thread } from "./sidebar";
 import { ChatArea } from "./chat-area";
 import type { Message } from "./message-bubble";
 import { CHAT_URL } from "@/lib/api-constants";
+import { Spotlight } from "@/components/ui/spotlight";
 
 function generateId() {
   return Math.random().toString(36).substring(2, 10);
@@ -171,9 +172,7 @@ export function ChatLayout() {
   }, []);
 
   const handleRenameThread = useCallback((id: string, title: string) => {
-    setThreads((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, title } : t))
-    );
+    setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, title } : t)));
   }, []);
 
   // Global ⌘+N shortcut for new thread
@@ -189,26 +188,33 @@ export function ChatLayout() {
   }, [handleNewThread]);
 
   return (
-    <div className="flex h-svh overflow-hidden" style={{ background: "radial-gradient(125% 125% at 50% 10%, #000000 40%, #2b0707 100%)" }}>
-      <Sidebar
-        threads={threads}
-        activeThreadId={activeThreadId}
-        onSelectThread={handleSelectThread}
-        onNewThread={handleNewThread}
-        onRenameThread={handleRenameThread}
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
+    <div className="flex h-svh overflow-hidden relative bg-black">
+      <Spotlight
+        gradientFirst="radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(345, 100%, 75%, .08) 0, hsla(345, 80%, 50%, .02) 50%, hsla(345, 80%, 40%, 0) 80%)"
+        gradientSecond="radial-gradient(50% 50% at 50% 50%, hsla(345, 100%, 75%, .06) 0, hsla(345, 80%, 50%, .02) 80%, transparent 100%)"
+        gradientThird="radial-gradient(50% 50% at 50% 50%, hsla(345, 100%, 75%, .04) 0, hsla(345, 80%, 40%, .02) 80%, transparent 100%)"
       />
-      <ChatArea
-        messages={activeMessages}
-        input={input}
-        onInputChange={setInput}
-        onSend={handleSend}
-        isLoading={isLoading}
-        streamingMsgId={streamingMsgId}
-        isWebSearching={isWebSearching}
-        didWebSearch={didWebSearch}
-      />
+      <div className="relative z-10 flex w-full h-full">
+        <Sidebar
+          threads={threads}
+          activeThreadId={activeThreadId}
+          onSelectThread={handleSelectThread}
+          onNewThread={handleNewThread}
+          onRenameThread={handleRenameThread}
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
+        />
+        <ChatArea
+          messages={activeMessages}
+          input={input}
+          onInputChange={setInput}
+          onSend={handleSend}
+          isLoading={isLoading}
+          streamingMsgId={streamingMsgId}
+          isWebSearching={isWebSearching}
+          didWebSearch={didWebSearch}
+        />
+      </div>
     </div>
   );
 }

@@ -53,7 +53,7 @@ export function ChatArea({
               fontWeight: 400,
             }}
           >
-            <span style={{ color: "rgba(255,255,255,0.6)" }}>
+            <span style={{ color: "rgba(255,255,255,0.8)" }}>
               your thinking partner, powered by your context
             </span>
           </h1>
