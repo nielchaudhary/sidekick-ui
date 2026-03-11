@@ -30,6 +30,8 @@ export function ChatLayout() {
   const [messagesByThread, setMessagesByThread] = useState<Record<string, Message[]>>({});
   const [input, setInput] = useState("");
   const [streamingMsgId, setStreamingMsgId] = useState<string | null>(null);
+  const [isWebSearching, setIsWebSearching] = useState(false);
+  const [didWebSearch, setDidWebSearch] = useState(false);
   const isLoading = streamingMsgId !== null;
 
   const activeMessages = activeThreadId ? (messagesByThread[activeThreadId] ?? []) : [];
@@ -60,6 +62,8 @@ export function ChatLayout() {
       }));
       setInput("");
       setStreamingMsgId(assistantMsgId);
+      setIsWebSearching(false);
+      setDidWebSearch(false);
 
       try {
         const response = await fetch(`${CHAT_URL}?llmProvider=claude`, {
@@ -93,7 +97,7 @@ export function ChatLayout() {
             const data = trimmed.slice(6);
             if (data === "[DONE]") continue;
 
-            let parsed: { text?: string; error?: string };
+            let parsed: { type?: string; status?: string; text?: string; error?: string };
             try {
               parsed = JSON.parse(data);
             } catch {
@@ -101,7 +105,13 @@ export function ChatLayout() {
             }
             if (parsed.error) throw new Error(parsed.error);
 
+            if (parsed.type === "status" && parsed.status === "web_search_active") {
+              setIsWebSearching(true);
+              setDidWebSearch(true);
+            }
+
             if (parsed.text) {
+              setIsWebSearching(false);
               setMessagesByThread((prev) => {
                 const msgs = prev[threadId] ?? [];
                 return {
@@ -180,6 +190,8 @@ export function ChatLayout() {
         onSend={handleSend}
         isLoading={isLoading}
         streamingMsgId={streamingMsgId}
+        isWebSearching={isWebSearching}
+        didWebSearch={didWebSearch}
       />
     </div>
   );

@@ -13,6 +13,8 @@ interface ChatAreaProps {
   onSend: () => void;
   isLoading: boolean;
   streamingMsgId: string | null;
+  isWebSearching?: boolean;
+  didWebSearch?: boolean;
 }
 
 export function ChatArea({
@@ -22,6 +24,8 @@ export function ChatArea({
   onSend,
   isLoading,
   streamingMsgId,
+  isWebSearching,
+  didWebSearch,
 }: ChatAreaProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isEmpty = messages.length === 0;
@@ -78,6 +82,8 @@ export function ChatArea({
                   message={msg}
                   isStreaming={msg.id === streamingMsgId}
                   isLoading={msg.id === streamingMsgId && msg.content === ""}
+                  isWebSearching={msg.id === streamingMsgId ? isWebSearching : undefined}
+                  didWebSearch={msg.id === streamingMsgId ? didWebSearch : undefined}
                 />
               ))}
             </div>

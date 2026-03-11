@@ -2,7 +2,7 @@
 
 import { memo, useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { ThumbsUp, ThumbsDown, RotateCcw } from "lucide-react";
+import { ThumbsUp, ThumbsDown, RotateCcw, Globe } from "lucide-react";
 import { ShimmerText } from "@/components/ui/shimmer-text";
 import { CopyButton } from "@/components/ui/copy-button";
 import { MarkdownRenderer } from "./markdown-renderer";
@@ -18,6 +18,8 @@ interface MessageBubbleProps {
   message: Message;
   isLoading?: boolean;
   isStreaming?: boolean;
+  isWebSearching?: boolean;
+  didWebSearch?: boolean;
   onRegenerate?: () => void;
 }
 
@@ -25,6 +27,8 @@ export const MessageBubble = memo(function MessageBubble({
   message,
   isLoading,
   isStreaming,
+  isWebSearching,
+  didWebSearch,
   onRegenerate,
 }: MessageBubbleProps) {
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
@@ -54,14 +58,23 @@ export const MessageBubble = memo(function MessageBubble({
   const thinkingIndicator = isLoading ? (
     <div className="flex items-center gap-2 py-1">
       <ShimmerText className="font-semibold">
-        Sidekick is thinking . . . ({elapsedSeconds}s)
+        {isWebSearching
+          ? `Sidekick web search active (${elapsedSeconds}s)`
+          : `Sidekick is thinking . . . (${elapsedSeconds}s)`}
       </ShimmerText>
+      {isWebSearching && (
+        <Globe className="size-4 text-white/50 animate-pulse" />
+      )}
     </div>
   ) : thinkingDuration !== null ? (
     <div className="flex items-center gap-2 py-1">
       <span className="font-semibold text-white/50 text-sm">
         Sidekick thought for {thinkingDuration}s
+        {didWebSearch && " · searched the web"}
       </span>
+      {didWebSearch && (
+        <Globe className="size-4 text-white/50" />
+      )}
     </div>
   ) : null;
 
