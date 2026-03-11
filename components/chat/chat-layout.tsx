@@ -108,6 +108,15 @@ export function ChatLayout() {
             if (parsed.type === "status" && parsed.status === "web_search_active") {
               setIsWebSearching(true);
               setDidWebSearch(true);
+              setMessagesByThread((prev) => {
+                const msgs = prev[threadId] ?? [];
+                return {
+                  ...prev,
+                  [threadId]: msgs.map((m) =>
+                    m.id === assistantMsgId ? { ...m, didWebSearch: true } : m
+                  ),
+                };
+              });
             }
 
             if (parsed.text) {

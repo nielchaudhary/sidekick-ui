@@ -12,6 +12,7 @@ export interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  didWebSearch?: boolean;
 }
 
 interface MessageBubbleProps {
@@ -73,6 +74,13 @@ export const MessageBubble = memo(function MessageBubble({
     </div>
   ) : null;
 
+  const webSearchIndicator = !isLoading && !thinkingDuration && didWebSearch ? (
+    <div className="flex items-center gap-2 py-1">
+      <Globe className="size-4 text-white/50" />
+      <span className="font-semibold text-white/50 text-sm">searched the web</span>
+    </div>
+  ) : null;
+
   const renderedContent = useMemo(() => {
     if (isLoading) return null;
 
@@ -100,6 +108,7 @@ export const MessageBubble = memo(function MessageBubble({
           )}
         >
           {thinkingIndicator}
+          {webSearchIndicator}
           {renderedContent}
         </div>
         {!isLoading && !isStreaming && isUser && (

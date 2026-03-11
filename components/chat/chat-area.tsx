@@ -83,7 +83,7 @@ export function ChatArea({
                   isStreaming={msg.id === streamingMsgId}
                   isLoading={msg.id === streamingMsgId && msg.content === ""}
                   isWebSearching={msg.id === streamingMsgId ? isWebSearching : undefined}
-                  didWebSearch={msg.id === streamingMsgId ? didWebSearch : undefined}
+                  didWebSearch={msg.didWebSearch ?? (msg.id === streamingMsgId ? didWebSearch : undefined)}
                 />
               ))}
             </div>

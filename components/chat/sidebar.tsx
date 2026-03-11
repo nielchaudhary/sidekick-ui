@@ -88,7 +88,7 @@ export function Sidebar({
       {/* Sidebar — always visible on desktop as either expanded (280px) or collapsed rail (64px) */}
       <aside
         className={cn(
-          "z-50 top-0 left-0 h-full flex flex-col bg-transparent transition-all duration-200 ease-out overflow-hidden",
+          "z-50 top-0 left-0 h-full flex flex-col bg-transparent border-r border-white/6 transition-all duration-200 ease-out overflow-hidden",
           // Mobile: fixed overlay, hidden when closed
           "fixed lg:relative",
           isOpen ? "w-70 translate-x-0" : "-translate-x-full lg:translate-x-0 lg:w-16"
@@ -135,10 +135,7 @@ export function Sidebar({
           </div>
 
           {/* New thread button */}
-          <button
-            onClick={onNewThread}
-            className={cn(sidebarButtonClass(isOpen), "group/new")}
-          >
+          <button onClick={onNewThread} className={cn(sidebarButtonClass(isOpen), "group/new")}>
             <SquarePen className="w-4 h-4 shrink-0" />
             <span className={sidebarLabelClass(isOpen)}>
               <span className="font-matter">New Thread</span>
@@ -187,10 +184,7 @@ export function Sidebar({
         <div className="shrink-0">
           {/* Logout */}
           <div className={cn("p-2", isOpen && "px-3 py-3")}>
-            <button
-              onClick={handleLogout}
-              className={sidebarButtonClass(isOpen)}
-            >
+            <button onClick={handleLogout} className={sidebarButtonClass(isOpen)}>
               <LogOut className="w-4 h-4 shrink-0" />
               <span className={sidebarLabelClass(isOpen)}>
                 <span className="font-matter">Log out</span>
