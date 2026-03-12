@@ -6,6 +6,7 @@ import { ChatArea } from "./chat-area";
 import type { Message } from "./message-bubble";
 import { CHAT_URL } from "@/lib/api-constants";
 import { Spotlight } from "@/components/ui/spotlight";
+import { createPasteEntry, type PasteEntry } from "./pasted-content-types";
 
 function generateId() {
   return Math.random().toString(36).substring(2, 10);
@@ -30,7 +31,7 @@ export function ChatLayout() {
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [messagesByThread, setMessagesByThread] = useState<Record<string, Message[]>>({});
   const [input, setInput] = useState("");
-  const [pastedContent, setPastedContent] = useState<string | null>(null);
+  const [pastedContents, setPastedContents] = useState<PasteEntry[]>([]);
   const [streamingMsgId, setStreamingMsgId] = useState<string | null>(null);
   const [isWebSearching, setIsWebSearching] = useState(false);
   const [didWebSearch, setDidWebSearch] = useState(false);
@@ -159,35 +160,56 @@ export function ChatLayout() {
   );
 
   const handleSend = useCallback(() => {
-    if (pastedContent) {
-      sendText(pastedContent);
-      setPastedContent(null);
-    } else {
-      sendText(input.trim());
+    const parts: string[] = [];
+
+    // Prepend all pasted content blocks
+    if (pastedContents.length > 0) {
+      parts.push(...pastedContents.map((p) => p.text));
     }
-  }, [input, pastedContent, sendText]);
+
+    // Append any remaining short text in the input
+    const trimmedInput = input.trim();
+    if (trimmedInput) {
+      parts.push(trimmedInput);
+    }
+
+    const fullText = parts.join("\n\n---\n\n");
+    if (fullText) {
+      sendText(fullText);
+      setPastedContents([]);
+    }
+  }, [input, pastedContents, sendText]);
 
   const handleNewThread = useCallback(() => {
     setActiveThreadId(null);
     setInput("");
-    setPastedContent(null);
+    setPastedContents([]);
   }, []);
 
   const handleSelectThread = useCallback((id: string) => {
     setActiveThreadId(id);
     setInput("");
-    setPastedContent(null);
+    setPastedContents([]);
   }, []);
 
   const handleLongContent = useCallback((content: string) => {
-    setPastedContent(content);
+    setPastedContents((prev) => {
+      const entry = createPasteEntry(content, prev.length);
+      return [...prev, entry];
+    });
     setInput("");
   }, []);
 
-  const handleDiscardPastedContent = useCallback(() => {
-    setInput(pastedContent ?? "");
-    setPastedContent(null);
-  }, [pastedContent]);
+  const handleDiscardPaste = useCallback((id: string) => {
+    setPastedContents((prev) => {
+      const filtered = prev.filter((p) => p.id !== id);
+      // Re-index labels
+      return filtered.map((p, i) => ({
+        ...p,
+        label: filtered.length === 1 ? "Pasted content" : `Paste ${i + 1}`,
+      }));
+    });
+  }, []);
 
   const handleRenameThread = useCallback((id: string, title: string) => {
     setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, title } : t)));
@@ -345,9 +367,9 @@ export function ChatLayout() {
           isWebSearching={isWebSearching}
           didWebSearch={didWebSearch}
           onEditMessage={handleEditMessage}
-          pastedContent={pastedContent}
+          pastedContents={pastedContents}
           onLongContent={handleLongContent}
-          onDiscardPastedContent={handleDiscardPastedContent}
+          onDiscardPaste={handleDiscardPaste}
         />
       </div>
     </div>

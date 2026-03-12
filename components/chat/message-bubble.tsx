@@ -7,8 +7,9 @@ import { ShimmerText } from "@/components/ui/shimmer-text";
 import { CopyButton } from "@/components/ui/copy-button";
 import { MarkdownRenderer } from "./markdown-renderer";
 import { ActionTooltip } from "@/components/ui/action-tooltip";
-import { PastedContentCard } from "./pasted-content-card";
+import { PastedContentChip } from "./pasted-content-card";
 import { PastedContentViewer } from "./pasted-content-viewer";
+import { countWords, type PasteEntry } from "./pasted-content-types";
 
 const LONG_CONTENT_WORD_THRESHOLD = 3000;
 
@@ -44,10 +45,36 @@ export const MessageBubble = memo(function MessageBubble({
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState("");
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(0);
   const editInputRef = useRef<HTMLInputElement>(null);
   const isUser = message.role === "user";
   const isLongContent =
-    isUser && message.content.trim().split(/\s+/).length >= LONG_CONTENT_WORD_THRESHOLD;
+    isUser && countWords(message.content) >= LONG_CONTENT_WORD_THRESHOLD;
+
+  // Parse long content into paste entries for chip display in message bubble
+  const longContentEntries: PasteEntry[] = useMemo(() => {
+    if (!isLongContent) return [];
+    const sections = message.content.split("\n\n---\n\n");
+    const longSections = sections.filter(
+      (s) => countWords(s) >= LONG_CONTENT_WORD_THRESHOLD
+    );
+    if (longSections.length <= 1) {
+      return [
+        {
+          id: message.id,
+          text: message.content,
+          label: "Pasted content",
+          wordCount: countWords(message.content),
+        },
+      ];
+    }
+    return longSections.map((s, i) => ({
+      id: `${message.id}-${i}`,
+      text: s,
+      label: `Paste ${i + 1}`,
+      wordCount: countWords(s),
+    }));
+  }, [isLongContent, message.content, message.id]);
 
   const startEditing = () => {
     setEditValue(message.content);
@@ -123,17 +150,27 @@ export const MessageBubble = memo(function MessageBubble({
     if (isUser) {
       if (isLongContent) {
         return (
-          <PastedContentCard
-            content={message.content}
-            onOpen={() => setViewerOpen(true)}
-          />
+          <div className="flex flex-wrap gap-2">
+            {longContentEntries.map((entry, i) => (
+              <PastedContentChip
+                key={entry.id}
+                label={entry.label}
+                wordCount={entry.wordCount}
+                index={i}
+                onOpen={() => {
+                  setViewerIndex(i);
+                  setViewerOpen(true);
+                }}
+              />
+            ))}
+          </div>
         );
       }
       return <p className="whitespace-pre-wrap font-matter">{message.content}</p>;
     }
 
     return <MarkdownRenderer content={message.content} isStreaming={isStreaming} />;
-  }, [isLoading, isUser, isLongContent, isStreaming, message.content]);
+  }, [isLoading, isUser, isLongContent, isStreaming, message.content, longContentEntries]);
 
   return (
     <div
@@ -244,7 +281,8 @@ export const MessageBubble = memo(function MessageBubble({
       </div>
       {isLongContent && (
         <PastedContentViewer
-          content={message.content}
+          entries={longContentEntries}
+          initialIndex={viewerIndex}
           isOpen={viewerOpen}
           onClose={() => setViewerOpen(false)}
         />
