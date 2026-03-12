@@ -11,7 +11,7 @@ import { PastedContentChip } from "./pasted-content-card";
 import { PastedContentViewer } from "./pasted-content-viewer";
 import { countWords, type PasteEntry } from "./pasted-content-types";
 
-const LONG_CONTENT_WORD_THRESHOLD = 3000;
+const LONG_CONTENT_WORD_THRESHOLD = 1500;
 
 export interface Message {
   id: string;
@@ -48,16 +48,13 @@ export const MessageBubble = memo(function MessageBubble({
   const [viewerIndex, setViewerIndex] = useState(0);
   const editInputRef = useRef<HTMLInputElement>(null);
   const isUser = message.role === "user";
-  const isLongContent =
-    isUser && countWords(message.content) >= LONG_CONTENT_WORD_THRESHOLD;
+  const isLongContent = isUser && countWords(message.content) >= LONG_CONTENT_WORD_THRESHOLD;
 
   // Parse long content into paste entries for chip display in message bubble
   const longContentEntries: PasteEntry[] = useMemo(() => {
     if (!isLongContent) return [];
     const sections = message.content.split("\n\n---\n\n");
-    const longSections = sections.filter(
-      (s) => countWords(s) >= LONG_CONTENT_WORD_THRESHOLD
-    );
+    const longSections = sections.filter((s) => countWords(s) >= LONG_CONTENT_WORD_THRESHOLD);
     if (longSections.length <= 1) {
       return [
         {
@@ -137,12 +134,13 @@ export const MessageBubble = memo(function MessageBubble({
     </div>
   ) : null;
 
-  const webSearchIndicator = !isLoading && !thinkingDuration && didWebSearch ? (
-    <div className="flex items-center gap-2 py-1">
-      <Globe className="size-4 text-white/50" />
-      <span className="font-semibold text-white/50 text-sm">searched the web</span>
-    </div>
-  ) : null;
+  const webSearchIndicator =
+    !isLoading && !thinkingDuration && didWebSearch ? (
+      <div className="flex items-center gap-2 py-1">
+        <Globe className="size-4 text-white/50" />
+        <span className="font-semibold text-white/50 text-sm">searched the web</span>
+      </div>
+    ) : null;
 
   const renderedContent = useMemo(() => {
     if (isLoading) return null;
