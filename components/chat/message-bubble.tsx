@@ -7,6 +7,10 @@ import { ShimmerText } from "@/components/ui/shimmer-text";
 import { CopyButton } from "@/components/ui/copy-button";
 import { MarkdownRenderer } from "./markdown-renderer";
 import { ActionTooltip } from "@/components/ui/action-tooltip";
+import { PastedContentCard } from "./pasted-content-card";
+import { PastedContentViewer } from "./pasted-content-viewer";
+
+const LONG_CONTENT_WORD_THRESHOLD = 3000;
 
 export interface Message {
   id: string;
@@ -39,8 +43,11 @@ export const MessageBubble = memo(function MessageBubble({
   const [thinkingDuration, setThinkingDuration] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState("");
+  const [viewerOpen, setViewerOpen] = useState(false);
   const editInputRef = useRef<HTMLInputElement>(null);
   const isUser = message.role === "user";
+  const isLongContent =
+    isUser && message.content.trim().split(/\s+/).length >= LONG_CONTENT_WORD_THRESHOLD;
 
   const startEditing = () => {
     setEditValue(message.content);
@@ -114,11 +121,19 @@ export const MessageBubble = memo(function MessageBubble({
     if (isLoading) return null;
 
     if (isUser) {
+      if (isLongContent) {
+        return (
+          <PastedContentCard
+            content={message.content}
+            onOpen={() => setViewerOpen(true)}
+          />
+        );
+      }
       return <p className="whitespace-pre-wrap font-matter">{message.content}</p>;
     }
 
     return <MarkdownRenderer content={message.content} isStreaming={isStreaming} />;
-  }, [isLoading, isUser, isStreaming, message.content]);
+  }, [isLoading, isUser, isLongContent, isStreaming, message.content]);
 
   return (
     <div
@@ -132,8 +147,12 @@ export const MessageBubble = memo(function MessageBubble({
       >
         <div
           className={cn(
-            "rounded-2xl px-3 py-2 text-md leading-relaxed min-w-0 wrap-break-word overflow-hidden",
-            isUser ? "bg-neutral-800 text-white" : "text-white/90"
+            "rounded-2xl text-md leading-relaxed min-w-0 wrap-break-word overflow-hidden",
+            isUser && isLongContent
+              ? "px-0 py-0 text-white"
+              : isUser
+                ? "px-3 py-2 bg-neutral-800 text-white"
+                : "px-3 py-2 text-white/90"
           )}
         >
           {thinkingIndicator}
@@ -223,6 +242,13 @@ export const MessageBubble = memo(function MessageBubble({
           </div>
         )}
       </div>
+      {isLongContent && (
+        <PastedContentViewer
+          content={message.content}
+          isOpen={viewerOpen}
+          onClose={() => setViewerOpen(false)}
+        />
+      )}
     </div>
   );
 });

@@ -21,15 +21,19 @@ const placeholders = [
 
 export type SearchMode = "github" | "reddit" | "x";
 
+const LONG_CONTENT_WORD_THRESHOLD = 3000;
+
 interface ChatInputProps {
   value: string;
   onChange: (value: string) => void;
   onSend: () => void;
   onStop?: () => void;
   onFilesSelected?: (files: File[]) => void;
+  onLongContent?: (content: string) => void;
   searchModes?: Set<SearchMode>;
   onSearchModesChange?: (modes: Set<SearchMode>) => void;
   isStreaming?: boolean;
+  hasPastedContent?: boolean;
 }
 
 export function ChatInput({
@@ -38,9 +42,11 @@ export function ChatInput({
   onSend,
   onStop,
   onFilesSelected,
+  onLongContent,
   searchModes: controlledSearchModes,
   onSearchModesChange: controlledOnSearchModesChange,
   isStreaming,
+  hasPastedContent,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -113,7 +119,7 @@ export function ChatInput({
     if (isComposingRef.current) return;
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (value.trim() && !isStreaming) {
+      if ((value.trim() || hasPastedContent) && !isStreaming) {
         onSend();
       }
     }
@@ -141,8 +147,26 @@ export function ChatInput({
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
-  const canSend = value.trim().length > 0 && !isStreaming;
-  const showMic = !value.trim() && !isStreaming;
+  // Debounced long-content detection
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!onLongContent) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const trimmed = value.trim();
+      if (!trimmed) return;
+      const wordCount = trimmed.split(/\s+/).length;
+      if (wordCount >= LONG_CONTENT_WORD_THRESHOLD) {
+        onLongContent(value);
+      }
+    }, 300);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [value, onLongContent]);
+
+  const canSend = (value.trim().length > 0 || !!hasPastedContent) && !isStreaming;
+  const showMic = !value.trim() && !hasPastedContent && !isStreaming;
 
   const handleVoiceStart = useCallback(() => {
     voiceHasStartedRef.current = true;

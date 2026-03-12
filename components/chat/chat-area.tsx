@@ -1,9 +1,11 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { MessageBubble, type Message } from "./message-bubble";
 import { ChatInput } from "./chat-input";
+import { PastedContentCard } from "./pasted-content-card";
+import { PastedContentViewer } from "./pasted-content-viewer";
 
 interface ChatAreaProps {
   messages: Message[];
@@ -15,6 +17,9 @@ interface ChatAreaProps {
   isWebSearching?: boolean;
   didWebSearch?: boolean;
   onEditMessage?: (messageId: string, newContent: string) => void;
+  pastedContent: string | null;
+  onLongContent: (content: string) => void;
+  onDiscardPastedContent: () => void;
 }
 
 export function ChatArea({
@@ -27,15 +32,33 @@ export function ChatArea({
   isWebSearching,
   didWebSearch,
   onEditMessage,
+  pastedContent,
+  onLongContent,
+  onDiscardPastedContent,
 }: ChatAreaProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isEmpty = messages.length === 0;
+  const [viewerOpen, setViewerOpen] = useState(false);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isLoading]);
+
+  const contentCardSlot = (
+    <AnimatePresence>
+      {pastedContent && (
+        <div className="max-w-3xl mx-auto w-full md:w-[90%] px-4 md:px-0">
+          <PastedContentCard
+            content={pastedContent}
+            onOpen={() => setViewerOpen(true)}
+            onDiscard={onDiscardPastedContent}
+          />
+        </div>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <div
@@ -64,11 +87,14 @@ export function ChatArea({
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="w-full"
           >
+            {contentCardSlot}
             <ChatInput
               value={input}
               onChange={onInputChange}
               onSend={onSend}
+              onLongContent={onLongContent}
               isStreaming={isLoading}
+              hasPastedContent={!!pastedContent}
             />
           </motion.div>
         </div>
@@ -93,14 +119,26 @@ export function ChatArea({
             </div>
           </div>
 
-          {/* Input bar */}
+          {/* Content card + Input bar */}
+          {contentCardSlot}
           <ChatInput
             value={input}
             onChange={onInputChange}
             onSend={onSend}
+            onLongContent={onLongContent}
             isStreaming={isLoading}
+            hasPastedContent={!!pastedContent}
           />
         </>
+      )}
+
+      {/* Pasted content viewer overlay */}
+      {pastedContent && (
+        <PastedContentViewer
+          content={pastedContent}
+          isOpen={viewerOpen}
+          onClose={() => setViewerOpen(false)}
+        />
       )}
     </div>
   );

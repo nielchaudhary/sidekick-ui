@@ -30,6 +30,7 @@ export function ChatLayout() {
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [messagesByThread, setMessagesByThread] = useState<Record<string, Message[]>>({});
   const [input, setInput] = useState("");
+  const [pastedContent, setPastedContent] = useState<string | null>(null);
   const [streamingMsgId, setStreamingMsgId] = useState<string | null>(null);
   const [isWebSearching, setIsWebSearching] = useState(false);
   const [didWebSearch, setDidWebSearch] = useState(false);
@@ -158,18 +159,35 @@ export function ChatLayout() {
   );
 
   const handleSend = useCallback(() => {
-    sendText(input.trim());
-  }, [input, sendText]);
+    if (pastedContent) {
+      sendText(pastedContent);
+      setPastedContent(null);
+    } else {
+      sendText(input.trim());
+    }
+  }, [input, pastedContent, sendText]);
 
   const handleNewThread = useCallback(() => {
     setActiveThreadId(null);
     setInput("");
+    setPastedContent(null);
   }, []);
 
   const handleSelectThread = useCallback((id: string) => {
     setActiveThreadId(id);
     setInput("");
+    setPastedContent(null);
   }, []);
+
+  const handleLongContent = useCallback((content: string) => {
+    setPastedContent(content);
+    setInput("");
+  }, []);
+
+  const handleDiscardPastedContent = useCallback(() => {
+    setInput(pastedContent ?? "");
+    setPastedContent(null);
+  }, [pastedContent]);
 
   const handleRenameThread = useCallback((id: string, title: string) => {
     setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, title } : t)));
@@ -327,6 +345,9 @@ export function ChatLayout() {
           isWebSearching={isWebSearching}
           didWebSearch={didWebSearch}
           onEditMessage={handleEditMessage}
+          pastedContent={pastedContent}
+          onLongContent={handleLongContent}
+          onDiscardPastedContent={handleDiscardPastedContent}
         />
       </div>
     </div>
