@@ -6,11 +6,18 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
+
 import { cn } from "@/lib/utils";
 import { CodeBlock } from "./code-block";
 import { sanitizeStreamingMarkdown } from "./streaming-sanitizer";
 
-const remarkPlugins = [remarkGfm, remarkMath];
+import type { Options as ReactMarkdownOptions } from "react-markdown";
+
+const remarkPlugins: ReactMarkdownOptions["remarkPlugins"] = [
+  remarkGfm,
+  [remarkMath, { singleDollarTextMath: false }],
+];
+
 const rehypePlugins = [rehypeHighlight, rehypeKatex];
 
 const matterFont = "font-matter";
@@ -67,11 +74,7 @@ const markdownComponents: Components = {
     const isBlock = Boolean(match || className);
 
     if (isBlock) {
-      return (
-        <CodeBlock language={match?.[1] || undefined}>
-          {children}
-        </CodeBlock>
-      );
+      return <CodeBlock language={match?.[1] || undefined}>{children}</CodeBlock>;
     }
 
     return (
@@ -92,12 +95,7 @@ const markdownComponents: Components = {
       return <span>{children}</span>;
     }
     return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        {...rest}
-      >
+      <a href={href} target="_blank" rel="noopener noreferrer" {...rest}>
         {children}
       </a>
     );
@@ -127,9 +125,7 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
   content,
   isStreaming,
 }: MarkdownRendererProps) {
-  const processedContent = isStreaming
-    ? sanitizeStreamingMarkdown(content)
-    : content;
+  const processedContent = isStreaming ? sanitizeStreamingMarkdown(content) : content;
 
   return (
     <div className={proseClasses}>
