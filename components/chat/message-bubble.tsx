@@ -11,7 +11,7 @@ import { PastedContentChip } from "./pasted-content-card";
 import { PastedContentViewer } from "./pasted-content-viewer";
 import { countWords, type PasteEntry } from "./pasted-content-types";
 
-const LONG_CONTENT_WORD_THRESHOLD = 1500;
+const DISPLAY_COLLAPSE_THRESHOLD = 1500;
 
 export interface Message {
   id: string;
@@ -48,20 +48,24 @@ export const MessageBubble = memo(function MessageBubble({
   const [viewerIndex, setViewerIndex] = useState(0);
   const editInputRef = useRef<HTMLInputElement>(null);
   const isUser = message.role === "user";
-  const isLongContent = isUser && countWords(message.content) >= LONG_CONTENT_WORD_THRESHOLD;
+  const totalWordCount = useMemo(
+    () => (isUser ? countWords(message.content) : 0),
+    [isUser, message.content]
+  );
+  const isLongContent = totalWordCount >= DISPLAY_COLLAPSE_THRESHOLD;
 
   // Parse long content into paste entries for chip display in message bubble
   const longContentEntries: PasteEntry[] = useMemo(() => {
     if (!isLongContent) return [];
     const sections = message.content.split("\n\n---\n\n");
-    const longSections = sections.filter((s) => countWords(s) >= LONG_CONTENT_WORD_THRESHOLD);
+    const longSections = sections.filter((s) => countWords(s) >= DISPLAY_COLLAPSE_THRESHOLD);
     if (longSections.length <= 1) {
       return [
         {
           id: message.id,
           text: message.content,
           label: "Pasted content",
-          wordCount: countWords(message.content),
+          wordCount: totalWordCount,
         },
       ];
     }
@@ -71,7 +75,7 @@ export const MessageBubble = memo(function MessageBubble({
       label: `Paste ${i + 1}`,
       wordCount: countWords(s),
     }));
-  }, [isLongContent, message.content, message.id]);
+  }, [isLongContent, message.content, message.id, totalWordCount]);
 
   const startEditing = () => {
     setEditValue(message.content);

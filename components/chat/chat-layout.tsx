@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { Sidebar, type Thread } from "./sidebar";
 import { ChatArea } from "./chat-area";
 import type { Message } from "./message-bubble";
@@ -10,6 +10,10 @@ import { createPasteEntry, type PasteEntry } from "./pasted-content-types";
 
 function generateId() {
   return Math.random().toString(36).substring(2, 10);
+}
+
+function truncate(text: string, maxLen: number) {
+  return text.slice(0, maxLen) + (text.length > maxLen ? "..." : "");
 }
 
 const SYSTEM_PROMPT = `Format all responses using GitHub-Flavored Markdown.
@@ -25,6 +29,79 @@ Rules:
 - Use bold and italic for emphasis where appropriate.
 - Never output plain text blocks when Markdown formatting would improve readability.`;
 
+type SetMessages = React.Dispatch<React.SetStateAction<Record<string, Message[]>>>;
+
+async function streamResponse(
+  threadId: string,
+  assistantMsgId: string,
+  prompt: string,
+  setMessagesByThread: SetMessages,
+  setIsWebSearching: (v: boolean) => void,
+  setDidWebSearch: (v: boolean) => void,
+) {
+  const response = await fetch(`${CHAT_URL}?llmProvider=claude`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, systemPrompt: SYSTEM_PROMPT }),
+  });
+
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error("No response body");
+
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("data: ")) continue;
+
+      const data = trimmed.slice(6);
+      if (data === "[DONE]") continue;
+
+      let parsed: { type?: string; status?: string; text?: string; error?: string };
+      try {
+        parsed = JSON.parse(data);
+      } catch {
+        continue;
+      }
+      if (parsed.error) throw new Error(parsed.error);
+
+      if (parsed.type === "status" && parsed.status === "web_search_active") {
+        setIsWebSearching(true);
+        setDidWebSearch(true);
+        setMessagesByThread((prev) => ({
+          ...prev,
+          [threadId]: (prev[threadId] ?? []).map((m) =>
+            m.id === assistantMsgId ? { ...m, didWebSearch: true } : m
+          ),
+        }));
+      }
+
+      if (parsed.text) {
+        setIsWebSearching(false);
+        setMessagesByThread((prev) => ({
+          ...prev,
+          [threadId]: (prev[threadId] ?? []).map((m) =>
+            m.id === assistantMsgId ? { ...m, content: m.content + parsed.text } : m
+          ),
+        }));
+      }
+    }
+  }
+}
+
+const EMPTY_MESSAGES: Message[] = [];
+
 export function ChatLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -37,11 +114,14 @@ export function ChatLayout() {
   const [didWebSearch, setDidWebSearch] = useState(false);
   const isLoading = streamingMsgId !== null;
 
-  const activeMessages = activeThreadId ? (messagesByThread[activeThreadId] ?? []) : [];
+  const activeMessages = useMemo(
+    () => (activeThreadId ? (messagesByThread[activeThreadId] ?? EMPTY_MESSAGES) : EMPTY_MESSAGES),
+    [activeThreadId, messagesByThread]
+  );
 
   const createThread = useCallback((firstMessage: string) => {
     const id = generateId();
-    const title = firstMessage.slice(0, 50) + (firstMessage.length > 50 ? "..." : "");
+    const title = truncate(firstMessage, 50);
     const newThread: Thread = { id, title, updatedAt: new Date() };
     setThreads((prev) => [newThread, ...prev]);
     setActiveThreadId(id);
@@ -69,89 +149,22 @@ export function ChatLayout() {
       setDidWebSearch(false);
 
       try {
-        const response = await fetch(`${CHAT_URL}?llmProvider=claude`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt: text, systemPrompt: SYSTEM_PROMPT }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const reader = response.body?.getReader();
-        if (!reader) throw new Error("No response body");
-
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop() ?? "";
-
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed.startsWith("data: ")) continue;
-
-            const data = trimmed.slice(6);
-            if (data === "[DONE]") continue;
-
-            let parsed: { type?: string; status?: string; text?: string; error?: string };
-            try {
-              parsed = JSON.parse(data);
-            } catch {
-              continue;
-            }
-            if (parsed.error) throw new Error(parsed.error);
-
-            if (parsed.type === "status" && parsed.status === "web_search_active") {
-              setIsWebSearching(true);
-              setDidWebSearch(true);
-              setMessagesByThread((prev) => {
-                const msgs = prev[threadId] ?? [];
-                return {
-                  ...prev,
-                  [threadId]: msgs.map((m) =>
-                    m.id === assistantMsgId ? { ...m, didWebSearch: true } : m
-                  ),
-                };
-              });
-            }
-
-            if (parsed.text) {
-              setIsWebSearching(false);
-              setMessagesByThread((prev) => {
-                const msgs = prev[threadId] ?? [];
-                return {
-                  ...prev,
-                  [threadId]: msgs.map((m) =>
-                    m.id === assistantMsgId ? { ...m, content: m.content + parsed.text } : m
-                  ),
-                };
-              });
-            }
-          }
-        }
-
+        await streamResponse(
+          threadId, assistantMsgId, text,
+          setMessagesByThread, setIsWebSearching, setDidWebSearch,
+        );
         setThreads((prev) =>
           prev.map((t) => (t.id === threadId ? { ...t, updatedAt: new Date() } : t))
         );
-      } catch (error) {
-        setMessagesByThread((prev) => {
-          const msgs = prev[threadId] ?? [];
-          return {
-            ...prev,
-            [threadId]: msgs.map((m) =>
-              m.id === assistantMsgId
-                ? { ...m, content: "Sorry, something went wrong. Please try again." }
-                : m
-            ),
-          };
-        });
+      } catch {
+        setMessagesByThread((prev) => ({
+          ...prev,
+          [threadId]: (prev[threadId] ?? []).map((m) =>
+            m.id === assistantMsgId
+              ? { ...m, content: "Sorry, something went wrong. Please try again." }
+              : m
+          ),
+        }));
       } finally {
         setStreamingMsgId(null);
       }
@@ -220,95 +233,37 @@ export function ChatLayout() {
       if (!activeThreadId || isLoading) return;
 
       const threadId = activeThreadId;
-
-      // Update user message and remove everything after it
-      const msgs = messagesByThread[threadId] ?? [];
-      const msgIndex = msgs.findIndex((m) => m.id === messageId);
-      if (msgIndex === -1) return;
-
-      const updatedMsgs = msgs.slice(0, msgIndex).concat({
-        ...msgs[msgIndex],
-        content: newContent,
-      });
-
-      // Update thread title if this was the first user message
-      if (msgIndex === 0) {
-        const title = newContent.slice(0, 50) + (newContent.length > 50 ? "..." : "");
-        setThreads((prev) => prev.map((t) => (t.id === threadId ? { ...t, title } : t)));
-      }
-
       const assistantMsgId = generateId();
       const assistantMsg: Message = { id: assistantMsgId, role: "assistant", content: "" };
 
-      setMessagesByThread((prev) => ({
-        ...prev,
-        [threadId]: [...updatedMsgs, assistantMsg],
-      }));
+      // Truncate messages after the edited one and re-stream via functional updater
+      setMessagesByThread((prev) => {
+        const msgs = prev[threadId] ?? [];
+        const msgIndex = msgs.findIndex((m) => m.id === messageId);
+        if (msgIndex === -1) return prev;
+
+        const updatedMsgs = msgs.slice(0, msgIndex).concat(
+          { ...msgs[msgIndex], content: newContent },
+          assistantMsg,
+        );
+
+        // Update thread title if first message
+        if (msgIndex === 0) {
+          setThreads((t) => t.map((th) => (th.id === threadId ? { ...th, title: truncate(newContent, 50) } : th)));
+        }
+
+        return { ...prev, [threadId]: updatedMsgs };
+      });
+
       setStreamingMsgId(assistantMsgId);
       setIsWebSearching(false);
       setDidWebSearch(false);
 
       try {
-        const response = await fetch(`${CHAT_URL}?llmProvider=claude`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt: newContent, systemPrompt: SYSTEM_PROMPT }),
-        });
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-        const reader = response.body?.getReader();
-        if (!reader) throw new Error("No response body");
-
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop() ?? "";
-
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed.startsWith("data: ")) continue;
-
-            const data = trimmed.slice(6);
-            if (data === "[DONE]") continue;
-
-            let parsed: { type?: string; status?: string; text?: string; error?: string };
-            try {
-              parsed = JSON.parse(data);
-            } catch {
-              continue;
-            }
-            if (parsed.error) throw new Error(parsed.error);
-
-            if (parsed.type === "status" && parsed.status === "web_search_active") {
-              setIsWebSearching(true);
-              setDidWebSearch(true);
-              setMessagesByThread((prev) => ({
-                ...prev,
-                [threadId]: (prev[threadId] ?? []).map((m) =>
-                  m.id === assistantMsgId ? { ...m, didWebSearch: true } : m
-                ),
-              }));
-            }
-
-            if (parsed.text) {
-              setIsWebSearching(false);
-              setMessagesByThread((prev) => ({
-                ...prev,
-                [threadId]: (prev[threadId] ?? []).map((m) =>
-                  m.id === assistantMsgId ? { ...m, content: m.content + parsed.text } : m
-                ),
-              }));
-            }
-          }
-        }
-
+        await streamResponse(
+          threadId, assistantMsgId, newContent,
+          setMessagesByThread, setIsWebSearching, setDidWebSearch,
+        );
         setThreads((prev) =>
           prev.map((t) => (t.id === threadId ? { ...t, updatedAt: new Date() } : t))
         );
@@ -325,10 +280,10 @@ export function ChatLayout() {
         setStreamingMsgId(null);
       }
     },
-    [activeThreadId, isLoading, messagesByThread]
+    [activeThreadId, isLoading]
   );
 
-  // Global ⌘+N shortcut for new thread
+  // Global ⌘+⌥+O shortcut for new thread
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.metaKey && e.altKey && e.code === "KeyO") {

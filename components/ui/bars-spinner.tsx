@@ -33,12 +33,6 @@ export function BarsSpinner({
           }}
         />
       ))}
-      <style>{`
-        @keyframes bars-spinner-fade {
-          0%, 39%, 100% { opacity: 0.2; }
-          40% { opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 }

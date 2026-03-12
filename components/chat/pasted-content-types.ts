@@ -1,3 +1,6 @@
+export const SYSTEM_FONT_STACK =
+  'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
+
 export interface PasteEntry {
   id: string;
   text: string;

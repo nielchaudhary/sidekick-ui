@@ -4,9 +4,7 @@ import { FileText, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useRef, useState, useEffect, useCallback } from "react";
-
-const SYSTEM_FONT_STACK =
-  'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
+import { SYSTEM_FONT_STACK } from "./pasted-content-types";
 
 interface PastedContentChipProps {
   label: string;

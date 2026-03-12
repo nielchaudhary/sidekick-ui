@@ -7,9 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AIVoiceInput } from "./ai-voice-input";
 import { ChatInputPlusMenu } from "./chat-input-plus-menu";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
-
-const SYSTEM_FONT_STACK =
-  'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
+import { countWords, SYSTEM_FONT_STACK } from "./pasted-content-types";
 
 const placeholders = [
   "What's on my calendar today?",
@@ -21,7 +19,7 @@ const placeholders = [
 
 export type SearchMode = "github" | "reddit" | "x";
 
-const LONG_CONTENT_WORD_THRESHOLD = 3000;
+const PASTE_EXTRACTION_THRESHOLD = 3000;
 
 interface ChatInputProps {
   value: string;
@@ -66,6 +64,7 @@ export function ChatInput({
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startAnimation = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
     }, 3000);
@@ -155,8 +154,7 @@ export function ChatInput({
     debounceRef.current = setTimeout(() => {
       const trimmed = value.trim();
       if (!trimmed) return;
-      const wordCount = trimmed.split(/\s+/).length;
-      if (wordCount >= LONG_CONTENT_WORD_THRESHOLD) {
+      if (countWords(trimmed) >= PASTE_EXTRACTION_THRESHOLD) {
         onLongContent(value);
       }
     }, 300);

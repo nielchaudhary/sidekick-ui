@@ -69,7 +69,6 @@ export function Sidebar({
   onToggle,
 }: SidebarProps) {
   const groups = useMemo(() => groupThreads(threads), [threads]);
-  const supabase = createClient();
   const router = useRouter();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -99,6 +98,7 @@ export function Sidebar({
   };
 
   const handleLogout = async () => {
+    const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/login");
   };

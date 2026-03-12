@@ -137,6 +137,11 @@ body {
   max-width: 1536px;
 }
 
+@keyframes bars-spinner-fade {
+  0%, 39%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
+}
+
 /* Headline font utility */
 .font-headline {
   font-family: var(--font-headline);

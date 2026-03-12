@@ -3,10 +3,7 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import type { PasteEntry } from "./pasted-content-types";
-
-const SYSTEM_FONT_STACK =
-  'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
+import { SYSTEM_FONT_STACK, type PasteEntry } from "./pasted-content-types";
 
 interface PastedContentViewerProps {
   entries: PasteEntry[];
