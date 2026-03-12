@@ -175,6 +175,119 @@ export function ChatLayout() {
     setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, title } : t)));
   }, []);
 
+  const handleEditMessage = useCallback(
+    async (messageId: string, newContent: string) => {
+      if (!activeThreadId || isLoading) return;
+
+      const threadId = activeThreadId;
+
+      // Update user message and remove everything after it
+      const msgs = messagesByThread[threadId] ?? [];
+      const msgIndex = msgs.findIndex((m) => m.id === messageId);
+      if (msgIndex === -1) return;
+
+      const updatedMsgs = msgs.slice(0, msgIndex).concat({
+        ...msgs[msgIndex],
+        content: newContent,
+      });
+
+      // Update thread title if this was the first user message
+      if (msgIndex === 0) {
+        const title = newContent.slice(0, 50) + (newContent.length > 50 ? "..." : "");
+        setThreads((prev) => prev.map((t) => (t.id === threadId ? { ...t, title } : t)));
+      }
+
+      const assistantMsgId = generateId();
+      const assistantMsg: Message = { id: assistantMsgId, role: "assistant", content: "" };
+
+      setMessagesByThread((prev) => ({
+        ...prev,
+        [threadId]: [...updatedMsgs, assistantMsg],
+      }));
+      setStreamingMsgId(assistantMsgId);
+      setIsWebSearching(false);
+      setDidWebSearch(false);
+
+      try {
+        const response = await fetch(`${CHAT_URL}?llmProvider=claude`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: newContent, systemPrompt: SYSTEM_PROMPT }),
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const reader = response.body?.getReader();
+        if (!reader) throw new Error("No response body");
+
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith("data: ")) continue;
+
+            const data = trimmed.slice(6);
+            if (data === "[DONE]") continue;
+
+            let parsed: { type?: string; status?: string; text?: string; error?: string };
+            try {
+              parsed = JSON.parse(data);
+            } catch {
+              continue;
+            }
+            if (parsed.error) throw new Error(parsed.error);
+
+            if (parsed.type === "status" && parsed.status === "web_search_active") {
+              setIsWebSearching(true);
+              setDidWebSearch(true);
+              setMessagesByThread((prev) => ({
+                ...prev,
+                [threadId]: (prev[threadId] ?? []).map((m) =>
+                  m.id === assistantMsgId ? { ...m, didWebSearch: true } : m
+                ),
+              }));
+            }
+
+            if (parsed.text) {
+              setIsWebSearching(false);
+              setMessagesByThread((prev) => ({
+                ...prev,
+                [threadId]: (prev[threadId] ?? []).map((m) =>
+                  m.id === assistantMsgId ? { ...m, content: m.content + parsed.text } : m
+                ),
+              }));
+            }
+          }
+        }
+
+        setThreads((prev) =>
+          prev.map((t) => (t.id === threadId ? { ...t, updatedAt: new Date() } : t))
+        );
+      } catch {
+        setMessagesByThread((prev) => ({
+          ...prev,
+          [threadId]: (prev[threadId] ?? []).map((m) =>
+            m.id === assistantMsgId
+              ? { ...m, content: "Sorry, something went wrong. Please try again." }
+              : m
+          ),
+        }));
+      } finally {
+        setStreamingMsgId(null);
+      }
+    },
+    [activeThreadId, isLoading, messagesByThread]
+  );
+
   // Global ⌘+N shortcut for new thread
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -213,6 +326,7 @@ export function ChatLayout() {
           streamingMsgId={streamingMsgId}
           isWebSearching={isWebSearching}
           didWebSearch={didWebSearch}
+          onEditMessage={handleEditMessage}
         />
       </div>
     </div>

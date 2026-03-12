@@ -4,7 +4,6 @@ import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MessageBubble, type Message } from "./message-bubble";
 import { ChatInput } from "./chat-input";
-import { FONTS } from "@/lib/theme";
 
 interface ChatAreaProps {
   messages: Message[];
@@ -15,6 +14,7 @@ interface ChatAreaProps {
   streamingMsgId: string | null;
   isWebSearching?: boolean;
   didWebSearch?: boolean;
+  onEditMessage?: (messageId: string, newContent: string) => void;
 }
 
 export function ChatArea({
@@ -26,6 +26,7 @@ export function ChatArea({
   streamingMsgId,
   isWebSearching,
   didWebSearch,
+  onEditMessage,
 }: ChatAreaProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isEmpty = messages.length === 0;
@@ -83,7 +84,10 @@ export function ChatArea({
                   isStreaming={msg.id === streamingMsgId}
                   isLoading={msg.id === streamingMsgId && msg.content === ""}
                   isWebSearching={msg.id === streamingMsgId ? isWebSearching : undefined}
-                  didWebSearch={msg.didWebSearch ?? (msg.id === streamingMsgId ? didWebSearch : undefined)}
+                  didWebSearch={
+                    msg.didWebSearch ?? (msg.id === streamingMsgId ? didWebSearch : undefined)
+                  }
+                  onEditMessage={msg.role === "user" ? onEditMessage : undefined}
                 />
               ))}
             </div>

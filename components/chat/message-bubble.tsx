@@ -1,8 +1,8 @@
 "use client";
 
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { ThumbsUp, ThumbsDown, RotateCcw, Globe } from "lucide-react";
+import { ThumbsUp, ThumbsDown, RotateCcw, Globe, Pencil, Check, X } from "lucide-react";
 import { ShimmerText } from "@/components/ui/shimmer-text";
 import { CopyButton } from "@/components/ui/copy-button";
 import { MarkdownRenderer } from "./markdown-renderer";
@@ -22,6 +22,7 @@ interface MessageBubbleProps {
   isWebSearching?: boolean;
   didWebSearch?: boolean;
   onRegenerate?: () => void;
+  onEditMessage?: (messageId: string, newContent: string) => void;
 }
 
 export const MessageBubble = memo(function MessageBubble({
@@ -31,11 +32,39 @@ export const MessageBubble = memo(function MessageBubble({
   isWebSearching,
   didWebSearch,
   onRegenerate,
+  onEditMessage,
 }: MessageBubbleProps) {
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [thinkingDuration, setThinkingDuration] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState("");
+  const editInputRef = useRef<HTMLInputElement>(null);
   const isUser = message.role === "user";
+
+  const startEditing = () => {
+    setEditValue(message.content);
+    setIsEditing(true);
+  };
+
+  const confirmEdit = () => {
+    const trimmed = editValue.trim();
+    if (trimmed && trimmed !== message.content && onEditMessage) {
+      onEditMessage(message.id, trimmed);
+    }
+    setIsEditing(false);
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  useEffect(() => {
+    if (isEditing && editInputRef.current) {
+      editInputRef.current.focus();
+      editInputRef.current.select();
+    }
+  }, [isEditing]);
 
   useEffect(() => {
     if (!isLoading) return;
@@ -109,13 +138,51 @@ export const MessageBubble = memo(function MessageBubble({
         >
           {thinkingIndicator}
           {webSearchIndicator}
-          {renderedContent}
+          {isEditing ? (
+            <div className="flex items-center gap-1.5">
+              <input
+                ref={editInputRef}
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") confirmEdit();
+                  if (e.key === "Escape") cancelEdit();
+                }}
+                className="flex-1 bg-transparent text-white text-md font-matter outline-none"
+              />
+              <button
+                type="button"
+                onClick={confirmEdit}
+                className="inline-flex items-center justify-center rounded-md p-1 cursor-pointer text-white/50 hover:text-white/80 transition-colors"
+              >
+                <Check className="size-4" />
+              </button>
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="inline-flex items-center justify-center rounded-md p-1 cursor-pointer text-white/50 hover:text-white/80 transition-colors"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          ) : (
+            renderedContent
+          )}
         </div>
-        {!isLoading && !isStreaming && isUser && (
+        {!isLoading && !isStreaming && isUser && !isEditing && (
           <div className="flex items-center gap-0.5 mt-1">
             <ActionTooltip label="Copy">
               <CopyButton value={message.content} size="lg" />
             </ActionTooltip>
+            {onEditMessage && (
+              <button
+                type="button"
+                onClick={startEditing}
+                className="inline-flex items-center justify-center rounded-md p-1 cursor-pointer transition-colors text-white/30 hover:text-white/60 hover:bg-white/10"
+              >
+                <Pencil className="size-4.5" />
+              </button>
+            )}
           </div>
         )}
         {!isLoading && !isStreaming && !isUser && (
