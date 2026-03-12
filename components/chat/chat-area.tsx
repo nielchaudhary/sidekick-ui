@@ -59,6 +59,7 @@ export function ChatArea({
               key={entry.id}
               label={pastedContents.length === 1 ? "Pasted content" : entry.label}
               wordCount={entry.wordCount}
+              text={entry.text}
               index={i}
               onOpen={() => {
                 setViewerIndex(i);

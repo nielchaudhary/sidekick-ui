@@ -154,6 +154,7 @@ export const MessageBubble = memo(function MessageBubble({
                 key={entry.id}
                 label={entry.label}
                 wordCount={entry.wordCount}
+                text={entry.text}
                 index={i}
                 onOpen={() => {
                   setViewerIndex(i);
