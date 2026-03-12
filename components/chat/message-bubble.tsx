@@ -183,12 +183,12 @@ export const MessageBubble = memo(function MessageBubble({
       >
         <div
           className={cn(
-            "rounded-2xl text-md leading-relaxed min-w-0 wrap-break-word overflow-hidden",
+            "rounded-2xl text-md leading-relaxed min-w-0 wrap-break-word",
             isUser && isLongContent
               ? "px-0 py-0 text-white"
               : isUser
-                ? "px-3 py-2 bg-neutral-800 text-white"
-                : "px-3 py-2 text-white/90"
+                ? "px-3 py-2 bg-neutral-800 text-white overflow-hidden"
+                : "px-3 py-2 text-white/90 overflow-hidden"
           )}
         >
           {thinkingIndicator}
