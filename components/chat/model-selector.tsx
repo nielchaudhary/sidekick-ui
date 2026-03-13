@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { ChevronDown, Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { createPortal } from "react-dom";
@@ -38,27 +38,27 @@ const BRAND_COLORS: Record<Provider, string> = {
   openai: "#10A37F",
 };
 
-function AnthropicLogo({ className }: { className?: string }) {
+function AnthropicLogo({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={style} aria-hidden="true">
       <path d="M13.827 3.52h3.603L24 20h-3.603l-6.57-16.48zm-7.258 0h3.767L16.906 20h-3.674l-1.343-3.461H6.042L4.652 20H1L6.57 3.52zm2.55 4.71-1.74 4.54h3.544l-1.804-4.54z" />
     </svg>
   );
 }
 
-function OpenAILogo({ className }: { className?: string }) {
+function OpenAILogo({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={style} aria-hidden="true">
       <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z" />
     </svg>
   );
 }
 
-function ProviderLogo({ provider, className }: { provider: Provider; className?: string }) {
+function ProviderLogo({ provider, className, style }: { provider: Provider; className?: string; style?: React.CSSProperties }) {
   return provider === "anthropic" ? (
-    <AnthropicLogo className={className} />
+    <AnthropicLogo className={className} style={style} />
   ) : (
-    <OpenAILogo className={className} />
+    <OpenAILogo className={className} style={style} />
   );
 }
 
@@ -187,6 +187,11 @@ export function ModelSelector({
 
   const triggerLabel = selectedModelObj?.label ?? "Sonnet 4.5";
   const triggerProvider = selectedModelObj?.provider ?? "anthropic";
+  const brandColor = BRAND_COLORS[triggerProvider];
+
+  const [chipHovered, setChipHovered] = useState(false);
+  const [chipFocused, setChipFocused] = useState(false);
+  const chipActive = chipHovered || chipFocused || open;
 
   const desktopPanel = (
     <motion.div
@@ -399,26 +404,37 @@ export function ModelSelector({
         ref={triggerRef}
         onClick={handleOpen}
         onKeyDown={handleTriggerKeyDown}
+        onMouseEnter={() => setChipHovered(true)}
+        onMouseLeave={() => setChipHovered(false)}
+        onFocus={() => setChipFocused(true)}
+        onBlur={() => setChipFocused(false)}
         role="combobox"
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={`Model: ${triggerLabel}`}
-        className="group flex items-center gap-1.5 px-1.5 rounded-full transition-all duration-150 cursor-pointer focus:outline-none"
+        className="inline-flex items-center gap-1.5 px-1.5 rounded-full cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-white/20"
       >
         <ProviderLogo
           provider={triggerProvider}
-          className={cn(
-            "size-3 shrink-0 transition-opacity duration-150",
-            open ? "text-white/80" : "text-white/60 group-hover:text-white/80"
-          )}
+          className="size-3.5 shrink-0"
+          style={{
+            color: chipActive ? brandColor : undefined,
+            opacity: chipActive ? 1 : 0.55,
+            filter: chipActive
+              ? `drop-shadow(0 0 5px ${brandColor}4D) grayscale(0%)`
+              : "grayscale(40%)",
+            transition: "color 180ms ease-out, opacity 180ms ease-out, filter 180ms ease-out",
+          }}
         />
-        <span className="hidden md:block">
+        <span className="hidden md:inline-flex items-center">
           <span
-            className={cn(
-              "text-[11px] font-medium truncate transition-colors duration-150",
-              open ? "text-white/80" : "text-white/70 group-hover:text-white/80"
-            )}
-            style={{ fontFamily: SYSTEM_FONT_STACK }}
+            className="text-[11px] font-medium truncate"
+            style={{
+              fontFamily: SYSTEM_FONT_STACK,
+              lineHeight: 1,
+              color: chipActive ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)",
+              transition: "color 180ms ease-out",
+            }}
           >
             {triggerLabel}
           </span>
@@ -426,7 +442,7 @@ export function ModelSelector({
         <ChevronDown
           className={cn(
             "size-3 shrink-0 transition-all duration-150",
-            open ? "rotate-180 text-white/80" : "text-white/60 group-hover:text-white/80"
+            open ? "rotate-180 text-white/70" : "text-white/40"
           )}
           strokeWidth={2.5}
         />
