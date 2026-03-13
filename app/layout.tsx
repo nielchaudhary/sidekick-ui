@@ -4,6 +4,8 @@ import "./globals.css";
 import "highlight.js/styles/github-dark-dimmed.min.css";
 import "katex/dist/katex.min.css";
 import { Toaster } from "@/components/ui/toaster";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,6 +30,8 @@ export default function RootLayout({
       <body suppressHydrationWarning className={`${inter.variable} antialiased bg-black min-h-screen`}>
         {children}
         <Toaster />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
