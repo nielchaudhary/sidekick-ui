@@ -64,7 +64,7 @@ export function ChatInput({
   const handleFilesSelected = onFilesSelected ?? (() => {});
 
   // Internal state for model selection when uncontrolled
-  const [internalSelectedModel, setInternalSelectedModel] = useState("sonnet");
+  const [internalSelectedModel, setInternalSelectedModel] = useState("sonnet-4.5");
   const selectedModel = controlledSelectedModel ?? internalSelectedModel;
   const handleModelChange = controlledOnModelChange ?? setInternalSelectedModel;
 

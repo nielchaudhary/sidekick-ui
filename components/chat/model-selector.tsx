@@ -23,7 +23,7 @@ export interface ModelSelectorProps {
 }
 
 const DEFAULT_MODELS: ModelOption[] = [
-  { id: "sonnet", label: "Sonnet", subtitle: "Fast & capable", provider: "anthropic" },
+  { id: "sonnet-4.5", label: "Sonnet 4.5", subtitle: "Fast & capable", provider: "anthropic" },
   { id: "opus-4.6", label: "Opus 4.6", subtitle: "Most intelligent", provider: "anthropic" },
   { id: "gpt-5", label: "GPT-5", subtitle: "Frontier reasoning", provider: "openai" },
 ];
@@ -168,9 +168,7 @@ export function ModelSelector({
         const ids = PROVIDERS.map((p) => p.id);
         const cur = ids.indexOf(activeProvider);
         const next =
-          e.key === "ArrowRight"
-            ? (cur + 1) % ids.length
-            : (cur - 1 + ids.length) % ids.length;
+          e.key === "ArrowRight" ? (cur + 1) % ids.length : (cur - 1 + ids.length) % ids.length;
         setActiveProvider(ids[next] as Provider);
         break;
       }
@@ -183,8 +181,7 @@ export function ModelSelector({
     }
   };
 
-  const triggerLabel = selectedModelObj?.label ?? "Sonnet";
-  const triggerSubtitle = selectedModelObj?.subtitle ?? "";
+  const triggerLabel = selectedModelObj?.label ?? "Sonnet 4.5";
   const triggerProvider = selectedModelObj?.provider ?? "anthropic";
 
   const desktopPanel = (
@@ -400,10 +397,7 @@ export function ModelSelector({
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={`Model: ${triggerLabel}`}
-        className={cn(
-          "group flex items-center gap-2 h-9.5 px-3.5 rounded-full transition-all duration-150 cursor-pointer focus:outline-none",
-          open ? "bg-white/10" : "bg-white/5 hover:bg-white/10"
-        )}
+        className="group flex items-center gap-1.5 px-1.5 rounded-full transition-all duration-150 cursor-pointer focus:outline-none"
       >
         <ProviderLogo
           provider={triggerProvider}
@@ -412,24 +406,15 @@ export function ModelSelector({
             open ? "text-white/80" : "text-white/60 group-hover:text-white/80"
           )}
         />
-        <span className="hidden md:flex flex-col min-w-0">
+        <span className="hidden md:block">
           <span
             className={cn(
-              "text-[11px] font-medium leading-tight truncate transition-colors duration-150",
+              "text-[11px] font-medium truncate transition-colors duration-150",
               open ? "text-white/80" : "text-white/70 group-hover:text-white/80"
             )}
             style={{ fontFamily: SYSTEM_FONT_STACK }}
           >
             {triggerLabel}
-          </span>
-          <span
-            className={cn(
-              "text-[10px] font-normal leading-tight truncate transition-colors duration-150",
-              open ? "text-white/40" : "text-white/30 group-hover:text-white/40"
-            )}
-            style={{ fontFamily: SYSTEM_FONT_STACK }}
-          >
-            {triggerSubtitle}
           </span>
         </span>
         <ChevronDown
@@ -443,9 +428,7 @@ export function ModelSelector({
 
       {mounted &&
         createPortal(
-          <AnimatePresence>
-            {open && (isMobile ? mobileSheet : desktopPanel)}
-          </AnimatePresence>,
+          <AnimatePresence>{open && (isMobile ? mobileSheet : desktopPanel)}</AnimatePresence>,
           document.body
         )}
     </>
