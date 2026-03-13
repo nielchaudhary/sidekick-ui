@@ -68,18 +68,22 @@ export function ModelSelector({
   models = DEFAULT_MODELS,
 }: ModelSelectorProps) {
   const [open, setOpen] = useState(false);
-  const [activeProvider, setActiveProvider] = useState<Provider>(() => {
-    const model = models.find((m) => m.id === selectedModel);
-    return model?.provider ?? "anthropic";
-  });
+  // Tracks a user-initiated provider override while the panel is open.
+  // When null, activeProvider is derived from selectedModel automatically.
+  const [providerOverride, setProviderOverride] = useState<Provider | null>(null);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [panelPos, setPanelPos] = useState({ bottom: 0, right: 0 });
+  const [chipHovered, setChipHovered] = useState(false);
+  const [chipFocused, setChipFocused] = useState(false);
+
+  const activeProvider = providerOverride ?? models.find((m) => m.id === selectedModel)?.provider ?? "anthropic";
+
   const changeProvider = useCallback((provider: Provider) => {
-    setActiveProvider(provider);
+    setProviderOverride(provider);
     setFocusedIndex(0);
   }, []);
-  const [panelPos, setPanelPos] = useState({ bottom: 0, right: 0 });
 
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -87,63 +91,58 @@ export function ModelSelector({
   const providerModels = models.filter((m) => m.provider === activeProvider);
   const selectedModelObj = models.find((m) => m.id === selectedModel);
 
+  // Track mobile breakpoint via matchMedia (fires only at 768px boundary, not every resize pixel)
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener("resize", check);
+    const mq = window.matchMedia("(max-width: 767px)");
+    const handleChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handleChange);
+    // Defer initial state updates to avoid synchronous setState-in-effect
     const id = setTimeout(() => {
       setMounted(true);
-      check();
+      setIsMobile(mq.matches);
     }, 0);
     return () => {
-      window.removeEventListener("resize", check);
+      mq.removeEventListener("change", handleChange);
       clearTimeout(id);
     };
   }, []);
 
-  // Compute panel position from trigger rect
-  const computePosition = useCallback(() => {
-    if (!triggerRef.current) return;
-    const rect = triggerRef.current.getBoundingClientRect();
-    setPanelPos({
-      bottom: window.innerHeight - rect.top + 8,
-      right: window.innerWidth - rect.right,
-    });
+  const handleOpen = useCallback(() => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPanelPos({
+        bottom: window.innerHeight - rect.top + 8,
+        right: window.innerWidth - rect.right,
+      });
+    }
+    setOpen((v) => !v);
   }, []);
 
-  const handleOpen = useCallback(() => {
-    computePosition();
-    setOpen((v) => !v);
-  }, [computePosition]);
-
-  // Click outside
+  // Close on outside click or Escape
   useEffect(() => {
     if (!open) return;
     const onMouseDown = (e: MouseEvent) => {
       const t = e.target as Node;
-      const inPanel = panelRef.current?.contains(t);
-      const inTrigger = triggerRef.current?.contains(t);
-      if (!inPanel && !inTrigger) setOpen(false);
+      if (!panelRef.current?.contains(t) && !triggerRef.current?.contains(t)) setOpen(false);
     };
-    document.addEventListener("mousedown", onMouseDown);
-    return () => document.removeEventListener("mousedown", onMouseDown);
-  }, [open]);
-
-  // Escape key
-  useEffect(() => {
-    if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
         triggerRef.current?.focus();
       }
     };
+    document.addEventListener("mousedown", onMouseDown);
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onMouseDown);
+      document.removeEventListener("keydown", onKey);
+    };
   }, [open]);
 
   const handleSelectModel = useCallback(
     (id: string) => {
       onModelChange(id);
+      setProviderOverride(null); // reset so active provider auto-follows selectedModel
       setTimeout(() => setOpen(false), 120);
     },
     [onModelChange]
@@ -189,8 +188,6 @@ export function ModelSelector({
   const triggerProvider = selectedModelObj?.provider ?? "anthropic";
   const brandColor = BRAND_COLORS[triggerProvider];
 
-  const [chipHovered, setChipHovered] = useState(false);
-  const [chipFocused, setChipFocused] = useState(false);
   const chipActive = chipHovered || chipFocused || open;
 
   const desktopPanel = (
@@ -329,7 +326,8 @@ export function ModelSelector({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.15 }}
-        className="fixed inset-0 z-9998 bg-black/50"
+        className="fixed inset-0 bg-black/50"
+        style={{ zIndex: 9998 }}
         onClick={() => setOpen(false)}
       />
       <motion.div
@@ -342,8 +340,8 @@ export function ModelSelector({
         onKeyDown={handlePanelKeyDown}
         role="dialog"
         aria-label="Select model"
-        className="fixed inset-x-0 bottom-0 z-9999 rounded-t-2xl border-t border-white/10 bg-black/80 backdrop-blur-xl shadow-2xl"
-        style={{ maxHeight: "50vh" }}
+        className="fixed inset-x-0 bottom-0 rounded-t-2xl border-t border-white/10 bg-black/80 backdrop-blur-xl shadow-2xl"
+        style={{ maxHeight: "50vh", zIndex: 9999 }}
       >
         {/* Provider row */}
         <div className="flex gap-2 px-4 pt-4 pb-3 border-b border-white/5 overflow-x-auto">
