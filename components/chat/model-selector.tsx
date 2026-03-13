@@ -95,6 +95,72 @@ function modelMatches(model: ModelOption, matcher: (text: string) => boolean): b
   return matcher(model.label) || matcher(model.id) || matcher(model.subtitle);
 }
 
+interface ModelRowProps {
+  model: ModelOption;
+  isActive: boolean;
+  isSelected: boolean;
+  onSelect: (id: string) => void;
+  onHover: () => void;
+  mobile?: boolean;
+}
+
+function ModelRow({ model, isActive, isSelected, onSelect, onHover, mobile }: ModelRowProps) {
+  const rowBrand = BRAND_COLORS[model.provider];
+  return (
+    <button
+      key={model.id}
+      role={mobile ? undefined : "option"}
+      aria-selected={mobile ? undefined : isSelected}
+      onClick={() => onSelect(model.id)}
+      onMouseEnter={onHover}
+      className={cn(
+        "w-full flex items-center h-12 transition-colors duration-100 cursor-pointer text-left focus:outline-none",
+        mobile
+          ? "gap-3 px-3 rounded-xl hover:bg-white/8"
+          : "gap-2.5 px-4 rounded-lg",
+        !mobile && (isActive ? "bg-white/8" : "hover:bg-white/8")
+      )}
+    >
+      <ProviderLogo
+        provider={model.provider}
+        className={cn("shrink-0", mobile ? "size-4.5" : "size-3.5")}
+        style={{
+          color: isActive ? rowBrand : undefined,
+          opacity: isActive ? 1 : 0.4,
+          filter: isActive
+            ? `drop-shadow(0 0 4px ${rowBrand}4D) grayscale(0%)`
+            : "grayscale(40%)",
+          transition: "color 180ms ease-out, opacity 180ms ease-out, filter 180ms ease-out",
+        }}
+      />
+      <div className="flex-1 min-w-0">
+        <div
+          className={cn("font-medium truncate", mobile ? "text-sm" : "text-[11px]")}
+          style={{
+            fontFamily: SYSTEM_FONT_STACK,
+            color: isActive ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)",
+            transition: "color 180ms ease-out",
+          }}
+        >
+          {model.label}
+        </div>
+        <div
+          className={cn("text-white/30 truncate", mobile ? "text-xs" : "text-[9px]")}
+          style={{ fontFamily: SYSTEM_FONT_STACK }}
+        >
+          {model.subtitle}
+        </div>
+      </div>
+      {isSelected && (
+        <Check
+          className={cn("shrink-0", mobile ? "size-3.5" : "size-3")}
+          style={{ color: rowBrand, opacity: 0.8 }}
+        />
+      )}
+    </button>
+  );
+}
+
 export function ModelSelector({
   selectedModel,
   onModelChange,
@@ -132,32 +198,37 @@ export function ModelSelector({
     [models, selectedModel]
   );
 
+  // Memoize the matcher so it's built once per query, shared by navigation + empty-state check
+  const matcher = useMemo(() => buildMatcher(searchQuery), [searchQuery]);
+
   // Check if current provider has any matches for empty-state display
   const hasMatchesInActiveProvider = useMemo(() => {
     if (!searchQuery) return true;
-    const matcher = buildMatcher(searchQuery);
     return providerModels.some((m) => modelMatches(m, matcher));
-  }, [searchQuery, providerModels]);
+  }, [searchQuery, providerModels, matcher]);
 
   // Navigate to first match: driven from the onChange handler, not an effect
-  const applySearchNavigation = useCallback((query: string) => {
+  const applySearchNavigation = useCallback((query: string, queryMatcher: (text: string) => boolean) => {
     if (!query) return;
-    const matcher = buildMatcher(query);
-    const firstMatch = models.find((m) => modelMatches(m, matcher));
+    const firstMatch = models.find((m) => modelMatches(m, queryMatcher));
     if (firstMatch) {
-      setProviderOverride(firstMatch.provider);
+      setProviderOverride((prev) => prev === firstMatch.provider ? prev : firstMatch.provider);
       const provModels = models.filter((m) => m.provider === firstMatch.provider);
       const idx = provModels.findIndex((m) => m.id === firstMatch.id);
-      setFocusedIndex(idx >= 0 ? idx : 0);
+      setFocusedIndex((prev) => {
+        const target = idx >= 0 ? idx : 0;
+        return prev === target ? prev : target;
+      });
     } else {
-      setFocusedIndex(0);
+      setFocusedIndex((prev) => prev === 0 ? prev : 0);
     }
   }, [models]);
 
   const handleSearchChange = useCallback((value: string) => {
     const clamped = value.slice(0, 100);
     setSearchQuery(clamped);
-    applySearchNavigation(clamped);
+    const newMatcher = buildMatcher(clamped);
+    applySearchNavigation(clamped, newMatcher);
   }, [applySearchNavigation]);
 
   // Track mobile breakpoint via matchMedia
@@ -206,6 +277,12 @@ export function ModelSelector({
     }
   }, [open, isMobile]);
 
+  // Use a ref for searchQuery so the Escape listener doesn't re-attach on every keystroke
+  const searchQueryRef = useRef(searchQuery);
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
+  }, [searchQuery]);
+
   // Close on outside click or Escape
   useEffect(() => {
     if (!open) return;
@@ -216,7 +293,7 @@ export function ModelSelector({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         // If search has text, clear it first; otherwise close panel
-        if (searchQuery) {
+        if (searchQueryRef.current) {
           setSearchQuery("");
           setProviderOverride(null);
           setFocusedIndex(0);
@@ -233,7 +310,7 @@ export function ModelSelector({
       document.removeEventListener("mousedown", onMouseDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open, searchQuery, closePanel]);
+  }, [open, closePanel]);
 
   const handleSelectModel = useCallback(
     (id: string) => {
@@ -380,6 +457,7 @@ export function ModelSelector({
   const desktopPanel = (
     <motion.div
       key="desktop-panel"
+      id="model-selector-panel"
       ref={panelRef}
       role="dialog"
       aria-label="Select model"
@@ -448,57 +526,16 @@ export function ModelSelector({
             >
               {searchQuery && !hasMatchesInActiveProvider ? emptyState : (
               <div className="flex flex-col gap-1">
-              {providerModels.map((model, idx) => {
-                const rowActive = focusedIndex === idx || model.id === selectedModel;
-                const rowBrand = BRAND_COLORS[model.provider];
-                return (
-                <button
+              {providerModels.map((model, idx) => (
+                <ModelRow
                   key={model.id}
-                  role="option"
-                  aria-selected={model.id === selectedModel}
-                  onClick={() => handleSelectModel(model.id)}
-                  onMouseEnter={() => setFocusedIndex(idx)}
-                  className={cn(
-                    "w-full flex items-center gap-2.5 px-4 h-12 rounded-lg transition-colors duration-100 cursor-pointer text-left focus:outline-none",
-                    rowActive ? "bg-white/8" : "hover:bg-white/8"
-                  )}
-                >
-                  <ProviderLogo
-                    provider={model.provider}
-                    className="size-3.5 shrink-0"
-                    style={{
-                      color: rowActive ? rowBrand : undefined,
-                      opacity: rowActive ? 1 : 0.4,
-                      filter: rowActive
-                        ? `drop-shadow(0 0 4px ${rowBrand}4D) grayscale(0%)`
-                        : "grayscale(40%)",
-                      transition: "color 180ms ease-out, opacity 180ms ease-out, filter 180ms ease-out",
-                    }}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div
-                      className="text-[11px] font-medium truncate"
-                      style={{
-                        fontFamily: SYSTEM_FONT_STACK,
-                        color: rowActive ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)",
-                        transition: "color 180ms ease-out",
-                      }}
-                    >
-                      {model.label}
-                    </div>
-                    <div
-                      className="text-[9px] text-white/30 truncate"
-                      style={{ fontFamily: SYSTEM_FONT_STACK }}
-                    >
-                      {model.subtitle}
-                    </div>
-                  </div>
-                  {model.id === selectedModel && (
-                    <Check className="size-3 shrink-0" style={{ color: rowBrand, opacity: 0.8 }} />
-                  )}
-                </button>
-                );
-              })}
+                  model={model}
+                  isActive={focusedIndex === idx || model.id === selectedModel}
+                  isSelected={model.id === selectedModel}
+                  onSelect={handleSelectModel}
+                  onHover={() => setFocusedIndex(idx)}
+                />
+              ))}
               </div>
               )}
             </motion.div>
@@ -522,6 +559,7 @@ export function ModelSelector({
       />
       <motion.div
         key="sheet"
+        id="model-selector-panel"
         ref={panelRef}
         initial={{ y: "100%" }}
         animate={{ y: 0 }}
@@ -567,52 +605,17 @@ export function ModelSelector({
               transition={{ duration: 0.12 }}
             >
               {searchQuery && !hasMatchesInActiveProvider ? emptyState : (
-              providerModels.map((model, idx) => {
-                const rowActive = focusedIndex === idx || model.id === selectedModel;
-                const rowBrand = BRAND_COLORS[model.provider];
-                return (
-                <button
+              providerModels.map((model, idx) => (
+                <ModelRow
                   key={model.id}
-                  onClick={() => handleSelectModel(model.id)}
-                  onMouseEnter={() => setFocusedIndex(idx)}
-                  className="w-full flex items-center gap-3 px-3 h-12 rounded-xl transition-colors duration-100 hover:bg-white/8 cursor-pointer text-left focus:outline-none"
-                >
-                  <ProviderLogo
-                    provider={model.provider}
-                    className="size-4.5 shrink-0"
-                    style={{
-                      color: rowActive ? rowBrand : undefined,
-                      opacity: rowActive ? 1 : 0.4,
-                      filter: rowActive
-                        ? `drop-shadow(0 0 4px ${rowBrand}4D) grayscale(0%)`
-                        : "grayscale(40%)",
-                      transition: "color 180ms ease-out, opacity 180ms ease-out, filter 180ms ease-out",
-                    }}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div
-                      className="text-sm font-medium"
-                      style={{
-                        fontFamily: SYSTEM_FONT_STACK,
-                        color: rowActive ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)",
-                        transition: "color 180ms ease-out",
-                      }}
-                    >
-                      {model.label}
-                    </div>
-                    <div
-                      className="text-xs text-white/30"
-                      style={{ fontFamily: SYSTEM_FONT_STACK }}
-                    >
-                      {model.subtitle}
-                    </div>
-                  </div>
-                  {model.id === selectedModel && (
-                    <Check className="size-3.5 shrink-0" style={{ color: rowBrand, opacity: 0.8 }} />
-                  )}
-                </button>
-                );
-              })
+                  model={model}
+                  isActive={focusedIndex === idx || model.id === selectedModel}
+                  isSelected={model.id === selectedModel}
+                  onSelect={handleSelectModel}
+                  onHover={() => setFocusedIndex(idx)}
+                  mobile
+                />
+              ))
               )}
             </motion.div>
           </AnimatePresence>
@@ -633,6 +636,7 @@ export function ModelSelector({
         onBlur={() => setChipFocused(false)}
         role="combobox"
         aria-expanded={open}
+        aria-controls="model-selector-panel"
         aria-haspopup="listbox"
         aria-label={`Model: ${triggerLabel}`}
         className="inline-flex items-center gap-1.5 px-1.5 rounded-full cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-white/20"
