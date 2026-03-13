@@ -448,12 +448,10 @@ export function ModelSelector({
           provider={triggerProvider}
           className="size-3.5 shrink-0"
           style={{
-            color: chipActive ? brandColor : undefined,
-            opacity: chipActive ? 1 : 0.55,
-            filter: chipActive
-              ? `drop-shadow(0 0 5px ${brandColor}4D) grayscale(0%)`
-              : "grayscale(40%)",
-            transition: "color 180ms ease-out, opacity 180ms ease-out, filter 180ms ease-out",
+            color: brandColor,
+            opacity: chipActive ? 1 : 0.75,
+            filter: chipActive ? `drop-shadow(0 0 5px ${brandColor}4D)` : "none",
+            transition: "opacity 180ms ease-out, filter 180ms ease-out",
           }}
         />
         <span className="hidden md:inline-flex items-center">
@@ -462,7 +460,7 @@ export function ModelSelector({
             style={{
               fontFamily: SYSTEM_FONT_STACK,
               lineHeight: 1,
-              color: chipActive ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)",
+              color: chipActive ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.5)",
               transition: "color 180ms ease-out",
             }}
           >
