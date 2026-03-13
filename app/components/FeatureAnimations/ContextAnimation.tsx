@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { motion } from "framer-motion";
 import { delay } from "@/lib/utils";
 import type { ContextAnimationPhase, LogoType, ClusterNode } from "@/types/animations";
-import { LogoSVGs } from "@/lib/brand-logos";
+import { LogoSVGs } from "@/app/components/icons/brand-logos";
 
 /** Canvas dimensions */
 const WIDTH = 340;

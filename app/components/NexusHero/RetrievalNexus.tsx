@@ -9,7 +9,7 @@ import {
   GmailLogo,
   GoogleSheetsLogo,
   GoogleCalendarLogo,
-} from "@/lib/brand-logos";
+} from "@/app/components/icons/brand-logos";
 import type {
   RetrievalNexusPhase as AppPhase,
   MemorySource,
