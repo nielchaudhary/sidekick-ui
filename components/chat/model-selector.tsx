@@ -79,7 +79,7 @@ export function ModelSelector({
     setActiveProvider(provider);
     setFocusedIndex(0);
   }, []);
-  const [panelPos, setPanelPos] = useState({ bottom: 0, left: 0 });
+  const [panelPos, setPanelPos] = useState({ bottom: 0, right: 0 });
 
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -106,7 +106,7 @@ export function ModelSelector({
     const rect = triggerRef.current.getBoundingClientRect();
     setPanelPos({
       bottom: window.innerHeight - rect.top + 8,
-      left: rect.left,
+      right: window.innerWidth - rect.right,
     });
   }, []);
 
@@ -208,7 +208,7 @@ export function ModelSelector({
       style={{
         position: "fixed",
         bottom: panelPos.bottom,
-        left: panelPos.left,
+        right: panelPos.right,
         width: 360,
         zIndex: 9999,
       }}

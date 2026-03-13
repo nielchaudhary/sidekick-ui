@@ -272,21 +272,21 @@ export function ChatInput({
 
               {/* Action bar - pinned to bottom */}
               <div className="absolute bottom-0 left-0 right-0 h-[48px] flex items-center justify-between px-3 z-20">
-                {/* Left: attachment menu + model selector */}
+                {/* Left: attachment menu */}
                 <div className="flex items-center gap-1 text-white/60">
                   <ChatInputPlusMenu
                     onFilesSelected={handleFilesSelected}
                     searchModes={searchModes}
                     onSearchModesChange={handleSearchModesChange}
                   />
+                </div>
+
+                {/* Right: model selector + mic & send */}
+                <div className="flex items-center gap-1.5">
                   <ModelSelector
                     selectedModel={selectedModel}
                     onModelChange={handleModelChange}
                   />
-                </div>
-
-                {/* Right: mic & send */}
-                <div className="flex items-center gap-1.5">
                   <AnimatePresence mode="wait" initial={false}>
                     {showMic ? (
                       <motion.button
