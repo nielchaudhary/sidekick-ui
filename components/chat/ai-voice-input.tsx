@@ -5,7 +5,10 @@ import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
 
 function generateBarHeights(count: number): number[] {
-  return Array.from({ length: count }, (_, i) => 20 + ((((i * 7 + 13) * 2654435761) >>> 0) % 100) * 0.8);
+  return Array.from(
+    { length: count },
+    (_, i) => 20 + ((((i * 7 + 13) * 2654435761) >>> 0) % 100) * 0.8
+  );
 }
 
 interface AIVoiceInputProps {
@@ -25,7 +28,7 @@ export function AIVoiceInput({
   demoMode = false,
   demoInterval = 3000,
   autoStart = false,
-  className
+  className,
 }: AIVoiceInputProps) {
   const [submitted, setSubmitted] = useState(autoStart);
   const [time, setTime] = useState(0);
@@ -96,9 +99,7 @@ export function AIVoiceInput({
         <button
           className={cn(
             "group w-16 h-16 rounded-xl flex items-center justify-center transition-colors",
-            submitted
-              ? "bg-none"
-              : "bg-none hover:bg-black/10 dark:hover:bg-white/10"
+            submitted ? "bg-none" : "bg-none hover:bg-black/10 dark:hover:bg-white/10"
           )}
           type="button"
           onClick={handleClick}
@@ -116,9 +117,7 @@ export function AIVoiceInput({
         <span
           className={cn(
             "font-mono text-sm transition-opacity duration-300",
-            submitted
-              ? "text-black/70 dark:text-white/70"
-              : "text-black/30 dark:text-white/30"
+            submitted ? "text-black/70 dark:text-white/70" : "text-black/30 dark:text-white/30"
           )}
         >
           {formatTime(time)}

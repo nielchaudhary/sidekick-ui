@@ -23,9 +23,24 @@ export interface ModelSelectorProps {
 }
 
 const DEFAULT_MODELS: ModelOption[] = [
-  { id: "sonnet-4.5", label: "Sonnet 4.5", subtitle: "Fast, capable, great for most tasks", provider: "anthropic" },
-  { id: "opus-4.6", label: "Opus 4.6", subtitle: "Most intelligent, best for complex work", provider: "anthropic" },
-  { id: "gpt-5", label: "GPT-5", subtitle: "OpenAI's latest frontier reasoning model", provider: "openai" },
+  {
+    id: "sonnet-4.5",
+    label: "Sonnet 4.5",
+    subtitle: "Fast, capable, great for most tasks",
+    provider: "anthropic",
+  },
+  {
+    id: "opus-4.6",
+    label: "Opus 4.6",
+    subtitle: "Most intelligent, best for complex work",
+    provider: "anthropic",
+  },
+  {
+    id: "gpt-5",
+    label: "GPT-5",
+    subtitle: "OpenAI's latest frontier reasoning model",
+    provider: "openai",
+  },
 ];
 
 const PROVIDERS: { id: Provider; label: string }[] = [
@@ -42,7 +57,13 @@ const BRAND_COLORS: Record<Provider, string> = {
 
 function AnthropicLogo({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={style} aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      style={style}
+      aria-hidden="true"
+    >
       <path d="M13.827 3.52h3.603L24 20h-3.603l-6.57-16.48zm-7.258 0h3.767L16.906 20h-3.674l-1.343-3.461H6.042L4.652 20H1L6.57 3.52zm2.55 4.71-1.74 4.54h3.544l-1.804-4.54z" />
     </svg>
   );
@@ -50,13 +71,27 @@ function AnthropicLogo({ className, style }: { className?: string; style?: React
 
 function OpenAILogo({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={style} aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      style={style}
+      aria-hidden="true"
+    >
       <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z" />
     </svg>
   );
 }
 
-function ProviderLogo({ provider, className, style }: { provider: Provider; className?: string; style?: React.CSSProperties }) {
+function ProviderLogo({
+  provider,
+  className,
+  style,
+}: {
+  provider: Provider;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
   return provider === "anthropic" ? (
     <AnthropicLogo className={className} style={style} />
   ) : (
@@ -115,9 +150,7 @@ function ModelRow({ model, isActive, isSelected, onSelect, onHover, mobile }: Mo
       onMouseEnter={onHover}
       className={cn(
         "w-full flex items-center h-12 transition-colors duration-100 cursor-pointer text-left focus:outline-none",
-        mobile
-          ? "gap-3 px-3 rounded-xl hover:bg-white/8"
-          : "gap-2.5 px-4 rounded-lg",
+        mobile ? "gap-3 px-3 rounded-xl hover:bg-white/8" : "gap-2.5 px-4 rounded-lg",
         !mobile && (isActive ? "bg-white/8" : "hover:bg-white/8")
       )}
     >
@@ -127,9 +160,7 @@ function ModelRow({ model, isActive, isSelected, onSelect, onHover, mobile }: Mo
         style={{
           color: isActive ? rowBrand : undefined,
           opacity: isActive ? 1 : 0.4,
-          filter: isActive
-            ? `drop-shadow(0 0 4px ${rowBrand}4D) grayscale(0%)`
-            : "grayscale(40%)",
+          filter: isActive ? `drop-shadow(0 0 4px ${rowBrand}4D) grayscale(0%)` : "grayscale(40%)",
           transition: "color 180ms ease-out, opacity 180ms ease-out, filter 180ms ease-out",
         }}
       />
@@ -179,7 +210,8 @@ export function ModelSelector({
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const activeProvider = providerOverride ?? models.find((m) => m.id === selectedModel)?.provider ?? "anthropic";
+  const activeProvider =
+    providerOverride ?? models.find((m) => m.id === selectedModel)?.provider ?? "anthropic";
 
   const changeProvider = useCallback((provider: Provider) => {
     setProviderOverride(provider);
@@ -208,28 +240,34 @@ export function ModelSelector({
   }, [searchQuery, providerModels, matcher]);
 
   // Navigate to first match: driven from the onChange handler, not an effect
-  const applySearchNavigation = useCallback((query: string, queryMatcher: (text: string) => boolean) => {
-    if (!query) return;
-    const firstMatch = models.find((m) => modelMatches(m, queryMatcher));
-    if (firstMatch) {
-      setProviderOverride((prev) => prev === firstMatch.provider ? prev : firstMatch.provider);
-      const provModels = models.filter((m) => m.provider === firstMatch.provider);
-      const idx = provModels.findIndex((m) => m.id === firstMatch.id);
-      setFocusedIndex((prev) => {
-        const target = idx >= 0 ? idx : 0;
-        return prev === target ? prev : target;
-      });
-    } else {
-      setFocusedIndex((prev) => prev === 0 ? prev : 0);
-    }
-  }, [models]);
+  const applySearchNavigation = useCallback(
+    (query: string, queryMatcher: (text: string) => boolean) => {
+      if (!query) return;
+      const firstMatch = models.find((m) => modelMatches(m, queryMatcher));
+      if (firstMatch) {
+        setProviderOverride((prev) => (prev === firstMatch.provider ? prev : firstMatch.provider));
+        const provModels = models.filter((m) => m.provider === firstMatch.provider);
+        const idx = provModels.findIndex((m) => m.id === firstMatch.id);
+        setFocusedIndex((prev) => {
+          const target = idx >= 0 ? idx : 0;
+          return prev === target ? prev : target;
+        });
+      } else {
+        setFocusedIndex((prev) => (prev === 0 ? prev : 0));
+      }
+    },
+    [models]
+  );
 
-  const handleSearchChange = useCallback((value: string) => {
-    const clamped = value.slice(0, 100);
-    setSearchQuery(clamped);
-    const newMatcher = buildMatcher(clamped);
-    applySearchNavigation(clamped, newMatcher);
-  }, [applySearchNavigation]);
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      const clamped = value.slice(0, 100);
+      setSearchQuery(clamped);
+      const newMatcher = buildMatcher(clamped);
+      applySearchNavigation(clamped, newMatcher);
+    },
+    [applySearchNavigation]
+  );
 
   // Track mobile breakpoint via matchMedia
   useEffect(() => {
@@ -375,7 +413,9 @@ export function ModelSelector({
         e.preventDefault();
         const cur = PROVIDER_IDS.indexOf(activeProvider);
         const next =
-          e.key === "ArrowRight" ? (cur + 1) % PROVIDER_IDS.length : (cur - 1 + PROVIDER_IDS.length) % PROVIDER_IDS.length;
+          e.key === "ArrowRight"
+            ? (cur + 1) % PROVIDER_IDS.length
+            : (cur - 1 + PROVIDER_IDS.length) % PROVIDER_IDS.length;
         changeProvider(PROVIDER_IDS[next] as Provider);
         break;
       }
@@ -396,14 +436,9 @@ export function ModelSelector({
 
   const searchInput = (mobile: boolean) => (
     <div
-      className={cn(
-        "flex items-center gap-2",
-        mobile ? "px-4 h-10" : "px-4 h-8"
-      )}
+      className={cn("flex items-center gap-2", mobile ? "px-4 h-10" : "px-4 h-8")}
       style={{
-        borderBottom: searchQuery
-          ? "1px solid rgba(255,255,255,0.08)"
-          : "1px solid transparent",
+        borderBottom: searchQuery ? "1px solid rgba(255,255,255,0.08)" : "1px solid transparent",
         transition: "border-color 150ms ease-out",
       }}
     >
@@ -414,7 +449,13 @@ export function ModelSelector({
             "shrink-0 cursor-pointer focus:outline-none transition-colors duration-150",
             mobile ? "p-2 -m-2" : ""
           )}
-          style={{ minWidth: mobile ? 44 : undefined, minHeight: mobile ? 44 : undefined, display: "flex", alignItems: "center", justifyContent: "center" }}
+          style={{
+            minWidth: mobile ? 44 : undefined,
+            minHeight: mobile ? 44 : undefined,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
           aria-label="Clear search"
         >
           <X className="size-3 text-white/40 hover:text-white/60 transition-colors duration-150" />
@@ -524,19 +565,21 @@ export function ModelSelector({
               transition={{ duration: 0.12 }}
               className="px-1"
             >
-              {searchQuery && !hasMatchesInActiveProvider ? emptyState : (
-              <div className="flex flex-col gap-1">
-              {providerModels.map((model, idx) => (
-                <ModelRow
-                  key={model.id}
-                  model={model}
-                  isActive={focusedIndex === idx || model.id === selectedModel}
-                  isSelected={model.id === selectedModel}
-                  onSelect={handleSelectModel}
-                  onHover={() => setFocusedIndex(idx)}
-                />
-              ))}
-              </div>
+              {searchQuery && !hasMatchesInActiveProvider ? (
+                emptyState
+              ) : (
+                <div className="flex flex-col gap-1">
+                  {providerModels.map((model, idx) => (
+                    <ModelRow
+                      key={model.id}
+                      model={model}
+                      isActive={focusedIndex === idx || model.id === selectedModel}
+                      isSelected={model.id === selectedModel}
+                      onSelect={handleSelectModel}
+                      onHover={() => setFocusedIndex(idx)}
+                    />
+                  ))}
+                </div>
               )}
             </motion.div>
           </AnimatePresence>
@@ -604,19 +647,19 @@ export function ModelSelector({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.12 }}
             >
-              {searchQuery && !hasMatchesInActiveProvider ? emptyState : (
-              providerModels.map((model, idx) => (
-                <ModelRow
-                  key={model.id}
-                  model={model}
-                  isActive={focusedIndex === idx || model.id === selectedModel}
-                  isSelected={model.id === selectedModel}
-                  onSelect={handleSelectModel}
-                  onHover={() => setFocusedIndex(idx)}
-                  mobile
-                />
-              ))
-              )}
+              {searchQuery && !hasMatchesInActiveProvider
+                ? emptyState
+                : providerModels.map((model, idx) => (
+                    <ModelRow
+                      key={model.id}
+                      model={model}
+                      isActive={focusedIndex === idx || model.id === selectedModel}
+                      isSelected={model.id === selectedModel}
+                      onSelect={handleSelectModel}
+                      onHover={() => setFocusedIndex(idx)}
+                      mobile
+                    />
+                  ))}
             </motion.div>
           </AnimatePresence>
         </div>

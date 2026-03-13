@@ -28,9 +28,7 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           // Set cookies on the request (for downstream server components)
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           // Also set cookies on the response (so the browser gets the updated session)
           supabaseResponse = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
@@ -68,7 +66,5 @@ export async function middleware(request: NextRequest) {
 // Only run middleware on pages, not on static files or API routes.
 // This matcher excludes Next.js internals and common static file extensions.
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };

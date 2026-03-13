@@ -10,8 +10,7 @@ const gradients = {
     "linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.4) 100%)",
   destructive:
     "linear-gradient(90deg, rgba(179,75,113,0.5) 0%, rgba(179,75,113,1) 50%, rgba(179,75,113,0.5) 100%)",
-  rose:
-    "linear-gradient(90deg, rgba(244,63,94,0.5) 0%, rgba(244,63,94,1) 50%, rgba(244,63,94,0.5) 100%)",
+  rose: "linear-gradient(90deg, rgba(244,63,94,0.5) 0%, rgba(244,63,94,1) 50%, rgba(244,63,94,0.5) 100%)",
 };
 
 interface ShimmerTextProps {
@@ -31,7 +30,6 @@ export function ShimmerText({
   delay = 0,
   spread = 200,
 }: ShimmerTextProps) {
-
   return (
     <motion.span
       className={cn("inline-block bg-clip-text text-transparent", className)}

@@ -34,12 +34,7 @@ export type RetrievalNexusPhase =
   | "storing";
 
 /** Animation phase for the Silicon Inference component */
-export type InferencePhase =
-  | "idle"
-  | "embedding"
-  | "attention"
-  | "ffn"
-  | "complete";
+export type InferencePhase = "idle" | "embedding" | "attention" | "ffn" | "complete";
 
 /** Logo types for brand icons */
 export type LogoType = "notion" | "sheets" | "gmail" | "slack" | "github";

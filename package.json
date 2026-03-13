@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run format && next dev",
+    "build": "npm run format && next build",
     "build:check": "pnpm lint && pnpm format:check && pnpm build",
     "start": "next start",
     "lint": "eslint",

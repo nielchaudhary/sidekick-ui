@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { motion } from "framer-motion";
 import { delay } from "@/lib/utils";
-import type { ContextAnimationPhase, LogoType, ClusterNode } from "@/types/animations";
+import type { ContextAnimationPhase, ClusterNode } from "@/types/animations";
 import { LogoSVGs } from "@/app/components/icons/brand-logos";
 
 /** Canvas dimensions */
@@ -417,13 +417,56 @@ const ContextAnimation = memo(function ContextAnimation() {
               animate={{ scale: [0.95, 1.05, 0.95] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
-            <circle cx="0" cy="0" r="12" fill="none" stroke="#E05A8D" strokeWidth="3" filter="url(#ctx-queryGlow)" />
+            <circle
+              cx="0"
+              cy="0"
+              r="12"
+              fill="none"
+              stroke="#E05A8D"
+              strokeWidth="3"
+              filter="url(#ctx-queryGlow)"
+            />
             <circle cx="0" cy="0" r="4" fill="#FFFFFF" opacity="0.9" />
-            <line x1="-22" y1="0" x2="-8" y2="0" stroke="#E05A8D" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1="8" y1="0" x2="22" y2="0" stroke="#E05A8D" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1="0" y1="-22" x2="0" y2="-8" stroke="#E05A8D" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1="0" y1="8" x2="0" y2="22" stroke="#E05A8D" strokeWidth="2.5" strokeLinecap="round" />
-            <motion.g animate={{ rotate: 360 }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }}>
+            <line
+              x1="-22"
+              y1="0"
+              x2="-8"
+              y2="0"
+              stroke="#E05A8D"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+            <line
+              x1="8"
+              y1="0"
+              x2="22"
+              y2="0"
+              stroke="#E05A8D"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+            <line
+              x1="0"
+              y1="-22"
+              x2="0"
+              y2="-8"
+              stroke="#E05A8D"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+            <line
+              x1="0"
+              y1="8"
+              x2="0"
+              y2="22"
+              stroke="#E05A8D"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+            <motion.g
+              animate={{ rotate: 360 }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            >
               <circle cx="0" cy="-30" r="2" fill="#E05A8D" opacity="0.6" />
             </motion.g>
           </motion.g>

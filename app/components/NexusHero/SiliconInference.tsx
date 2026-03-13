@@ -130,8 +130,9 @@ const SYNAPSE_LINES = Array.from({ length: 6 }, (_, i) => ({
 }));
 
 // Pre-computed random delays for attention cells
-const CELL_RANDOM_DELAYS = Array.from({ length: ATTENTION_GRID_SIZE * ATTENTION_GRID_SIZE }, (_, i) =>
-  ((i * 7 + 3) % 50) / 100
+const CELL_RANDOM_DELAYS = Array.from(
+  { length: ATTENTION_GRID_SIZE * ATTENTION_GRID_SIZE },
+  (_, i) => ((i * 7 + 3) % 50) / 100
 );
 
 // Attention Matrix - 8x8 grid representing Multi-Head Self-Attention

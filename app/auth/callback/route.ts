@@ -14,8 +14,7 @@ import { NextResponse } from "next/server";
 
 // Use a trusted base URL from env instead of request.url's origin
 // to prevent open-redirect attacks via Host header manipulation.
-const getBaseUrl = () =>
-  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const getBaseUrl = () => process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

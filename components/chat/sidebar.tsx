@@ -192,10 +192,7 @@ export function Sidebar({
               </p>
               {group.threads.map((thread) =>
                 editingId === thread.id ? (
-                  <div
-                    key={thread.id}
-                    className="flex items-center gap-1 px-1 py-1"
-                  >
+                  <div key={thread.id} className="flex items-center gap-1 px-1 py-1">
                     <input
                       ref={editInputRef}
                       value={editValue}

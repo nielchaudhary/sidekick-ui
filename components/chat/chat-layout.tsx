@@ -37,7 +37,7 @@ async function streamResponse(
   prompt: string,
   setMessagesByThread: SetMessages,
   setIsWebSearching: (v: boolean) => void,
-  setDidWebSearch: (v: boolean) => void,
+  setDidWebSearch: (v: boolean) => void
 ) {
   const response = await fetch(`${CHAT_URL}?llmProvider=claude`, {
     method: "POST",
@@ -150,8 +150,12 @@ export function ChatLayout() {
 
       try {
         await streamResponse(
-          threadId, assistantMsgId, text,
-          setMessagesByThread, setIsWebSearching, setDidWebSearch,
+          threadId,
+          assistantMsgId,
+          text,
+          setMessagesByThread,
+          setIsWebSearching,
+          setDidWebSearch
         );
         setThreads((prev) =>
           prev.map((t) => (t.id === threadId ? { ...t, updatedAt: new Date() } : t))
@@ -169,7 +173,7 @@ export function ChatLayout() {
         setStreamingMsgId(null);
       }
     },
-    [streamingMsgId, activeThreadId, createThread]
+    [streamingMsgId, activeThreadId, createThread, isLoading]
   );
 
   const handleSend = useCallback(() => {
@@ -242,14 +246,15 @@ export function ChatLayout() {
         const msgIndex = msgs.findIndex((m) => m.id === messageId);
         if (msgIndex === -1) return prev;
 
-        const updatedMsgs = msgs.slice(0, msgIndex).concat(
-          { ...msgs[msgIndex], content: newContent },
-          assistantMsg,
-        );
+        const updatedMsgs = msgs
+          .slice(0, msgIndex)
+          .concat({ ...msgs[msgIndex], content: newContent }, assistantMsg);
 
         // Update thread title if first message
         if (msgIndex === 0) {
-          setThreads((t) => t.map((th) => (th.id === threadId ? { ...th, title: truncate(newContent, 50) } : th)));
+          setThreads((t) =>
+            t.map((th) => (th.id === threadId ? { ...th, title: truncate(newContent, 50) } : th))
+          );
         }
 
         return { ...prev, [threadId]: updatedMsgs };
@@ -261,8 +266,12 @@ export function ChatLayout() {
 
       try {
         await streamResponse(
-          threadId, assistantMsgId, newContent,
-          setMessagesByThread, setIsWebSearching, setDidWebSearch,
+          threadId,
+          assistantMsgId,
+          newContent,
+          setMessagesByThread,
+          setIsWebSearching,
+          setDidWebSearch
         );
         setThreads((prev) =>
           prev.map((t) => (t.id === threadId ? { ...t, updatedAt: new Date() } : t))

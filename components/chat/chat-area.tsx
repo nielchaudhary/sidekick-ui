@@ -74,15 +74,11 @@ export function ChatArea({
   ) : null;
 
   return (
-    <div
-      className="flex-1 flex flex-col min-w-0 h-full overflow-x-hidden relative"
-    >
+    <div className="flex-1 flex flex-col min-w-0 h-full overflow-x-hidden relative">
       {isEmpty ? (
         /* Empty state: hero heading + vertically centered input */
         <div className="flex-1 flex flex-col items-center justify-center px-4">
-          <h1
-            className="text-[26px] sm:text-[28px] md:text-[28px] tracking-[0.012em] leading-[1.15] text-center mb-3 select-none font-matter font-normal"
-          >
+          <h1 className="text-[26px] sm:text-[28px] md:text-[28px] tracking-[0.012em] leading-[1.15] text-center mb-3 select-none font-matter font-normal">
             <span style={{ color: "rgba(255,255,255,0.8)" }}>
               your thinking partner, powered by your context
             </span>

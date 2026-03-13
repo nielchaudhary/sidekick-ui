@@ -1,11 +1,14 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { Plus, Paperclip, Github, Twitter } from "lucide-react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
 
 import type { SearchMode } from "./chat-input";
+
+const subscribe = () => () => {};
+const useMounted = () => useSyncExternalStore(subscribe, () => true, () => false);
 
 function RedditIcon({ className }: { className?: string }) {
   return (
@@ -64,11 +67,7 @@ export function ChatInputPlusMenu({
 }: ChatInputPlusMenuProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -101,9 +100,7 @@ export function ChatInputPlusMenu({
       {mounted ? (
         <DropdownMenuPrimitive.Root open={open} onOpenChange={setOpen}>
           <DropdownMenuPrimitive.Trigger asChild>
-            <button
-              className="size-8 rounded-full flex items-center justify-center bg-transparent hover:bg-white/10 text-white/60 hover:text-white transition-all duration-150 cursor-pointer focus:outline-none"
-            >
+            <button className="size-8 rounded-full flex items-center justify-center bg-transparent hover:bg-white/10 text-white/60 hover:text-white transition-all duration-150 cursor-pointer focus:outline-none">
               <Plus
                 className="size-4.5 transition-transform duration-200 ease-out"
                 style={{ transform: open ? "rotate(45deg)" : "rotate(0deg)" }}
@@ -147,11 +144,23 @@ export function ChatInputPlusMenu({
                       <DropdownMenuPrimitive.Label className="text-[11px] text-white/30 uppercase tracking-wider px-3 py-1 font-medium">
                         Search modes
                       </DropdownMenuPrimitive.Label>
-                      {([
-                        { mode: "github" as const, icon: <Github className="size-4 text-foreground" />, label: "GitHub" },
-                        { mode: "reddit" as const, icon: <RedditIcon className="size-4 text-[#FF4500]" />, label: "Reddit" },
-                        { mode: "x" as const, icon: <Twitter className="size-4 text-foreground" />, label: "X" },
-                      ]).map(({ mode, icon, label }) => (
+                      {[
+                        {
+                          mode: "github" as const,
+                          icon: <Github className="size-4 text-foreground" />,
+                          label: "GitHub",
+                        },
+                        {
+                          mode: "reddit" as const,
+                          icon: <RedditIcon className="size-4 text-[#FF4500]" />,
+                          label: "Reddit",
+                        },
+                        {
+                          mode: "x" as const,
+                          icon: <Twitter className="size-4 text-foreground" />,
+                          label: "X",
+                        },
+                      ].map(({ mode, icon, label }) => (
                         <DropdownMenuPrimitive.CheckboxItem
                           key={mode}
                           checked={searchModes.has(mode)}
@@ -176,9 +185,7 @@ export function ChatInputPlusMenu({
           </AnimatePresence>
         </DropdownMenuPrimitive.Root>
       ) : (
-        <button
-          className="size-8 rounded-full flex items-center justify-center bg-transparent hover:bg-white/10 text-white/60 hover:text-white transition-all duration-150 cursor-pointer focus:outline-none"
-        >
+        <button className="size-8 rounded-full flex items-center justify-center bg-transparent hover:bg-white/10 text-white/60 hover:text-white transition-all duration-150 cursor-pointer focus:outline-none">
           <Plus className="size-4.5" strokeWidth={2} />
         </button>
       )}

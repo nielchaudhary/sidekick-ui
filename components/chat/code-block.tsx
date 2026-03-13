@@ -25,10 +25,7 @@ interface CodeBlockProps {
   language?: string;
 }
 
-export const CodeBlock = memo(function CodeBlock({
-  children,
-  language,
-}: CodeBlockProps) {
+export const CodeBlock = memo(function CodeBlock({ children, language }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -71,9 +68,7 @@ export const CodeBlock = memo(function CodeBlock({
       </div>
       <div className="overflow-x-auto">
         <pre className="px-5 py-4 text-[13px] leading-[1.7]">
-          <code className={cn("font-mono text-white/85", language)}>
-            {children}
-          </code>
+          <code className={cn("font-mono text-white/85", language)}>{children}</code>
         </pre>
       </div>
     </div>

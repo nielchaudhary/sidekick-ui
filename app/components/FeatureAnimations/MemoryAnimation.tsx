@@ -78,7 +78,13 @@ function DataPacket() {
 }
 
 /** Lattice ring animation for storage phase */
-function LatticeRing({ index, radius, duration, strokeDash, opacity }: {
+function LatticeRing({
+  index,
+  radius,
+  duration,
+  strokeDash,
+  opacity,
+}: {
   index: number;
   radius: number;
   duration: number;
@@ -187,8 +193,7 @@ function StorageNode() {
       <motion.div
         className="absolute rounded-full"
         style={{
-          background:
-            "radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%)",
+          background: "radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%)",
         }}
         initial={{ width: 20, height: 20, opacity: 0 }}
         animate={{
@@ -217,8 +222,7 @@ function StorageNode() {
         className="relative w-14 h-14 rounded-full flex items-center justify-center"
         style={{
           background: "linear-gradient(135deg, #B34B71 0%, #6B2D4A 100%)",
-          boxShadow:
-            "0 0 40px rgba(179, 75, 113, 0.7), inset 0 0 25px rgba(255,255,255,0.15)",
+          boxShadow: "0 0 40px rgba(179, 75, 113, 0.7), inset 0 0 25px rgba(255,255,255,0.15)",
         }}
         initial={{ scale: 0.5 }}
         animate={{ scale: [0.5, 1.15, 1] }}
@@ -228,8 +232,7 @@ function StorageNode() {
         <motion.div
           className="absolute inset-1.5 rounded-full"
           style={{
-            background:
-              "radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%)",
           }}
           animate={{ opacity: [0.3, 1, 0.5], scale: [1, 1.1, 1] }}
           transition={{ duration: 1, times: [0, 0.3, 1], ease: "easeOut" }}

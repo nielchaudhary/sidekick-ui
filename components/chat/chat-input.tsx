@@ -208,7 +208,11 @@ export function ChatInput({
         )}
         className="w-full relative rounded-2xl bg-black px-0 py-0"
       >
-        <div ref={containerRef} className="relative w-full" style={{ minHeight: `${MIN_HEIGHT}px` }}>
+        <div
+          ref={containerRef}
+          className="relative w-full"
+          style={{ minHeight: `${MIN_HEIGHT}px` }}
+        >
           {voiceMode ? (
             <AIVoiceInput autoStart onStart={handleVoiceStart} onStop={handleVoiceStop} />
           ) : (
@@ -230,8 +234,7 @@ export function ChatInput({
                   rows={1}
                   className="w-full resize-none bg-transparent text-[15px] text-white focus:outline-none scrollbar-hide relative z-10"
                   style={{
-                    fontFamily:
-                      SYSTEM_FONT_STACK,
+                    fontFamily: SYSTEM_FONT_STACK,
                     fontWeight: 400,
                     lineHeight: "1.5",
                     paddingTop: "14px",
@@ -254,8 +257,7 @@ export function ChatInput({
                         transition={{ duration: 0.3, ease: "linear" }}
                         className="text-[15px] text-[#9CA3AF] truncate"
                         style={{
-                          fontFamily:
-                            SYSTEM_FONT_STACK,
+                          fontFamily: SYSTEM_FONT_STACK,
                           fontWeight: 500,
                           lineHeight: "1.5",
                         }}
@@ -283,10 +285,7 @@ export function ChatInput({
 
                 {/* Right: model selector + mic & send */}
                 <div className="flex items-center gap-1.5">
-                  <ModelSelector
-                    selectedModel={selectedModel}
-                    onModelChange={handleModelChange}
-                  />
+                  <ModelSelector selectedModel={selectedModel} onModelChange={handleModelChange} />
                   <AnimatePresence mode="wait" initial={false}>
                     {showMic ? (
                       <motion.button

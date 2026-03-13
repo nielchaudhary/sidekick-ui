@@ -143,8 +143,7 @@ export function PastedContentChip({
                 <div
                   className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none"
                   style={{
-                    background:
-                      "linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.85))",
+                    background: "linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.85))",
                   }}
                 />
               )}

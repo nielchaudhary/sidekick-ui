@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { GRADIENTS, COLORS, BORDERS } from "@/lib/theme";
-
-const NavbarItems = ["Features", "Integrations"];
+import { COLORS, BORDERS } from "@/lib/theme";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);

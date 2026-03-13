@@ -20,11 +20,15 @@ export function PastedContentViewer({
 }: PastedContentViewerProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  const [prevInitialIndex, setPrevInitialIndex] = useState(initialIndex);
 
-  // Reset active index when opening or when initialIndex changes
-  useEffect(() => {
+  // Reset active index when opening or when initialIndex changes (during render, not in effect)
+  if (prevIsOpen !== isOpen || prevInitialIndex !== initialIndex) {
+    setPrevIsOpen(isOpen);
+    setPrevInitialIndex(initialIndex);
     if (isOpen) setActiveIndex(initialIndex);
-  }, [isOpen, initialIndex]);
+  }
 
   const hasMultiple = entries.length > 1;
   const current = entries[activeIndex] ?? entries[0];
@@ -76,7 +80,7 @@ export function PastedContentViewer({
         >
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-black/60 backdrop-blur-[4px]"
+            className="absolute inset-0 bg-black/60 backdrop-blur-xs"
             onClick={onClose}
           />
 
@@ -88,12 +92,12 @@ export function PastedContentViewer({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.97 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-10 bg-black border border-white/[0.12] flex flex-col outline-none
-                       w-[90vw] h-[100dvh] rounded-none md:rounded-2xl md:w-[min(720px,90vw)] md:h-[min(600px,80vh)]"
+            className="relative z-10 bg-black border border-white/12 flex flex-col outline-none
+                       w-[90vw] h-dvh rounded-none md:rounded-2xl md:w-[min(720px,90vw)] md:h-[min(600px,80vh)]"
             style={{ fontFamily: SYSTEM_FONT_STACK }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 h-12 shrink-0 border-b border-white/[0.08]">
+            <div className="flex items-center justify-between px-5 h-12 shrink-0 border-b border-white/8">
               <div className="flex items-center gap-2">
                 {hasMultiple && (
                   <button
@@ -133,7 +137,7 @@ export function PastedContentViewer({
                 className="p-1 rounded-md text-white/30 hover:text-white/70 transition-colors duration-150 cursor-pointer"
                 aria-label="Close viewer"
               >
-                <X className="size-[18px]" />
+                <X className="size-4.5" />
               </button>
             </div>
 

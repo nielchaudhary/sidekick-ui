@@ -78,7 +78,7 @@ export function LabelInput({
         className={cn(
           "block outline-none ring-0 peer text-primary w-full px-3.5 h-10 text-sm rounded-lg border focus:ring-0 focus:outline-none dark:bg-neutral-950 dark:border-neutral-700/75 autofill:shadow-[inset_0_0_0px_1000px_var(--color-background)]",
           isPasswordType && "pr-9",
-          ringColorMap[ringColor],
+          ringColorMap[ringColor]
         )}
         placeholder={placeholder}
         type={inputType}
@@ -95,9 +95,11 @@ export function LabelInput({
           aria-label={isVisible ? "Hide password" : "Show password"}
           aria-pressed={isVisible}
         >
-          {isVisible
-            ? <EyeOffIcon size={16} aria-hidden="true" />
-            : <EyeIcon size={16} aria-hidden="true" />}
+          {isVisible ? (
+            <EyeOffIcon size={16} aria-hidden="true" />
+          ) : (
+            <EyeIcon size={16} aria-hidden="true" />
+          )}
         </button>
       )}
     </div>

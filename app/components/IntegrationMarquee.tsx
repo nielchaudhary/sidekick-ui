@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { GRADIENTS } from "@/lib/theme";
 import { ReactNode } from "react";
@@ -133,7 +134,7 @@ function IntegrationCard({ integration }: { integration: Integration }) {
           ) : (
             <>
               {/* White logo - visible by default, hidden on hover */}
-              <img
+              <Image
                 className="absolute inset-0 z-10 transition-opacity duration-500 opacity-100 group-hover:opacity-0"
                 width="28"
                 height="28"
@@ -141,7 +142,7 @@ function IntegrationCard({ integration }: { integration: Integration }) {
                 src={integration.logoWhite}
               />
               {/* Colored logo - hidden by default, visible on hover */}
-              <img
+              <Image
                 className="absolute inset-0 z-10 transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
                 width="28"
                 height="28"
