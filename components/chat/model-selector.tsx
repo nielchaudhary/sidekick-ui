@@ -64,16 +64,31 @@ function ProviderLogo({ provider, className, style }: { provider: Provider; clas
   );
 }
 
-/** Build a case-insensitive regex from query, falling back to literal match on invalid patterns. */
+/** Build a case-insensitive regex matcher with circuit-breaker for catastrophic backtracking. */
 function buildMatcher(query: string): (text: string) => boolean {
   if (!query) return () => true;
-  try {
-    const re = new RegExp(query, "i");
-    return (text: string) => re.test(text);
-  } catch {
+
+  const literalFallback = () => {
     const lower = query.toLowerCase();
     return (text: string) => text.toLowerCase().includes(lower);
+  };
+
+  let re: RegExp;
+  try {
+    re = new RegExp(query, "i");
+  } catch {
+    return literalFallback();
   }
+
+  // Circuit-breaker: test against empty string canary.
+  // If a single .test("") takes >2ms, the pattern has catastrophic backtracking — fall back to literal.
+  const t0 = performance.now();
+  re.test("");
+  if (performance.now() - t0 > 2) {
+    return literalFallback();
+  }
+
+  return (text: string) => re.test(text);
 }
 
 function modelMatches(model: ModelOption, matcher: (text: string) => boolean): boolean {
@@ -96,9 +111,7 @@ export function ModelSelector({
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const activeProvider = providerOverride ?? models.find((m) => m.id === selectedModel)?.provider ?? "anthropic";
 
@@ -119,16 +132,14 @@ export function ModelSelector({
     [models, selectedModel]
   );
 
-  // Debounce search input
-  useEffect(() => {
-    debounceRef.current = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 200);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [searchQuery]);
+  // Check if current provider has any matches for empty-state display
+  const hasMatchesInActiveProvider = useMemo(() => {
+    if (!searchQuery) return true;
+    const matcher = buildMatcher(searchQuery);
+    return providerModels.some((m) => modelMatches(m, matcher));
+  }, [searchQuery, providerModels]);
 
-  // Auto-navigate: when debounced query changes, update provider + focus via the search handler
-  const lastNavigatedQueryRef = useRef("");
+  // Navigate to first match: driven from the onChange handler, not an effect
   const applySearchNavigation = useCallback((query: string) => {
     if (!query) return;
     const matcher = buildMatcher(query);
@@ -143,22 +154,11 @@ export function ModelSelector({
     }
   }, [models]);
 
-  // Trigger navigation when debouncedQuery changes (called from debounce timer callback)
-  useEffect(() => {
-    if (debouncedQuery && open && debouncedQuery !== lastNavigatedQueryRef.current) {
-      lastNavigatedQueryRef.current = debouncedQuery;
-      // Use setTimeout(0) to avoid synchronous setState-in-effect
-      const id = setTimeout(() => applySearchNavigation(debouncedQuery), 0);
-      return () => clearTimeout(id);
-    }
-  }, [debouncedQuery, open, applySearchNavigation]);
-
-  // Check if current provider has any matches for empty-state display
-  const hasMatchesInActiveProvider = useMemo(() => {
-    if (!debouncedQuery) return true;
-    const matcher = buildMatcher(debouncedQuery);
-    return providerModels.some((m) => modelMatches(m, matcher));
-  }, [debouncedQuery, providerModels]);
+  const handleSearchChange = useCallback((value: string) => {
+    const clamped = value.slice(0, 100);
+    setSearchQuery(clamped);
+    applySearchNavigation(clamped);
+  }, [applySearchNavigation]);
 
   // Track mobile breakpoint via matchMedia
   useEffect(() => {
@@ -187,8 +187,6 @@ export function ModelSelector({
       if (v) {
         // Closing — reset search state
         setSearchQuery("");
-        setDebouncedQuery("");
-        lastNavigatedQueryRef.current = "";
       }
       return !v;
     });
@@ -197,8 +195,6 @@ export function ModelSelector({
   const closePanel = useCallback(() => {
     setOpen(false);
     setSearchQuery("");
-    setDebouncedQuery("");
-    lastNavigatedQueryRef.current = "";
   }, []);
 
   // Auto-focus search input on desktop when panel opens
@@ -222,7 +218,6 @@ export function ModelSelector({
         // If search has text, clear it first; otherwise close panel
         if (searchQuery) {
           setSearchQuery("");
-          setDebouncedQuery("");
           setProviderOverride(null);
           setFocusedIndex(0);
           searchInputRef.current?.focus();
@@ -251,7 +246,6 @@ export function ModelSelector({
 
   const handleClearSearch = useCallback(() => {
     setSearchQuery("");
-    setDebouncedQuery("");
     setProviderOverride(null);
     setFocusedIndex(0);
     searchInputRef.current?.focus();
@@ -280,7 +274,7 @@ export function ModelSelector({
     // Redirect printable characters to search input (typeahead capture)
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
       e.preventDefault();
-      setSearchQuery((q) => (q + e.key).slice(0, 100));
+      handleSearchChange(searchQuery + e.key);
       searchInputRef.current?.focus();
       return;
     }
@@ -355,7 +349,7 @@ export function ModelSelector({
         ref={searchInputRef}
         type="text"
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value.slice(0, 100))}
+        onChange={(e) => handleSearchChange(e.target.value)}
         onKeyDown={handleSearchInputKeyDown}
         placeholder="Search models…"
         maxLength={100}
@@ -378,7 +372,7 @@ export function ModelSelector({
       style={{ fontFamily: SYSTEM_FONT_STACK }}
     >
       <span className="text-[10px] text-white/25 italic">
-        No models match &ldquo;{debouncedQuery}&rdquo;
+        No models match &ldquo;{searchQuery}&rdquo;
       </span>
     </div>
   );
@@ -452,7 +446,7 @@ export function ModelSelector({
               transition={{ duration: 0.12 }}
               className="px-1"
             >
-              {debouncedQuery && !hasMatchesInActiveProvider ? emptyState : (
+              {searchQuery && !hasMatchesInActiveProvider ? emptyState : (
               <div className="flex flex-col gap-1">
               {providerModels.map((model, idx) => {
                 const rowActive = focusedIndex === idx || model.id === selectedModel;
@@ -572,7 +566,7 @@ export function ModelSelector({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.12 }}
             >
-              {debouncedQuery && !hasMatchesInActiveProvider ? emptyState : (
+              {searchQuery && !hasMatchesInActiveProvider ? emptyState : (
               providerModels.map((model, idx) => {
                 const rowActive = focusedIndex === idx || model.id === selectedModel;
                 const rowBrand = BRAND_COLORS[model.provider];
