@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { ChevronDown, Check, Search, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
@@ -33,6 +33,8 @@ const PROVIDERS: { id: Provider; label: string }[] = [
   { id: "openai", label: "OpenAI" },
 ];
 
+const PROVIDER_IDS = PROVIDERS.map((p) => p.id);
+
 const BRAND_COLORS: Record<Provider, string> = {
   anthropic: "#D97757",
   openai: "#10A37F",
@@ -62,14 +64,28 @@ function ProviderLogo({ provider, className, style }: { provider: Provider; clas
   );
 }
 
+/** Build a case-insensitive regex from query, falling back to literal match on invalid patterns. */
+function buildMatcher(query: string): (text: string) => boolean {
+  if (!query) return () => true;
+  try {
+    const re = new RegExp(query, "i");
+    return (text: string) => re.test(text);
+  } catch {
+    const lower = query.toLowerCase();
+    return (text: string) => text.toLowerCase().includes(lower);
+  }
+}
+
+function modelMatches(model: ModelOption, matcher: (text: string) => boolean): boolean {
+  return matcher(model.label) || matcher(model.id) || matcher(model.subtitle);
+}
+
 export function ModelSelector({
   selectedModel,
   onModelChange,
   models = DEFAULT_MODELS,
 }: ModelSelectorProps) {
   const [open, setOpen] = useState(false);
-  // Tracks a user-initiated provider override while the panel is open.
-  // When null, activeProvider is derived from selectedModel automatically.
   const [providerOverride, setProviderOverride] = useState<Provider | null>(null);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -77,6 +93,12 @@ export function ModelSelector({
   const [panelPos, setPanelPos] = useState({ bottom: 0, right: 0 });
   const [chipHovered, setChipHovered] = useState(false);
   const [chipFocused, setChipFocused] = useState(false);
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const activeProvider = providerOverride ?? models.find((m) => m.id === selectedModel)?.provider ?? "anthropic";
 
@@ -88,15 +110,61 @@ export function ModelSelector({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const providerModels = models.filter((m) => m.provider === activeProvider);
-  const selectedModelObj = models.find((m) => m.id === selectedModel);
+  const providerModels = useMemo(
+    () => models.filter((m) => m.provider === activeProvider),
+    [models, activeProvider]
+  );
+  const selectedModelObj = useMemo(
+    () => models.find((m) => m.id === selectedModel),
+    [models, selectedModel]
+  );
 
-  // Track mobile breakpoint via matchMedia (fires only at 768px boundary, not every resize pixel)
+  // Debounce search input
+  useEffect(() => {
+    debounceRef.current = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 200);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [searchQuery]);
+
+  // Auto-navigate: when debounced query changes, update provider + focus via the search handler
+  const lastNavigatedQueryRef = useRef("");
+  const applySearchNavigation = useCallback((query: string) => {
+    if (!query) return;
+    const matcher = buildMatcher(query);
+    const firstMatch = models.find((m) => modelMatches(m, matcher));
+    if (firstMatch) {
+      setProviderOverride(firstMatch.provider);
+      const provModels = models.filter((m) => m.provider === firstMatch.provider);
+      const idx = provModels.findIndex((m) => m.id === firstMatch.id);
+      setFocusedIndex(idx >= 0 ? idx : 0);
+    } else {
+      setFocusedIndex(0);
+    }
+  }, [models]);
+
+  // Trigger navigation when debouncedQuery changes (called from debounce timer callback)
+  useEffect(() => {
+    if (debouncedQuery && open && debouncedQuery !== lastNavigatedQueryRef.current) {
+      lastNavigatedQueryRef.current = debouncedQuery;
+      // Use setTimeout(0) to avoid synchronous setState-in-effect
+      const id = setTimeout(() => applySearchNavigation(debouncedQuery), 0);
+      return () => clearTimeout(id);
+    }
+  }, [debouncedQuery, open, applySearchNavigation]);
+
+  // Check if current provider has any matches for empty-state display
+  const hasMatchesInActiveProvider = useMemo(() => {
+    if (!debouncedQuery) return true;
+    const matcher = buildMatcher(debouncedQuery);
+    return providerModels.some((m) => modelMatches(m, matcher));
+  }, [debouncedQuery, providerModels]);
+
+  // Track mobile breakpoint via matchMedia
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
     const handleChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     mq.addEventListener("change", handleChange);
-    // Defer initial state updates to avoid synchronous setState-in-effect
     const id = setTimeout(() => {
       setMounted(true);
       setIsMobile(mq.matches);
@@ -115,20 +183,53 @@ export function ModelSelector({
         right: window.innerWidth - rect.right,
       });
     }
-    setOpen((v) => !v);
+    setOpen((v) => {
+      if (v) {
+        // Closing — reset search state
+        setSearchQuery("");
+        setDebouncedQuery("");
+        lastNavigatedQueryRef.current = "";
+      }
+      return !v;
+    });
   }, []);
+
+  const closePanel = useCallback(() => {
+    setOpen(false);
+    setSearchQuery("");
+    setDebouncedQuery("");
+    lastNavigatedQueryRef.current = "";
+  }, []);
+
+  // Auto-focus search input on desktop when panel opens
+  useEffect(() => {
+    if (open && !isMobile) {
+      // Slight delay to ensure the panel has rendered
+      const id = setTimeout(() => searchInputRef.current?.focus(), 50);
+      return () => clearTimeout(id);
+    }
+  }, [open, isMobile]);
 
   // Close on outside click or Escape
   useEffect(() => {
     if (!open) return;
     const onMouseDown = (e: MouseEvent) => {
       const t = e.target as Node;
-      if (!panelRef.current?.contains(t) && !triggerRef.current?.contains(t)) setOpen(false);
+      if (!panelRef.current?.contains(t) && !triggerRef.current?.contains(t)) closePanel();
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setOpen(false);
-        triggerRef.current?.focus();
+        // If search has text, clear it first; otherwise close panel
+        if (searchQuery) {
+          setSearchQuery("");
+          setDebouncedQuery("");
+          setProviderOverride(null);
+          setFocusedIndex(0);
+          searchInputRef.current?.focus();
+        } else {
+          closePanel();
+          triggerRef.current?.focus();
+        }
       }
     };
     document.addEventListener("mousedown", onMouseDown);
@@ -137,16 +238,36 @@ export function ModelSelector({
       document.removeEventListener("mousedown", onMouseDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open]);
+  }, [open, searchQuery, closePanel]);
 
   const handleSelectModel = useCallback(
     (id: string) => {
       onModelChange(id);
-      setProviderOverride(null); // reset so active provider auto-follows selectedModel
-      setTimeout(() => setOpen(false), 120);
+      setProviderOverride(null);
+      setTimeout(() => closePanel(), 120);
     },
-    [onModelChange]
+    [onModelChange, closePanel]
   );
+
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery("");
+    setDebouncedQuery("");
+    setProviderOverride(null);
+    setFocusedIndex(0);
+    searchInputRef.current?.focus();
+  }, []);
+
+  const handleSearchInputKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      // Move focus to model list — panel keydown handler will take over
+      panelRef.current?.focus();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const model = providerModels[focusedIndex];
+      if (model) handleSelectModel(model.id);
+    }
+  };
 
   const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
@@ -156,6 +277,14 @@ export function ModelSelector({
   };
 
   const handlePanelKeyDown = (e: React.KeyboardEvent) => {
+    // Redirect printable characters to search input (typeahead capture)
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      setSearchQuery((q) => (q + e.key).slice(0, 100));
+      searchInputRef.current?.focus();
+      return;
+    }
+
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
@@ -163,16 +292,20 @@ export function ModelSelector({
         break;
       case "ArrowUp":
         e.preventDefault();
-        setFocusedIndex((i) => (i - 1 + providerModels.length) % providerModels.length);
+        if (focusedIndex === 0) {
+          // Move focus back to search input
+          searchInputRef.current?.focus();
+        } else {
+          setFocusedIndex((i) => (i - 1 + providerModels.length) % providerModels.length);
+        }
         break;
       case "ArrowLeft":
       case "ArrowRight": {
         e.preventDefault();
-        const ids = PROVIDERS.map((p) => p.id);
-        const cur = ids.indexOf(activeProvider);
+        const cur = PROVIDER_IDS.indexOf(activeProvider);
         const next =
-          e.key === "ArrowRight" ? (cur + 1) % ids.length : (cur - 1 + ids.length) % ids.length;
-        changeProvider(ids[next] as Provider);
+          e.key === "ArrowRight" ? (cur + 1) % PROVIDER_IDS.length : (cur - 1 + PROVIDER_IDS.length) % PROVIDER_IDS.length;
+        changeProvider(PROVIDER_IDS[next] as Provider);
         break;
       }
       case "Enter": {
@@ -189,6 +322,66 @@ export function ModelSelector({
   const brandColor = BRAND_COLORS[triggerProvider];
 
   const chipActive = chipHovered || chipFocused || open;
+
+  const searchInput = (mobile: boolean) => (
+    <div
+      className={cn(
+        "flex items-center gap-2",
+        mobile ? "px-4 h-10" : "px-4 h-8"
+      )}
+      style={{
+        borderBottom: searchQuery
+          ? "1px solid rgba(255,255,255,0.08)"
+          : "1px solid transparent",
+        transition: "border-color 150ms ease-out",
+      }}
+    >
+      {searchQuery ? (
+        <button
+          onClick={handleClearSearch}
+          className={cn(
+            "shrink-0 cursor-pointer focus:outline-none transition-colors duration-150",
+            mobile ? "p-2 -m-2" : ""
+          )}
+          style={{ minWidth: mobile ? 44 : undefined, minHeight: mobile ? 44 : undefined, display: "flex", alignItems: "center", justifyContent: "center" }}
+          aria-label="Clear search"
+        >
+          <X className="size-3 text-white/40 hover:text-white/60 transition-colors duration-150" />
+        </button>
+      ) : (
+        <Search className="size-3 text-white/20 shrink-0" />
+      )}
+      <input
+        ref={searchInputRef}
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value.slice(0, 100))}
+        onKeyDown={handleSearchInputKeyDown}
+        placeholder="Search models…"
+        maxLength={100}
+        className={cn(
+          "flex-1 bg-transparent border-none outline-none placeholder:text-white/20 font-medium min-w-0",
+          mobile ? "text-sm" : "text-[11px]"
+        )}
+        style={{
+          fontFamily: SYSTEM_FONT_STACK,
+          color: "rgba(255,255,255,0.8)",
+          caretColor: "rgba(255,255,255,0.5)",
+        }}
+      />
+    </div>
+  );
+
+  const emptyState = (
+    <div
+      className="flex items-center justify-center py-6"
+      style={{ fontFamily: SYSTEM_FONT_STACK }}
+    >
+      <span className="text-[10px] text-white/25 italic">
+        No models match &ldquo;{debouncedQuery}&rdquo;
+      </span>
+    </div>
+  );
 
   const desktopPanel = (
     <motion.div
@@ -249,6 +442,7 @@ export function ModelSelector({
 
         {/* Model list */}
         <div role="listbox" aria-label="Models" className="flex-1 py-2 mt-1 min-w-0">
+          {searchInput(false)}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeProvider}
@@ -258,6 +452,7 @@ export function ModelSelector({
               transition={{ duration: 0.12 }}
               className="px-1"
             >
+              {debouncedQuery && !hasMatchesInActiveProvider ? emptyState : (
               <div className="flex flex-col gap-1">
               {providerModels.map((model, idx) => {
                 const rowActive = focusedIndex === idx || model.id === selectedModel;
@@ -311,6 +506,7 @@ export function ModelSelector({
                 );
               })}
               </div>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -328,7 +524,7 @@ export function ModelSelector({
         transition={{ duration: 0.15 }}
         className="fixed inset-0 bg-black/50"
         style={{ zIndex: 9998 }}
-        onClick={() => setOpen(false)}
+        onClick={() => closePanel()}
       />
       <motion.div
         key="sheet"
@@ -363,8 +559,11 @@ export function ModelSelector({
           ))}
         </div>
 
+        {/* Search input */}
+        {searchInput(true)}
+
         {/* Model list */}
-        <div className="overflow-y-auto py-1.5 px-2" style={{ maxHeight: "calc(50vh - 64px)" }}>
+        <div className="overflow-y-auto py-1.5 px-2" style={{ maxHeight: "calc(50vh - 108px)" }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={activeProvider}
@@ -373,7 +572,8 @@ export function ModelSelector({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.12 }}
             >
-              {providerModels.map((model, idx) => {
+              {debouncedQuery && !hasMatchesInActiveProvider ? emptyState : (
+              providerModels.map((model, idx) => {
                 const rowActive = focusedIndex === idx || model.id === selectedModel;
                 const rowBrand = BRAND_COLORS[model.provider];
                 return (
@@ -418,7 +618,8 @@ export function ModelSelector({
                   )}
                 </button>
                 );
-              })}
+              })
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
