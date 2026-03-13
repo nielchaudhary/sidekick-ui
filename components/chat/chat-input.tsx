@@ -102,7 +102,11 @@ export function ChatInput({
     const maxH = isMobile ? MOBILE_MAX_HEIGHT : MAX_HEIGHT;
     const newHeight = Math.max(MIN_HEIGHT, Math.min(textarea.scrollHeight, maxH));
     textarea.style.height = `${newHeight}px`;
-    textarea.style.overflowY = textarea.scrollHeight > maxH ? "auto" : "hidden";
+    const isOverflowing = textarea.scrollHeight > maxH;
+    textarea.style.overflowY = isOverflowing ? "auto" : "hidden";
+    if (isOverflowing) {
+      textarea.scrollTop = textarea.scrollHeight;
+    }
   }, [value]);
 
   // IME composition handling
@@ -252,6 +256,9 @@ export function ChatInput({
                   </AnimatePresence>
                 </div>
               </div>
+
+              {/* Opaque mask so textarea text never bleeds through under the action bar */}
+              <div className="absolute bottom-0 left-0 right-0 h-[48px] bg-black z-15 pointer-events-none rounded-b-2xl" />
 
               {/* Action bar - pinned to bottom */}
               <div className="absolute bottom-0 left-0 right-0 h-[48px] flex items-center justify-between px-3 z-20">
