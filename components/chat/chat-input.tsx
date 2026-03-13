@@ -6,6 +6,7 @@ import { useRef, useEffect, useState, useCallback, KeyboardEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AIVoiceInput } from "./ai-voice-input";
 import { ChatInputPlusMenu } from "./chat-input-plus-menu";
+import { ModelSelector } from "./model-selector";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { countWords, SYSTEM_FONT_STACK } from "./pasted-content-types";
 
@@ -32,6 +33,8 @@ interface ChatInputProps {
   onSearchModesChange?: (modes: Set<SearchMode>) => void;
   isStreaming?: boolean;
   hasPastedContent?: boolean;
+  selectedModel?: string;
+  onModelChange?: (id: string) => void;
 }
 
 export function ChatInput({
@@ -45,6 +48,8 @@ export function ChatInput({
   onSearchModesChange: controlledOnSearchModesChange,
   isStreaming,
   hasPastedContent,
+  selectedModel: controlledSelectedModel,
+  onModelChange: controlledOnModelChange,
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,6 +62,11 @@ export function ChatInput({
   const searchModes = controlledSearchModes ?? internalSearchModes;
   const handleSearchModesChange = controlledOnSearchModesChange ?? setInternalSearchModes;
   const handleFilesSelected = onFilesSelected ?? (() => {});
+
+  // Internal state for model selection when uncontrolled
+  const [internalSelectedModel, setInternalSelectedModel] = useState("sonnet-4.5");
+  const selectedModel = controlledSelectedModel ?? internalSelectedModel;
+  const handleModelChange = controlledOnModelChange ?? setInternalSelectedModel;
 
   // Rotating placeholder
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
@@ -233,7 +243,7 @@ export function ChatInput({
                   }}
                 />
                 {/* Animated placeholder */}
-                <div className="absolute top-[14px] left-[16px] right-[16px] pointer-events-none overflow-hidden z-0">
+                <div className="absolute top-3.5 left-4 right-4 pointer-events-none overflow-hidden z-0">
                   <AnimatePresence mode="wait">
                     {!value && !isFocused && (
                       <motion.p
@@ -263,7 +273,7 @@ export function ChatInput({
               {/* Action bar - pinned to bottom */}
               <div className="absolute bottom-0 left-0 right-0 h-[48px] flex items-center justify-between px-3 z-20">
                 {/* Left: attachment menu */}
-                <div className="text-white/60">
+                <div className="flex items-center gap-1 text-white/60">
                   <ChatInputPlusMenu
                     onFilesSelected={handleFilesSelected}
                     searchModes={searchModes}
@@ -271,8 +281,12 @@ export function ChatInput({
                   />
                 </div>
 
-                {/* Right: mic & send */}
+                {/* Right: model selector + mic & send */}
                 <div className="flex items-center gap-1.5">
+                  <ModelSelector
+                    selectedModel={selectedModel}
+                    onModelChange={handleModelChange}
+                  />
                   <AnimatePresence mode="wait" initial={false}>
                     {showMic ? (
                       <motion.button
