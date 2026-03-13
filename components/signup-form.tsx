@@ -3,15 +3,16 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { FieldDescription, FieldGroup } from "@/components/ui/field";
+import { LabelInput } from "@/components/ui/label-input";
 import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
-import { AuthLogo } from "@/components/auth-logo";
 import Link from "next/link";
 
 export function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
   const supabase = createClient();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -43,8 +44,11 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
       email,
       password,
       options: {
-        // The confirmation email link will redirect here after Supabase verifies it
         emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+        },
       },
     });
 
@@ -78,7 +82,6 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
   if (confirmationSent) {
     return (
       <div className={cn("flex flex-col gap-6", className)} {...props}>
-        <AuthLogo />
         <Card>
           <CardHeader>
             <CardTitle>Check your email</CardTitle>
@@ -102,30 +105,44 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <AuthLogo />
       <Card>
         <CardHeader>
-          <CardTitle>Create your account</CardTitle>
+          <CardTitle>Create your Sidekick account</CardTitle>
           <CardDescription>Enter your email below to create your account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleEmailSignup}>
             <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="johndoe@sidekick.com"
+              <div className="flex gap-3">
+                <LabelInput
+                  id="first-name"
+                  label="First name"
+                  type="text"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Input
+                <LabelInput
+                  id="last-name"
+                  label="Last name"
+                  type="text"
+                  required
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+              <LabelInput
+                id="email"
+                label="Email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <div>
+                <LabelInput
                   id="password"
+                  label="Password"
                   type="password"
                   required
                   minLength={8}
@@ -173,7 +190,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                     ))}
                   </ul>
                 )}
-              </Field>
+              </div>
 
               {error && <p className="text-sm text-red-400">{error}</p>}
 

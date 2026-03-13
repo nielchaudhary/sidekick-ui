@@ -53,6 +53,7 @@ export async function middleware(request: NextRequest) {
   // If the user is not logged in, redirect them to the login page.
   const isProtectedRoute =
     request.nextUrl.pathname.startsWith("/dashboard") ||
+    request.nextUrl.pathname.startsWith("/chat") ||
     request.nextUrl.pathname.startsWith("/app");
 
   if (isProtectedRoute && !user) {

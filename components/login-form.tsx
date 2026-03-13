@@ -12,12 +12,11 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { FieldDescription, FieldGroup } from "@/components/ui/field";
+import { LabelInput } from "@/components/ui/label-input";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { AuthLogo } from "@/components/auth-logo";
 import Link from "next/link";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
@@ -50,7 +49,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/chat");
   };
 
   // OAuth handler for Google sign-in.
@@ -71,41 +70,37 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <AuthLogo />
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>Welcome back to Sidekick</CardTitle>
           <CardDescription>Enter your email below to login to your account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleEmailLogin}>
             <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="johndoe@sidekick.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </Field>
-              <Field>
-                <div className="flex items-center justify-between">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
+              <LabelInput
+                id="email"
+                label="Email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <div>
+                <div className="flex items-center justify-end mb-1">
                   <a href="#" className="text-sm text-white/50 underline-offset-4 hover:underline">
                     Forgot your password?
                   </a>
                 </div>
-                <Input
+                <LabelInput
                   id="password"
+                  label="Password"
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-              </Field>
+              </div>
 
               {error && <p className="text-sm text-red-400">{error}</p>}
 

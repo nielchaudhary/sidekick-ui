@@ -88,13 +88,6 @@ const integrations: Integration[] = [
     desc: "Source Control",
   },
   {
-    name: "Discord",
-    logoWhite: "https://cdn.simpleicons.org/discord/white",
-    logoColor: "https://cdn.simpleicons.org/discord",
-    color: "rgba(88, 101, 242, 0.5)",
-    desc: "Community",
-  },
-  {
     name: "Linear",
     logoWhite: "https://cdn.simpleicons.org/linear/white",
     logoColor: "https://cdn.simpleicons.org/linear",

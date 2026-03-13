@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "highlight.js/styles/github-dark-dimmed.min.css";
+import "katex/dist/katex.min.css";
 import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
-
 export const metadata: Metadata = {
   title: "Sidekick",
   description:
@@ -24,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased bg-black min-h-screen`}>
+      <body suppressHydrationWarning className={`${inter.variable} antialiased bg-black min-h-screen`}>
         {children}
         <Toaster />
       </body>
