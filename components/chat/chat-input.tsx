@@ -243,7 +243,7 @@ export function ChatInput({
                   }}
                 />
                 {/* Animated placeholder */}
-                <div className="absolute top-[14px] left-[16px] right-[16px] pointer-events-none overflow-hidden z-0">
+                <div className="absolute top-3.5 left-4 right-4 pointer-events-none overflow-hidden z-0">
                   <AnimatePresence mode="wait">
                     {!value && !isFocused && (
                       <motion.p

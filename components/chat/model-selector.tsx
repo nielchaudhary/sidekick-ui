@@ -75,6 +75,10 @@ export function ModelSelector({
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const changeProvider = useCallback((provider: Provider) => {
+    setActiveProvider(provider);
+    setFocusedIndex(0);
+  }, []);
   const [panelPos, setPanelPos] = useState({ bottom: 0, left: 0 });
 
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -84,17 +88,17 @@ export function ModelSelector({
   const selectedModelObj = models.find((m) => m.id === selectedModel);
 
   useEffect(() => {
-    setMounted(true);
     const check = () => setIsMobile(window.innerWidth < 768);
-    check();
     window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    const id = setTimeout(() => {
+      setMounted(true);
+      check();
+    }, 0);
+    return () => {
+      window.removeEventListener("resize", check);
+      clearTimeout(id);
+    };
   }, []);
-
-  // Reset focus when provider changes
-  useEffect(() => {
-    setFocusedIndex(0);
-  }, [activeProvider]);
 
   // Compute panel position from trigger rect
   const computePosition = useCallback(() => {
@@ -169,7 +173,7 @@ export function ModelSelector({
         const cur = ids.indexOf(activeProvider);
         const next =
           e.key === "ArrowRight" ? (cur + 1) % ids.length : (cur - 1 + ids.length) % ids.length;
-        setActiveProvider(ids[next] as Provider);
+        changeProvider(ids[next] as Provider);
         break;
       }
       case "Enter": {
@@ -218,7 +222,7 @@ export function ModelSelector({
               role="tab"
               aria-selected={activeProvider === p.id}
               aria-label={p.label}
-              onClick={() => setActiveProvider(p.id)}
+              onClick={() => changeProvider(p.id)}
               className={cn(
                 "relative w-11 h-11 rounded-lg flex items-center justify-center transition-all duration-150 cursor-pointer focus:outline-none",
                 activeProvider === p.id ? "bg-white/10" : "hover:bg-white/5"
@@ -263,8 +267,8 @@ export function ModelSelector({
                   className={cn(
                     "w-full flex items-center gap-2.5 px-4 h-12 rounded-lg transition-colors duration-100 cursor-pointer text-left focus:outline-none",
                     focusedIndex === idx || model.id === selectedModel
-                      ? "bg-white/[0.08]"
-                      : "hover:bg-white/[0.08]"
+                      ? "bg-white/8"
+                      : "hover:bg-white/8"
                   )}
                 >
                   <ProviderLogo
@@ -306,7 +310,7 @@ export function ModelSelector({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.15 }}
-        className="fixed inset-0 z-[9998] bg-black/50"
+        className="fixed inset-0 z-9998 bg-black/50"
         onClick={() => setOpen(false)}
       />
       <motion.div
@@ -319,7 +323,7 @@ export function ModelSelector({
         onKeyDown={handlePanelKeyDown}
         role="dialog"
         aria-label="Select model"
-        className="fixed inset-x-0 bottom-0 z-[9999] rounded-t-2xl border-t border-white/10 bg-black/80 backdrop-blur-xl shadow-2xl"
+        className="fixed inset-x-0 bottom-0 z-9999 rounded-t-2xl border-t border-white/10 bg-black/80 backdrop-blur-xl shadow-2xl"
         style={{ maxHeight: "50vh" }}
       >
         {/* Provider row */}
@@ -327,7 +331,7 @@ export function ModelSelector({
           {PROVIDERS.map((p) => (
             <button
               key={p.id}
-              onClick={() => setActiveProvider(p.id)}
+              onClick={() => changeProvider(p.id)}
               className={cn(
                 "flex items-center gap-1.5 px-3 h-8 rounded-full text-sm font-medium transition-all duration-150 shrink-0 cursor-pointer focus:outline-none",
                 activeProvider === p.id
@@ -357,11 +361,11 @@ export function ModelSelector({
                   key={model.id}
                   onClick={() => handleSelectModel(model.id)}
                   onMouseEnter={() => setFocusedIndex(idx)}
-                  className="w-full flex items-center gap-3 px-3 h-12 rounded-xl transition-colors duration-100 hover:bg-white/[0.08] cursor-pointer text-left focus:outline-none"
+                  className="w-full flex items-center gap-3 px-3 h-12 rounded-xl transition-colors duration-100 hover:bg-white/8 cursor-pointer text-left focus:outline-none"
                 >
                   <ProviderLogo
                     provider={model.provider}
-                    className="size-[18px] text-white/50 shrink-0"
+                    className="size-4.5 text-white/50 shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <div
