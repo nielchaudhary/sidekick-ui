@@ -23,9 +23,9 @@ export interface ModelSelectorProps {
 }
 
 const DEFAULT_MODELS: ModelOption[] = [
-  { id: "sonnet-4.5", label: "Sonnet 4.5", subtitle: "Fast & capable", provider: "anthropic" },
-  { id: "opus-4.6", label: "Opus 4.6", subtitle: "Most intelligent", provider: "anthropic" },
-  { id: "gpt-5", label: "GPT-5", subtitle: "Frontier reasoning", provider: "openai" },
+  { id: "sonnet-4.5", label: "Sonnet 4.5", subtitle: "Fast, capable, great for most tasks", provider: "anthropic" },
+  { id: "opus-4.6", label: "Opus 4.6", subtitle: "Most intelligent, best for complex work", provider: "anthropic" },
+  { id: "gpt-5", label: "GPT-5", subtitle: "OpenAI's latest frontier reasoning model", provider: "openai" },
 ];
 
 const PROVIDERS: { id: Provider; label: string }[] = [
@@ -252,6 +252,7 @@ export function ModelSelector({
               transition={{ duration: 0.12 }}
               className="px-1"
             >
+              <div className="flex flex-col gap-1">
               {providerModels.map((model, idx) => (
                 <button
                   key={model.id}
@@ -268,27 +269,28 @@ export function ModelSelector({
                 >
                   <ProviderLogo
                     provider={model.provider}
-                    className="size-[18px] text-white/50 shrink-0"
+                    className="size-3.5 text-white/50 shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <div
-                      className="text-xs text-white/80 font-medium truncate"
+                      className="text-[11px] text-white/80 font-medium truncate"
                       style={{ fontFamily: SYSTEM_FONT_STACK }}
                     >
                       {model.label}
                     </div>
                     <div
-                      className="text-[10px] text-white/30 truncate"
+                      className="text-[9px] text-white/30 truncate"
                       style={{ fontFamily: SYSTEM_FONT_STACK }}
                     >
                       {model.subtitle}
                     </div>
                   </div>
                   {model.id === selectedModel && (
-                    <Check className="size-3.5 text-white/70 shrink-0" />
+                    <Check className="size-3 text-white/70 shrink-0" />
                   )}
                 </button>
               ))}
+              </div>
             </motion.div>
           </AnimatePresence>
         </div>
