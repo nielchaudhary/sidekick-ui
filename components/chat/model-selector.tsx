@@ -262,7 +262,10 @@ export function ModelSelector({
               className="px-1"
             >
               <div className="flex flex-col gap-1">
-              {providerModels.map((model, idx) => (
+              {providerModels.map((model, idx) => {
+                const rowActive = focusedIndex === idx || model.id === selectedModel;
+                const rowBrand = BRAND_COLORS[model.provider];
+                return (
                 <button
                   key={model.id}
                   role="option"
@@ -271,19 +274,29 @@ export function ModelSelector({
                   onMouseEnter={() => setFocusedIndex(idx)}
                   className={cn(
                     "w-full flex items-center gap-2.5 px-4 h-12 rounded-lg transition-colors duration-100 cursor-pointer text-left focus:outline-none",
-                    focusedIndex === idx || model.id === selectedModel
-                      ? "bg-white/8"
-                      : "hover:bg-white/8"
+                    rowActive ? "bg-white/8" : "hover:bg-white/8"
                   )}
                 >
                   <ProviderLogo
                     provider={model.provider}
-                    className="size-3.5 text-white/50 shrink-0"
+                    className="size-3.5 shrink-0"
+                    style={{
+                      color: rowActive ? rowBrand : undefined,
+                      opacity: rowActive ? 1 : 0.4,
+                      filter: rowActive
+                        ? `drop-shadow(0 0 4px ${rowBrand}4D) grayscale(0%)`
+                        : "grayscale(40%)",
+                      transition: "color 180ms ease-out, opacity 180ms ease-out, filter 180ms ease-out",
+                    }}
                   />
                   <div className="flex-1 min-w-0">
                     <div
-                      className="text-[11px] text-white/80 font-medium truncate"
-                      style={{ fontFamily: SYSTEM_FONT_STACK }}
+                      className="text-[11px] font-medium truncate"
+                      style={{
+                        fontFamily: SYSTEM_FONT_STACK,
+                        color: rowActive ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)",
+                        transition: "color 180ms ease-out",
+                      }}
                     >
                       {model.label}
                     </div>
@@ -295,10 +308,11 @@ export function ModelSelector({
                     </div>
                   </div>
                   {model.id === selectedModel && (
-                    <Check className="size-3 text-white/70 shrink-0" />
+                    <Check className="size-3 shrink-0" style={{ color: rowBrand, opacity: 0.8 }} />
                   )}
                 </button>
-              ))}
+                );
+              })}
               </div>
             </motion.div>
           </AnimatePresence>
@@ -361,7 +375,10 @@ export function ModelSelector({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.12 }}
             >
-              {providerModels.map((model, idx) => (
+              {providerModels.map((model, idx) => {
+                const rowActive = focusedIndex === idx || model.id === selectedModel;
+                const rowBrand = BRAND_COLORS[model.provider];
+                return (
                 <button
                   key={model.id}
                   onClick={() => handleSelectModel(model.id)}
@@ -370,12 +387,24 @@ export function ModelSelector({
                 >
                   <ProviderLogo
                     provider={model.provider}
-                    className="size-4.5 text-white/50 shrink-0"
+                    className="size-4.5 shrink-0"
+                    style={{
+                      color: rowActive ? rowBrand : undefined,
+                      opacity: rowActive ? 1 : 0.4,
+                      filter: rowActive
+                        ? `drop-shadow(0 0 4px ${rowBrand}4D) grayscale(0%)`
+                        : "grayscale(40%)",
+                      transition: "color 180ms ease-out, opacity 180ms ease-out, filter 180ms ease-out",
+                    }}
                   />
                   <div className="flex-1 min-w-0">
                     <div
-                      className="text-sm text-white/80 font-medium"
-                      style={{ fontFamily: SYSTEM_FONT_STACK }}
+                      className="text-sm font-medium"
+                      style={{
+                        fontFamily: SYSTEM_FONT_STACK,
+                        color: rowActive ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)",
+                        transition: "color 180ms ease-out",
+                      }}
                     >
                       {model.label}
                     </div>
@@ -387,10 +416,11 @@ export function ModelSelector({
                     </div>
                   </div>
                   {model.id === selectedModel && (
-                    <Check className="size-3.5 text-white/70 shrink-0" />
+                    <Check className="size-3.5 shrink-0" style={{ color: rowBrand, opacity: 0.8 }} />
                   )}
                 </button>
-              ))}
+                );
+              })}
             </motion.div>
           </AnimatePresence>
         </div>
