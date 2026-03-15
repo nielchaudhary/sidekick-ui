@@ -7,7 +7,7 @@ import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { SYSTEM_FONT_STACK } from "./pasted-content-types";
 
-type Provider = "anthropic" | "openai";
+type Provider = "anthropic" | "openai" | "sarvam" | "google";
 
 export interface ModelOption {
   id: string;
@@ -41,11 +41,49 @@ const DEFAULT_MODELS: ModelOption[] = [
     subtitle: "OpenAI's latest frontier reasoning model",
     provider: "openai",
   },
+  {
+    id: "gemini-3.1-pro",
+    label: "Gemini 3.1 Pro",
+    subtitle: "Most intelligent, agentic coding & reasoning",
+    provider: "google",
+  },
+  {
+    id: "gemini-3-flash",
+    label: "Gemini 3 Flash",
+    subtitle: "Fast multimodal, great balance of speed & quality",
+    provider: "google",
+  },
+  {
+    id: "gemini-3.1-flash-lite",
+    label: "Gemini 3.1 Flash Lite",
+    subtitle: "Fastest, lowest cost, high-volume tasks",
+    provider: "google",
+  },
+  {
+    id: "sarvam-105b",
+    label: "Sarvam 105B (Indus)",
+    subtitle: "Flagship Indic reasoning, 128K context",
+    provider: "sarvam",
+  },
+  {
+    id: "sarvam-30b",
+    label: "Sarvam 30B",
+    subtitle: "Fast Indic chat, 32K context",
+    provider: "sarvam",
+  },
+  {
+    id: "sarvam-m",
+    label: "Sarvam M",
+    subtitle: "Hybrid reasoning, Indic + English",
+    provider: "sarvam",
+  },
 ];
 
 const PROVIDERS: { id: Provider; label: string }[] = [
   { id: "anthropic", label: "Anthropic" },
   { id: "openai", label: "OpenAI" },
+  { id: "google", label: "Google" },
+  { id: "sarvam", label: "Sarvam" },
 ];
 
 const PROVIDER_IDS = PROVIDERS.map((p) => p.id);
@@ -53,6 +91,8 @@ const PROVIDER_IDS = PROVIDERS.map((p) => p.id);
 const BRAND_COLORS: Record<Provider, string> = {
   anthropic: "#D97757",
   openai: "#10A37F",
+  sarvam: "#7CE4F0",
+  google: "#4285F4",
 };
 
 function AnthropicLogo({ className, style }: { className?: string; style?: React.CSSProperties }) {
@@ -83,6 +123,49 @@ function OpenAILogo({ className, style }: { className?: string; style?: React.CS
   );
 }
 
+function SarvamLogo({ className, style }: { className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} style={style} aria-hidden="true">
+      <g stroke="currentColor" strokeWidth={1.15} fill="none">
+        <ellipse cx="12" cy="12" rx="4.5" ry="8.2" />
+        <ellipse cx="12" cy="12" rx="4.5" ry="8.2" transform="rotate(72 12 12)" />
+        <ellipse cx="12" cy="12" rx="4.5" ry="8.2" transform="rotate(144 12 12)" />
+        <ellipse cx="12" cy="12" rx="4.5" ry="8.2" transform="rotate(216 12 12)" />
+        <ellipse cx="12" cy="12" rx="4.5" ry="8.2" transform="rotate(288 12 12)" />
+      </g>
+      <rect
+        x="11.1"
+        y="11.1"
+        width="1.8"
+        height="1.8"
+        rx="0.2"
+        transform="rotate(45 12 12)"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function GoogleGeminiLogo({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      style={style}
+      aria-hidden="true"
+    >
+      <path d="M12 0C12 6.627 6.627 12 0 12c6.627 0 12 5.373 12 12 0-6.627 5.373-12 12-12-6.627 0-12-5.373-12-12z" />
+    </svg>
+  );
+}
+
 function ProviderLogo({
   provider,
   className,
@@ -92,11 +175,16 @@ function ProviderLogo({
   className?: string;
   style?: React.CSSProperties;
 }) {
-  return provider === "anthropic" ? (
-    <AnthropicLogo className={className} style={style} />
-  ) : (
-    <OpenAILogo className={className} style={style} />
-  );
+  switch (provider) {
+    case "anthropic":
+      return <AnthropicLogo className={className} style={style} />;
+    case "openai":
+      return <OpenAILogo className={className} style={style} />;
+    case "sarvam":
+      return <SarvamLogo className={className} style={style} />;
+    case "google":
+      return <GoogleGeminiLogo className={className} style={style} />;
+  }
 }
 
 /** Build a case-insensitive regex matcher with circuit-breaker for catastrophic backtracking. */
